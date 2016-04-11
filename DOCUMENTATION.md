@@ -4,7 +4,7 @@ badiDate - Documentation
 ## Dependencies
 
 badiDate requires [Moment.js](http://momentjs.com/). In order to use the <code>localBadiDate()</code> wrapper function,
-[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/jan-r-g/MeeusSunMoon) are also required
+[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon) are also required
 
 ## How it works
 
@@ -173,7 +173,7 @@ A <code>{</code> without matching <code>}</code> will result in a return value o
 This object contains the badiDate object, as well as moment objects for the start and end of the Badí' date as well as
 sunrise, solar noon, and - if applicable - the time for commemoration of the Holy Day.
 
-It requires the modules [Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/jan-r-g/MeeusSunMoon).
+It requires the modules [Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon).
 
 A local Badí' date object is created with
 

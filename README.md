@@ -1,4 +1,4 @@
-MeeusSunMoon
+Badí' Date
 ============
 
 [![MIT License][license-image]][license-url]
@@ -13,7 +13,7 @@ commemoration.
 ## Dependencies
 
 badiDate requires [Moment.js](http://momentjs.com/). In order to use the <code>localBadiDate()</code> wrapper function,
-[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/jan-r-g/MeeusSunMoon) are also required
+[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon) are also required
 
 ## [Documentation](DOCUMENTATION.md)
 
@@ -29,7 +29,7 @@ Minified versions are also provided in <code>min/</code>
 
 ## Accuracy
 
-Accuracies of solar and lunar calculations are given by [MeeusSunMoon](https://github.com/jan-r-g/MeeusSunMoon).
+Accuracies of solar and lunar calculations are given by [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon).
 
 The accuracy of the calculation of the date of Naw-Rúz and the dates of the Twin Birthdays depend on those as well as that
 of the equinox calculations, which are immensely complex. Equinox dates until 2200 are calculated with an algorithm using
