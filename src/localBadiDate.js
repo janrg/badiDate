@@ -21,11 +21,15 @@ function localBadiDate(date, latitude, longitude, timezoneId) {
     dateSolarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
     dateSunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
     dateStart = MeeusSunMoon.sunset(gregDate.subtract(1, "day"), latitude, longitude);
+    // add() and subtract() modify the object so we have to undo this
+    gregDate.add(1, "day");
   } else { // If we use clocks instead of the sun. Set to 6/12/18 local time (-> 7/13/19 if DST is in effect)
     dateEnd = moment.tz(gregDate.format("YYYY-MM-DDT") + "18:00:00", timezoneId);
     dateSolarNoon = moment.tz(gregDate.format("YYYY-MM-DDT") + "12:00:00", timezoneId);
     dateSunrise = moment.tz(gregDate.format("YYYY-MM-DDT") + "06:00:00", timezoneId);
     dateStart = moment.tz(gregDate.subtract(1, "day").format("YYYY-MM-DDT") + "18:00:00", timezoneId);
+    // add() and subtract() modify the object so we have to undo this
+    gregDate.add(1, "day");
     if (dateEnd.isDST()) {
       dateEnd.add(1, "hour");
       dateSolarNoon.add(1, "hour");
