@@ -55,6 +55,10 @@ well above the uncertainty of the algorithms.
 
 Initial release
 
+### 1.0.1
+
+Added Persian(Farsi) Localization
+
 ## License
 
 badiDate is freely distributable under the terms of the [MIT license](LICENSE).
