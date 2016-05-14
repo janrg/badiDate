@@ -33,31 +33,24 @@ Accuracies of solar and lunar calculations are given by [MeeusSunMoon](https://g
 
 The accuracy of the calculation of the date of Naw-Rúz and the dates of the Twin Birthdays depend on those as well as that
 of the equinox calculations, which are immensely complex. Equinox dates until 2200 are calculated with an algorithm using
-the [JPL DE405 Ephemeris](https://en.wikipedia.org/wiki/Jet_Propulsion_Laboratory_Development_Ephemeris), and from 2200 to
-2400 with an algorithm using the [VSOP87 Ephemeris](https://en.wikipedia.org/wiki/VSOP_(planets)#VSOP87), which is slightly
-less accurate, but only on the order of a few seconds.
+the [JPL DE405 Ephemeris](https://en.wikipedia.org/wiki/Jet_Propulsion_Laboratory_Development_Ephemeris), and from 2200 onwards
+with an algorithm using the [VSOP87 Ephemeris](https://en.wikipedia.org/wiki/VSOP_(planets)#VSOP87), which is slightly less
+accurate, but only on the order of a few seconds.
 
-There are 3 years between 2015 and 2400 where the northward equinox is such, that the date of Naw-Rúz is somewhat uncertain:
-* In 2026, the difference between the equinox and sunset in Tehran is only about 20 seconds, but an override has been inserted
-  to ensure conformity with the list of dates for the next 50 years published by the Bahá'í World Center
-* In 2059 and 2385, the differences are 2 and 3 minutes respectively, which should be well above the uncertainty of the algorithms
-
-There are no years in the next 1000 years where a new moon is close enough to the end of the day of Naw-Rúz to question the count
-of eight new moons after Naw-Rúz
-
-There are 5 years between 2015 and 2400 where the eighth new moon after Naw-Rúz is closer than 5 minutes to the time of sunset in
-Tehran on the date (2176, 2245, 2267, 2339, 2372), but in no case is the difference less than 2.5 minutes, which again should be
-well above the uncertainty of the algorithms.
+The main source of uncertainty for far future dates comes from the uncertainty on [ΔT](https://en.wikipedia.org/wiki/%CE%94T).
+A detailed analysis of uncertainties is included in the code. The range of dates is limited to until 20 March 2351, as the
+uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm may not be correct.
 
 ## Changelog
+
+### 1.1.0
+
+Fixed some output formatting, added uncertainty analysis for far future dates and based on this reduced the range of dates slightly
+(now ends in 507 BE), added Persian localization (thanks to arminhaghi).
 
 ### 1.0.0
 
 Initial release
-
-### 1.0.1
-
-Added Persian(Farsi) Localization
 
 ## License
 
