@@ -257,9 +257,9 @@ badiLocale.Arabic.yearInVahid = {
   19: "واحد"
 };
 
-badiLocale.Arabic.BE = "بديع",
-badiLocale.Arabic.badiCalendar = "تقويم بديع",
-badiLocale.Arabic.locale = "ar"
+badiLocale.Arabic.BE = "بديع";
+badiLocale.Arabic.badiCalendar = "تقويم بديع";
+badiLocale.Arabic.locale = "ar";
 }
 
 // CHINESE

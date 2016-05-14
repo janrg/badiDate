@@ -55,12 +55,7 @@ function badiDate(date) {
     "m4ce", "l4c3", "l4d3", "l5cb", "m4bi", "l4ci", "l4c8", "l4d8", "l5ch", "l4c5",
     "l4d5", "l4cd", "l5c2", "l4d1", "l4c9", "l4da", "l5ci", "l4c7", "l4d7", "l4cf",
     "l5c4", "l4d2", "l4cb", "l4bj", "l5d1", "l4c8", "l4d8", "l4cg", "l5c5", "l4d4",
-    "l4cc", "l4c2", "l5d2", "l4c9", "l4da", "l4ci", "l5c7", "l4d6", "l4ce", "l4c3",
-    "l4d3", "k5cc", "l4bj", "l4cj", "l4c9", "k5d9", "l4cg", "l4c5", "l4d5", "k5cd",
-    "l4c2", "l4d2", "l4ca", "k5da", "l4ch", "l4c6", "l4d6", "k5ce", "l4c3", "l4d3",
-    "l4cc", "k5c1", "l4cj", "l4c8", "l4d8", "k5cg", "l4c4", "l4d4", "l4cd", "k4c3",
-    "k5d3", "l4ca", "l4da", "k4ci", "k5c7", "l4d6", "l4ce", "k4c4", "k5d4", "l4cc",
-    "l4c1", "k4d1", "k5c9", "l4d7", "l4cg"];
+    "l4cc", "l4c2", "l5d2", "l4c9", "l4da", "l4ci"];
   // This is only to make code below more human-readable
   var holyDaysEnum = {
     nawRuz: 1,
@@ -78,8 +73,8 @@ function badiDate(date) {
   // The ranges of dates (Gregorian and Badí') for which a badiDate will work
   // lower limit the beginning of the calendar, upper limit given by the range
   // of years we have stored in the badiYears variable.
-  var validRangeGreg = [moment.utc("1844-03-21"), moment.utc("2400-03-20")];
-  var validRangeBadi = [1, 556];
+  var validRangeGreg = [moment.utc("1844-03-21"), moment.utc("2351-03-20")];
+  var validRangeBadi = [1, 507];
   // badiDate accepts a number of different arguments for instantiation, JS Date object,
   // moment object, ISO 8601 date string, Badí' date string in the format "year-month-day"
   // or "year-holyDayNumber", and array in the format [year, month, day] or [year, holyDayNumber]
@@ -491,20 +486,24 @@ function badiDate(date) {
           return String(badiDay);
         case "D":
           var day = badiLocale[language].month[badiDay];
-          if (day.substring(0,1) !== "‘") {
-            return day.substring(0,3);
+          if (day.substring(4,5) === "’" && day.substring(0,1) === "‘") {
+            return day.substring(0,5);
+          } else if (day.substring(0,1) !== "‘") {
+            return day.replace(/<(?:.|\n)*?>/gm, '').substring(0,3);
           } else {
-            return day.substring(0,4);
+            return day.replace(/<(?:.|\n)*?>/gm, '').substring(0,4);
           }
           break;
         case "m":
           return String(badiMonth);
         case "M":
           var month = badiLocale[language].month[badiMonth];
-          if (month.substring(0,1) !== "‘") {
-            return month.substring(0,3);
+          if (month.substring(4,5) === "’" && month.substring(0,1) === "‘") {
+            return month.substring(0,5);
+          } else if (month.substring(0,1) !== "‘") {
+            return month.replace(/<(?:.|\n)*?>/gm, '').substring(0,3);
           } else {
-            return month.substring(0,4);
+            return month.replace(/<(?:.|\n)*?>/gm, '').substring(0,4);
           }
           break;
         case "W":

@@ -3,14 +3,14 @@ var longitudeTihran = 51.42;
 
 // Calculate the time of of the beginning of the year in Tihran in UTC
 var nawRuzTihranUTC = function(equinox) {
-  var vernalEquinox, nawruzTihran;
+  var vernalEquinox, nawRuzTihran;
   vernalEquinox = moment.tz(equinox, "UTC");
   nawRuzTihran = MeeusSunMoon.sunset(vernalEquinox, latitudeTihran, longitudeTihran);
   if (vernalEquinox.isBefore(nawRuzTihran)) {
     nawRuzTihran = MeeusSunMoon.sunset(vernalEquinox.subtract(1, "day"), latitudeTihran, longitudeTihran);
   }
   return nawRuzTihran;
-}
+};
 
 // Calculate the Badí' dates for the Twin Birthdays
 var twinBirthdays = function(nawRuzTihran) {
@@ -23,7 +23,7 @@ var twinBirthdays = function(nawRuzTihran) {
   // Count the new moons since Naw-Rúz and keep the eighth one
   for (var i = 0; i < newMoons.length; i++) {
     if (newMoons[i].isAfter(nawRuzEnd)) {
-      index++
+      index++;
     }
     if (index === 8) {
       eighthNewMoon = newMoons[i];
@@ -33,14 +33,6 @@ var twinBirthdays = function(nawRuzTihran) {
   // Convert to the proper timezone and calculate sunset.
   eighthNewMoon.tz("Asia/Tehran");
   var newMoonSunset = MeeusSunMoon.sunset(eighthNewMoon, latitudeTihran, longitudeTihran);
-  // Output some info about years in which the eighth new moon and sunset are very close,
-  // as we might get the date wrong by a day then
-  // (We don't have to worry about this for the new moon near Naw-Rúz as none will be close
-  //  enough for at least a thousand years)
-  var diff = eighthNewMoon.diff(newMoonSunset, "minutes");
-  if (Math.abs(diff) < 5) {
-    console.log(eighthNewMoon.format() + "\n" + newMoonSunset.format() + "\n" + diff);
-  }
   // If sunset is before the new moon, the new moon is on the next Badí' date
   // Then we add another day because it's the day after the occurence of the eighth new moon
   if (newMoonSunset.isBefore(eighthNewMoon)) {
@@ -49,7 +41,7 @@ var twinBirthdays = function(nawRuzTihran) {
   eighthNewMoon.add(1, 'day');
   var monthDay = badiMonthDayTB(eighthNewMoon, nawRuzTihran);
   return monthDay;
-}
+};
 
 // Calculate the Badí' dates for the Twin Birthdays from the Gregorian date of the
 // Birth of the Báb and the date of Naw-Rúz
@@ -64,10 +56,9 @@ var yearList = function() {
   var nawRuzTihran, nextNawRuzTihran, ayyamiHaLength, TB;
   var longList = "  var badiYears = {\n";
   var shortList = "  var badiYears = [\n    ";
-  var counter = 0;
-  var equinoxesLength = equinoxes.length;
+  var equinoxesLength = 337; // Stop at end of 2350 AD / 507 BE as the Naw-Rúz 509 BE is potentially too close to call
   for (var i = 0; i < equinoxesLength - 1; i++) {
-    nawRuzTihran = nawRuzTihranUTC(equinoxes[i])
+    nawRuzTihran = nawRuzTihranUTC(equinoxes[i]);
     nextNawRuzTihran = nawRuzTihranUTC(equinoxes[i+1]);
     ayyamiHaLength = Math.round(nextNawRuzTihran.diff(nawRuzTihran, "day", true) - 361);
     TB = twinBirthdays(nawRuzTihran);
@@ -90,4 +81,4 @@ var yearList = function() {
   }
   $("#long").html("<pre>" + longList + "</pre>");
   $("#short").html("<pre>" + shortList + "</pre>");
-}();
+};

@@ -130,7 +130,7 @@ badiLocale.Dummy.yearInVahid = {
   19: "Váḥid"
 };
 
-badiLocale.Dummy.BE = "BE",
-badiLocale.Dummy.badiCalendar = "Badí' Calendar",
-badiLocale.Dummy.locale = "en"
+badiLocale.Dummy.BE = "BE";
+badiLocale.Dummy.badiCalendar = "Badí' Calendar";
+badiLocale.Dummy.locale = "en";
 }
