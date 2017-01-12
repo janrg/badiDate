@@ -589,17 +589,17 @@ badiLocale.Latvian.monthL = {
 };
 
 badiLocale.Latvian.holyDay = {
-  0: "Naw-Rúz",
-  1: "Riḍván pirmā diena",
-  2: "Riḍván devītā diena",
-  3: "Riḍván divpadsmitā diena",
-  4: "Bába paziņojums",
-  5: "Bahá’u’lláh Debessbraukšana",
-  6: "Bába mocekļa nāve",
-  7: "Bába dzimšanas diena",
-  8: "Bahá’u’lláh dzimšanas diena",
-  9: "Derības diena",
-  10: "`Abdu’l-Bahá Debessbraukšana"
+  1: "Naw-Rúz",
+  2: "Riḍván pirmā diena",
+  3: "Riḍván devītā diena",
+  4: "Riḍván divpadsmitā diena",
+  5: "Bába paziņojums",
+  6: "Bahá’u’lláh Debessbraukšana",
+  7: "Bába mocekļa nāve",
+  8: "Bába dzimšanas diena",
+  9: "Bahá’u’lláh dzimšanas diena",
+  10: "Derības diena",
+  11: "`Abdu’l-Bahá Debessbraukšana"
 };
 
 badiLocale.Latvian.weekdayL = {
@@ -719,17 +719,17 @@ badiLocale.Portuguese.monthL = {
 };
 
 badiLocale.Portuguese.holyDay = {
-  0: "Naw-Rúz",
-  1: "1º dia do Riḍván",
-  2: "9º dia do Riḍván",
-  3: "12º dia do Riḍván",
-  4: "Declaração do Báb",
-  5: "Ascensão de Bahá’u’lláh",
-  6: "Martírio do Báb",
-  7: "Aniversário do Báb",
-  8: "Aniversário de Bahá’u’lláh",
-  9: "Dia do Convênio",
-  10: "Ascensão de `Abdu’l-Bahá"
+  1: "Naw-Rúz",
+  2: "1º dia do Riḍván",
+  3: "9º dia do Riḍván",
+  4: "12º dia do Riḍván",
+  5: "Declaração do Báb",
+  6: "Ascensão de Bahá’u’lláh",
+  7: "Martírio do Báb",
+  8: "Aniversário do Báb",
+  9: "Aniversário de Bahá’u’lláh",
+  10: "Dia do Convênio",
+  11: "Ascensão de `Abdu’l-Bahá"
 };
 
 badiLocale.Portuguese.weekdayL = {
@@ -798,17 +798,17 @@ badiLocale.Russian.monthL = {
 };
 
 badiLocale.Russian.holyDay = {
-  0: "Нау-Рӯз",
-  1: "1-й день Рид̣вāна",
-  2: "9-й день Рид̣вāна",
-  3: "12-й день Рид̣вāна",
-  4: "Возвещение Баба",
-  5: "Вознесение Бахауллы",
-  6: "Мученическая Баба",
-  7: "рождения Баба",
-  8: "рождения Бахауллы",
-  9: "День Завета",
-  10: "Вознесение Абдул-Баха"
+  1: "Нау-Рӯз",
+  2: "1-й день Рид̣вāна",
+  3: "9-й день Рид̣вāна",
+  4: "12-й день Рид̣вāна",
+  5: "Возвещение Баба",
+  6: "Вознесение Бахауллы",
+  7: "Мученическая Баба",
+  8: "рождения Баба",
+  9: "рождения Бахауллы",
+  10: "День Завета",
+  11: "Вознесение Абдул-Баха"
 };
 
 badiLocale.Russian.weekday = {
@@ -906,17 +906,17 @@ badiLocale.Spanish.monthL = {
 };
 
 badiLocale.Spanish.holyDay = {
-  0: "Naw-Rúz",
-  1: "Primer día de Riḍván",
-  2: "Noveno día de Riḍván",
-  3: "Duodécimo día de Riḍván",
-  4: "Declaración del Báb",
-  5: "Ascensión de Bahá’u’lláh",
-  6: "Martirio del Báb",
-  7: "Nacimiento del Báb",
-  8: "Nacimiento de Bahá’u’lláh",
-  9: "Día de la Alianza",
-  10: "Fallecimiento de `Abdu’l-Bahá"
+  1: "Naw-Rúz",
+  2: "Primer día de Riḍván",
+  3: "Noveno día de Riḍván",
+  4: "Duodécimo día de Riḍván",
+  5: "Declaración del Báb",
+  6: "Ascensión de Bahá’u’lláh",
+  7: "Martirio del Báb",
+  8: "Nacimiento del Báb",
+  9: "Nacimiento de Bahá’u’lláh",
+  10: "Día de la Alianza",
+  11: "Fallecimiento de `Abdu’l-Bahá"
 };
 
 badiLocale.Spanish.weekdayL = {
@@ -962,17 +962,17 @@ badiLocale.Swedish.monthL = {
 };
 
 badiLocale.Swedish.holyDay = {
-  0: "Naw-Rúz",
-  1: "Första Riḍván",
-  2: "Nionde Riḍván",
-  3: "Tolfte Riḍván",
-  4: "Bábs Deklaration",
-  5: "Bahá’u’lláhs Bortgång",
-  6: "Bábs Martyrskap",
-  7: "Bábs Födelse",
-  8: "Bahá’u’lláhs Födelse",
-  9: "Förbundets dag",
-  10: "`Abdu’l-Bahás Bortgång" 
+  1: "Naw-Rúz",
+  2: "Första Riḍván",
+  3: "Nionde Riḍván",
+  4: "Tolfte Riḍván",
+  5: "Bábs Deklaration",
+  6: "Bahá’u’lláhs Bortgång",
+  7: "Bábs Martyrskap",
+  8: "Bábs Födelse",
+  9: "Bahá’u’lláhs Födelse",
+  10: "Förbundets dag",
+  11: "`Abdu’l-Bahás Bortgång" 
 };
 
 badiLocale.Swedish.weekdayL = {
