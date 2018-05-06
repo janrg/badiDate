@@ -50,7 +50,6 @@
         "no-nested-ternary": "error",
         "no-prototype-builtins": "error",
         "no-script-url": "error",
-        "no-undefined": "error",
         "no-underscore-dangle": ["error", {"allowAfterThis": true}],
         "no-useless-concat": "error",
         "no-var": "error",

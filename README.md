@@ -1,5 +1,4 @@
-Badí' Date
-============
+# Badí' Date
 
 [![MIT License][license-image]][license-url]
 
