@@ -1,4 +1,3 @@
-/* global $ */
 import * as MeeusSunMoon from '../node_modules/meeussunmoon/src/index.js';
 import {equinoxes} from './equinoxes.js';
 
@@ -114,10 +113,9 @@ const yearList = function () {
   }
   shortList += '\n\nexport {badiYears};';
   longList += '\n\nexport {badiYears};';
-  $('#long').html('<pre>' + longList + '</pre>');
-  $('#short').html('<pre>' + shortList + '</pre>');
+  document.getElementById('short').innerHTML = '<pre>' + shortList + '</pre>';
+  document.getElementById('long').innerHTML = '<pre>' + longList + '</pre>';
 };
 
-yearList();
-
-export {latitudeTihran, longitudeTihran, nawRuzTihranUTC, twinBirthdays};
+export {latitudeTihran, longitudeTihran, nawRuzTihranUTC, twinBirthdays,
+  yearList};

@@ -2384,10 +2384,10 @@
 
   MeeusSunMoon.options({ returnTimeForPNMS: true, roundToNearestMinute: true });
 
+  exports.MeeusSunMoon = index;
   exports.BadiDate = BadiDate;
   exports.LocalBadiDate = LocalBadiDate;
   exports.badiDateOptions = badiDateOptions$1;
-  exports.MeeusSunMoon = index;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

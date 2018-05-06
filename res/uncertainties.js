@@ -1,4 +1,3 @@
-/* global $ */
 import * as MeeusSunMoon from '../node_modules/meeussunmoon/src/index.js';
 import {latitudeTihran, longitudeTihran, nawRuzTihranUTC,
   twinBirthdays} from './generateYears.js';
@@ -141,7 +140,7 @@ const debugList = function () {
     debug += BoB.ayyamiHaLength();
     debug += '<br>';
   }
-  $('#debug').html('<pre>' + debug + '</pre>');
+  document.getElementById('debug').innerHTML = '<pre>' + debug + '</pre>';
 };
 
-debugList();
+export {debugList};

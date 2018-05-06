@@ -2,13 +2,15 @@
 <html lang="en-US">
 <head>
   <meta charset="utf-8">
-  <title>Badí' Calendar - Calculate Possible Uncertainties</title>
+  <title>Badí' Calendar - Calculate Uncertainties</title>
 </head>
 <body>
 <div id="debug"></div>
 <script type="text/javascript" src="../node_modules/moment/min/moment.min.js"></script>
 <script type="text/javascript" src="../node_modules/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.12.2.min.js"></script>
-<script type="module" src="uncertainties.js"></script>
+<script type="module">
+    import {debugList} from './uncertainties.js';
+    debugList();
+</script>
 </body>
 </html>

@@ -2538,4 +2538,4 @@ const badiDateOptions$1 = function (options) {
 
 MeeusSunMoon.options({returnTimeForPNMS: true, roundToNearestMinute: true});
 
-export { BadiDate, LocalBadiDate, badiDateOptions$1 as badiDateOptions, index as MeeusSunMoon };
+export { index as MeeusSunMoon, BadiDate, LocalBadiDate, badiDateOptions$1 as badiDateOptions };
