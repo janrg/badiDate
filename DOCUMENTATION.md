@@ -1,5 +1,4 @@
-badiDate - Documentation
-============================
+# badiDate - Documentation
 
 ## Dependencies
 
@@ -52,16 +51,16 @@ The other dependencies are best included from a CDN, such as CDNJS:
 For bundling (e.g. with rollup) you can then import the ES6 module via
 
 ```js
-import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'badidate'
+import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'badidate';
 ```
 
 or directly use it in the browser via
 
 ```js
-import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'node_modules/badidate/dist/localBadiDate-mss-locales-es.js'
+import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'node_modules/badidate/dist/localBadiDate-mss-locales-es.js';
 ```
 
-where MeeusSunMoon is imported in order to be able to set the modules options via `MeeusSunMoon.options()` (see 
+where MeeusSunMoon is imported in order to be able to set the modules options via `MeeusSunMoon.options()` (see
 [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon)).
 
 If the version of `localBadiDate*.js` without bundled  MeeusSunMoon is used, the module has to be loaded globally via its UMD bundle in order
@@ -75,7 +74,7 @@ There are two configuration options that can be set as
 badiDateOptions({
   useClockLocations: false, // default: true
   defaultLanguage: 'en', // default: 'en'
-})
+});
 ```
 
 (Note that two of the options for MeeusSunMoon, `roundToNearestMinute` and `returnTimeForPNMS`, default to `true` when using the badiDate module.)
@@ -89,8 +88,8 @@ badiDateOptions({
 The BadiDate object represents a Badí' date with some simplifications in order to make it independent of location
 (for local Badí' dates, a wrapper class, `LocalBadiDate()` exists, see below), namely
 
-* Badí' dates are taken to correspond to Gregorian dates 1-1, i.e. to start at midnight
-* No other times (e.g. for Holy Day commemorations) are stored
+*   Badí' dates are taken to correspond to Gregorian dates 1-1, i.e. to start at midnight
+*   No other times (e.g. for Holy Day commemorations) are stored
 
 For dates in 172 BE and after (21 March 2015 and after), the new implementation is used to calculate the beginning
 of the year, all Holy Days, and the length of Ayyám-i-Há, for earlier dates the earlier implementation, where for the
@@ -104,11 +103,11 @@ There are a number of different ways, in which a badiDate object can be created:
 #### From a moment or Date object
 
 ```js
-var myMoment = moment('2015-03-21');
-var myBadiDate1 = new BadiDate(myMoment);
-    
-var myDate = new Date('2015-03-21');
-var myBadiDate2 = new BadiDate(myDate);
+const myMoment = moment('2015-03-21');
+const myBadiDate1 = new BadiDate(myMoment);
+
+const myDate = new Date('2015-03-21');
+const myBadiDate2 = new BadiDate(myDate);
 ```
 
 Sets the Badí' date from the Gregorian date given by the moment or Date object. Any time or timezone information
@@ -117,7 +116,7 @@ is ignored.
 #### From an ISO 8601 string
 
 ```js
-var myBadiDate = new BadiDate('2015-03-21');
+const myBadiDate = new BadiDate('2015-03-21');
 ```
 
 Sets the Badí' date from the Gregorian date given by the string. Handling of malformed strings is attempted by
@@ -127,10 +126,10 @@ is ignored.
 #### From a Badí' date string or array
 
 ```js
-var myBadiDate1 = new BadiDate('172-1-1')
-var myBadiDate2 = new BadiDate('172-1');
-var myBadiDate3 = new BadiDate([172, 1, 1]);
-var myBadiDate4 = new BadiDate([172, 1]);
+const myBadiDate1 = new BadiDate('172-1-1');
+const myBadiDate2 = new BadiDate('172-1');
+const myBadiDate3 = new BadiDate([172, 1, 1]);
+const myBadiDate4 = new BadiDate([172, 1]);
 ```
 
 Sets the Badí' date from the given string or array. Arguments can either be in the format `'Y-M-D'`,
@@ -156,7 +155,7 @@ the latter of which is included in some of the bundles.
 A local Badí' date object is created with
 
 ```js
-var date1 = new LocalBadiDate(date, latitude, longitude, timezoneId)
+const date1 = new LocalBadiDate(date, latitude, longitude, timezoneId);
 ```
 
 where `date` accepts the same input formats as `BadiDate()`, `latitude` and `longitude` are the geographic latitude and longitude
@@ -300,7 +299,7 @@ BadiDate.format(formatString, language)
 
 Outputs the date in the format as given by formatString and in the given language. The following tokens are replaced in `formatString`:
 
-|                   | Token | Output 
+|                   | Token | Output
 |-------------------|-------|--------
 | **Day**           | d     | Day of the month, without leading zeroes
 |                   | dd    | Day of the month, with leading zeroes
@@ -332,7 +331,7 @@ Outputs the date in the format as given by formatString and in the given languag
 If no formatting string is given, `format()` defaults to `'d MM+ y BE'`. E.g.
 
 ```js
-var myBadiDate = new BadiDate([172, 1, 1]);
+const myBadiDate = new BadiDate([172, 1, 1]);
 console.log(myBadiDate.format());
 ```
 
@@ -356,15 +355,14 @@ roughly to reduce vertex count and no attempt was made to capture to boundary to
 
 The groups of three times given below correspond to sunrise, solar noon, and sunset.
 
-* **Canada**: 06:30, 12:00, 18:00 above 60°N latitude.
-* **Finland**: 06:00, 12:00, 18:00 local standard time (i.e. 07:00, 13:00, 19:00 in local time when DST is in effect), **except** for the
-month of `Alá´, where the actual times for sunrise, solar noon, and sunset are used.
-* **Iceland**: 06:00, 13:00, 18:00.
-* **Norway**: 06:00, 12:00, 18:00.
-* **Sweden**: 06:00, 12:00, 18:00 in Norrland (i.e. Lapland, Norrbotten, Västerbotten, Jämtland, Ångermanland, Medelpad, Härjedalen,
+*   **Canada**: 06:30, 12:00, 18:00 above 60°N latitude.
+*   **Finland**: 06:00, 12:00, 18:00 local standard time (i.e. 07:00, 13:00, 19:00 in local time when DST is in effect), **except** for the
+month of \`Alá´, where the actual times for sunrise, solar noon, and sunset are used.
+*   **Iceland**: 06:00, 13:00, 18:00.
+*   **Norway**: 06:00, 12:00, 18:00.
+*   **Sweden**: 06:00, 12:00, 18:00 in Norrland (i.e. Lapland, Norrbotten, Västerbotten, Jämtland, Ångermanland, Medelpad, Härjedalen,
 Hälsingland, and Gästriksland)
-* **USA**: 06:00, 12:00, 18:00 local standard time (i.e. 07:00, 13:00, 19:00 in local time when DST is in effect) **in Alaska**.
-
+*   **USA**: 06:00, 12:00, 18:00 local standard time (i.e. 07:00, 13:00, 19:00 in local time when DST is in effect) **in Alaska**.
 
 ## The Source Data
 
