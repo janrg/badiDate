@@ -20,13 +20,12 @@ function localeRegex(languageCodes) {
     'zh', 'en_us', 'en-us'];
   let localeListString = '';
   for (let i = 0; i < locales.length; i++) {
-    if (languageCodes.indexOf(locales[i]) === -1) {
+    if (!languageCodes.includes(locales[i])) {
       localeListString += '|' + locales[i];
     }
   }
   localeListString = localeListString.slice(1);
-  let regexString = '';
-  regexString = '(import \\* as (' + localeListString +
+  const regexString = '(import \\* as (' + localeListString +
       ") from '\\.\\/locale\\/(" + localeListString +
       ")\\.js';|badiLocale\\['(" + localeListString +
       ")'] = (" + localeListString + ');)';

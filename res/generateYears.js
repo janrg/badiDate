@@ -80,23 +80,23 @@ const badiMonthDayTB = function (gregDate, nawRuzTihran) {
  * Generate the long and short list of dates for use in the badiDate class
  */
 const yearList = function () {
-  let ayyamiHaLength, nawRuzTihran, nextNawRuzTihran, TB;
   let longList = 'const badiYears = {\n';
   let shortList = 'const badiYears = [\n  ';
   // Stop at end of 2350 AD / 507 BE as the Naw-Rúz 509 BE is potentially too
   // close to call
   const equinoxesLength = 337;
   for (let i = 0; i < equinoxesLength - 1; i++) {
-    nawRuzTihran = nawRuzTihranUTC(equinoxes[i]);
-    nextNawRuzTihran = nawRuzTihranUTC(equinoxes[i + 1]);
-    ayyamiHaLength = Math.round(nextNawRuzTihran.diff(
+    const nawRuzTihran = nawRuzTihranUTC(equinoxes[i]);
+    const nextNawRuzTihran = nawRuzTihranUTC(equinoxes[i + 1]);
+    const ayyamiHaLength = Math.round(nextNawRuzTihran.diff(
       nawRuzTihran, 'day', true) - 361);
-    TB = twinBirthdays(nawRuzTihran);
-    longList += '  ' + (i + 172).toString() + ': {\n' +
-            '    aHL: ' + ayyamiHaLength + ',\n' +
-            '    NR: \'' + nawRuzTihran.format('YYYY-MM-DD') + '\',\n' +
-            '    TB: [' + TB[0] + ', ' + TB[1] + ', ' + TB[2] + ', ' + TB[3] +
-            ']\n  }';
+    const TB = twinBirthdays(nawRuzTihran);
+    longList += `  ${(i + 172).toString()}: {
+    aHL: ${ayyamiHaLength},
+    NR: '${nawRuzTihran.format('YYYY-MM-DD')}',
+    TB: [${TB[0]}, ${TB[1]}, ${TB[2]}, ${TB[3]}
+]
+  }`;
     shortList += '\'' + nawRuzTihran.date().toString(36) +
       ayyamiHaLength.toString(36) + TB[0].toString(36) +
       TB[1].toString(36) + '\'';
