@@ -1,5 +1,230 @@
-import {badiLocale, setDefaultLanguage} from './badiLocale.js';
-import {badiYears} from './badiYears.js';
+/**
+ * @license BadiDate v2.0.0
+ * (c) 2018 Jan Greis
+ * licensed under MIT
+ */
+
+const month = {
+  1: 'Bahá',
+  2: 'Jalál',
+  3: 'Jamál',
+  4: '‘Aẓamat',
+  5: 'Núr',
+  6: 'Raḥmat',
+  7: 'Kalimát',
+  8: 'Kamál',
+  9: 'Asmá’',
+  10: '‘Izzat',
+  11: 'Ma<u>sh</u>íyyat',
+  12: '‘Ilm',
+  13: 'Qudrat',
+  14: 'Qawl',
+  15: 'Masá’il',
+  16: '<u>Sh</u>araf',
+  17: 'Sulṭán',
+  18: 'Mulk',
+  19: '‘Alá’',
+  20: 'Ayyám-i-Há'
+};
+
+const monthL = {
+  1: 'Splendour',
+  2: 'Glory',
+  3: 'Beauty',
+  4: 'Grandeur',
+  5: 'Light',
+  6: 'Mercy',
+  7: 'Words',
+  8: 'Perfection',
+  9: 'Names',
+  10: 'Might',
+  11: 'Will',
+  12: 'Knowledge',
+  13: 'Power',
+  14: 'Speech',
+  15: 'Questions',
+  16: 'Honour',
+  17: 'Sovereignty',
+  18: 'Dominion',
+  19: 'Loftiness',
+  20: 'Ayyám-i-Há'
+};
+
+const holyDay = {
+  1: 'Naw-Rúz',
+  2: 'First day of Riḍván',
+  3: 'Ninth day of Riḍván',
+  4: 'Twelfth day of Riḍván',
+  5: 'Declaration of the Báb',
+  6: 'Ascension of Bahá’u’lláh',
+  7: 'Martyrdom of the Báb',
+  8: 'Birth of the Báb',
+  9: 'Birth of Bahá’u’lláh',
+  10: 'Day of the Covenant',
+  11: 'Ascension of ‘Abdu’l-Bahá'
+};
+
+// CAREFUL: Numbering corresponds to Badí' week, i.e. 1 is Jalál (-> Saturday)
+const weekday = {
+  1: 'Jalál',
+  2: 'Jamál',
+  3: 'Kamál',
+  4: 'Fiḍál',
+  5: '‘Idál',
+  6: 'Istijlál',
+  7: 'Istiqlál'
+};
+
+const weekdayAbbr3 = {
+  1: 'Jal',
+  2: 'Jam',
+  3: 'Kam',
+  4: 'Fiḍ',
+  5: '‘Idá',
+  6: 'Isj',
+  7: 'Isq'
+};
+
+const weekdayAbbr2 = {
+  1: 'Jl',
+  2: 'Jm',
+  3: 'Ka',
+  4: 'Fi',
+  5: '‘Id',
+  6: 'Ij',
+  7: 'Iq'
+};
+
+const weekdayL = {
+  1: 'Glory',
+  2: 'Beauty',
+  3: 'Perfection',
+  4: 'Grace',
+  5: 'Justice',
+  6: 'Majesty',
+  7: 'Independence'
+};
+
+const yearInVahid = {
+  1: 'Alif',
+  2: 'Bá’',
+  3: 'Ab',
+  4: 'Dál',
+  5: 'Báb',
+  6: 'Váv',
+  7: 'Abad',
+  8: 'Jád',
+  9: 'Bahá',
+  10: 'Ḥubb',
+  11: 'Bahháj',
+  12: 'Javáb',
+  13: 'Aḥad',
+  14: 'Vahháb',
+  15: 'Vidád',
+  16: 'Badí‘',
+  17: 'Bahí',
+  18: 'Abhá',
+  19: 'Váḥid'
+};
+
+const BE = 'BE';
+const badiCalendar = 'Badí‘ Calendar';
+
+var en = /*#__PURE__*/Object.freeze({
+  month: month,
+  monthL: monthL,
+  holyDay: holyDay,
+  weekday: weekday,
+  weekdayAbbr3: weekdayAbbr3,
+  weekdayAbbr2: weekdayAbbr2,
+  weekdayL: weekdayL,
+  yearInVahid: yearInVahid,
+  BE: BE,
+  badiCalendar: badiCalendar
+});
+
+/* eslint-disable dot-notation, line-comment-position, camelcase, sort-imports */
+
+
+
+
+
+
+
+
+
+
+
+
+
+const badiLocale = {};
+badiLocale['en'] = en;
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Set default language for localization. If the language doesn't exist,
+ * nothing is changed.
+ * @param {string} language that should be set as default
+ */
+const setDefaultLanguage = function (language) {
+  if (typeof badiLocale[language] === 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('Chosen language does not exist. Setting has not been changed');
+  } else {
+    badiLocale['default'] = badiLocale[language];
+  }
+};
+
+const badiYears = [
+  'l4da', 'k4ci', 'k5c7', 'l4d6', 'l4ce', 'k4c4', 'k5d4', 'l4cb', 'l4c1',
+  'k4cj', 'k5c8', 'l4d7', 'l4cf', 'k4c5', 'k4d5', 'k5ce', 'l4c2', 'k4d2',
+  'k4ca', 'k5da', 'l4ch', 'k4c6', 'k4d6', 'k5cf', 'l4c4', 'k4d4', 'k4cc',
+  'k5c1', 'l4cj', 'k4c8', 'k4d8', 'k5cg', 'l4c5', 'k4d5', 'k4ce', 'k5c3',
+  'l4d2', 'k4ca', 'k4d9', 'k5ci', 'l4c6', 'k4d6', 'k4cf', 'k4c4', 'k5d4',
+  'k4cb', 'k4bj', 'k4cj', 'k5c9', 'k4d8', 'k4cg', 'k4c6', 'k5d6', 'k4cd',
+  'k4c2', 'k4d2', 'k5ca', 'k4d9', 'k4ci', 'k4c7', 'k5d7', 'k4cf', 'k4c4',
+  'k4d4', 'k5cc', 'k4bj', 'k4cj', 'k4c9', 'k5d9', 'k4cg', 'k4c6', 'k4d5',
+  'k5cd', 'k4c2', 'k4d1', 'k4ca', 'k4da', 'j5cj', 'k4c7', 'k4d7', 'k4cf',
+  'j5c4', 'k4d3', 'k4cb', 'k4c1', 'k5d1', 'l4c9', 'l4d9', 'l4ch', 'k5c6',
+  'l4d5', 'l4cd', 'l4c2', 'k5d2', 'l4ca', 'l4da', 'l4cj', 'k5c8', 'l4d7',
+  'l4cf', 'l4c4', 'k5d4', 'l4cb', 'l4c1', 'l4d1', 'k5c9', 'l4d8', 'l4cg',
+  'l4c5', 'k4d5', 'k5ce', 'l4c2', 'l4d2', 'k4cb', 'k5db', 'l4ci', 'l4c7',
+  'k4d7', 'k5cf', 'l4c4', 'l4d4', 'k4cc', 'k5c2', 'l4d1', 'l4c9', 'k4d9',
+  'k5ch', 'l4c5', 'l4d5', 'k4ce', 'k5c3', 'l4d2', 'l4cb', 'k4da', 'k5ci',
+  'l4c6', 'l4d6', 'k4cf', 'k5c5', 'l4d4', 'l4cc', 'k4c1', 'k4d1', 'k5c9',
+  'l4d8', 'k4cg', 'k4c6', 'k5d6', 'l4ce', 'k4c3', 'k4d3', 'k5cb', 'l4da',
+  'k4ci', 'k4c7', 'k5d7', 'l4cf', 'k4c5', 'k4d5', 'k5cd', 'l4c1', 'k4cj',
+  'k4c9', 'k5d9', 'l4cg', 'k4c6', 'k4d6', 'k5ce', 'l4c3', 'k4d2', 'k4ca',
+  'k5bj', 'l4ci', 'k4c7', 'k4d7', 'k4cg', 'k5c5', 'k4d4', 'k4cc', 'k4c1',
+  'k5d1', 'k4c9', 'k4d9', 'k4ch', 'k5c7', 'l4d6', 'l4ce', 'l4c3', 'l5d3',
+  'l4ca', 'l4da', 'l4cj', 'l5c8', 'l4d7', 'l4cg', 'l4c5', 'l5d4', 'l4cb',
+  'l4c1', 'l4d1', 'l5ca', 'l4d9', 'l4ch', 'l4c6', 'l5d6', 'l4cd', 'l4c2',
+  'l4d2', 'l4cb', 'k5c1', 'l4cj', 'l4c8', 'l4d8', 'k5cg', 'l4c4', 'l4d4',
+  'l4cc', 'k5c2', 'l4d1', 'l4ca', 'l4da', 'k5ci', 'l4c6', 'l4d5', 'l4ce',
+  'k5c3', 'l4d2', 'l4cb', 'l4db', 'k5cj', 'l4c8', 'l4d7', 'l4cf', 'k5c5',
+  'l4d4', 'l4cc', 'l4c2', 'k5d2', 'l4c9', 'l4d9', 'l4ch', 'k4c6', 'k5d6',
+  'l4ce', 'l4c3', 'k4d3', 'k5cc', 'l4db', 'l4cj', 'k4c8', 'k5d8', 'l4cf',
+  'l4c4', 'k4d5', 'k5cd', 'l4c2', 'l4d2', 'k4ca', 'k5d9', 'l4cg', 'l4c6',
+  'k4d6', 'k5cf', 'l4c3', 'l4d3', 'k4cb', 'k5bj', 'l4ci', 'l4c7', 'k4d7',
+  'k5cg', 'l4c5', 'l4d5', 'k4cd', 'k4c2', 'k5d2', 'l4c9', 'k4d9', 'k4ch',
+  'k5c7', 'l4d6', 'k4cf', 'k4c4', 'k5d4', 'l4cb', 'l4bj', 'l4cj', 'l5c8',
+  'm4d7', 'l4cg', 'l4c5', 'l5d5', 'm4cc', 'l4c1', 'l4d1', 'l5ca', 'm4d9',
+  'l4ch', 'l4c7', 'l5d7', 'm4ce', 'l4c3', 'l4d3', 'l5cb', 'm4bi', 'l4ci',
+  'l4c8', 'l4d8', 'l5ch', 'l4c5', 'l4d5', 'l4cd', 'l5c2', 'l4d1', 'l4c9',
+  'l4da', 'l5ci', 'l4c7', 'l4d7', 'l4cf', 'l5c4', 'l4d2', 'l4cb', 'l4bj',
+  'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
+  'l4c9', 'l4da', 'l4ci'];
 
 /**
  * A date in the Badí' calendar.
@@ -89,8 +314,7 @@ class BadiDate {
    * @param {string} language output language (subject to fallbacks)
    * @returns {string} date formatted according to inputs
    */
-  format(formatString = 'd MM+ y BE', // eslint-disable-line complexity
-    language) {
+  format(formatString, language) { // eslint-disable-line complexity
     if (!this.isValid()) {
       return 'Not a valid date';
     }
@@ -98,7 +322,7 @@ class BadiDate {
       ['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv'],
       ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE'],
       ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
-    if (language === undefined ||
+    if (typeof language === 'undefined' ||
         typeof badiLocale[language] === 'undefined') {
       // eslint-disable-next-line dot-notation
       if (typeof badiLocale['default'] === 'undefined') {
@@ -107,7 +331,9 @@ class BadiDate {
         language = 'default';
       }
     }
-    if (typeof formatString !== 'string') {
+    if (typeof formatString === 'undefined') {
+      formatString = 'd MM+ y BE';
+    } else if (typeof formatString !== 'string') {
       return 'Invalid formatting string.';
     }
     let returnString = '';
@@ -115,30 +341,30 @@ class BadiDate {
     for (let i = 0; i < length; i++) {
       // Text wrapped in {} is output as-is. A '{' without a matching '}'
       // results in invalid input
-      if (formatString[i] === '{' && i < length - 1) {
+      if (formatString.charAt(i) === '{' && i < length - 1) {
         for (let j = i + 1; j <= length; j++) {
           if (j === length) {
             return 'Invalid formatting string.';
           }
-          if (formatString[j] === '}') {
+          if (formatString.charAt(j) === '}') {
             i = j;
             break;
           }
-          returnString += formatString[j];
+          returnString += formatString.charAt(j);
         }
       } else {
-        const next1 = formatString[i];
-        const next2 = next1 + formatString[i + 1];
-        const next3 = next2 + formatString[i + 2];
+        const next1 = formatString.charAt(i);
+        const next2 = next1 + formatString.charAt(i + 1);
+        const next3 = next2 + formatString.charAt(i + 2);
         // First check for match to 3-symbol token, then 2, then 1
         // (Tokens are not uniquely decodable)
-        if (formatTokens[0].includes(next3)) {
+        if (formatTokens[0].indexOf(next3) > -1) {
           returnString += this._getFormatItem(next3, language);
           i += 2;
-        } else if (formatTokens[1].includes(next2)) {
+        } else if (formatTokens[1].indexOf(next2) > -1) {
           returnString += this._getFormatItem(next2, language);
           i += 1;
-        } else if (formatTokens[2].includes(next1)) {
+        } else if (formatTokens[2].indexOf(next1) > -1) {
           returnString += this._getFormatItem(next1, language);
         } else {
           returnString += next1;
@@ -155,22 +381,24 @@ class BadiDate {
    * @returns {string} localized output string in desired language (or fallback)
    */
   _getFormatItem(token, language) { // eslint-disable-line complexity
+    // ES6 is a bit funny with the scope of let in a switch
+    let day, month, monthL;
     switch (token) {
       // Single character tokens
       case 'd':
         return String(this._badiDay);
-      case 'D': {
-        const day = this._formatItemFallback(language, 'month', this._badiDay);
+      case 'D':
+        day = this._formatItemFallback(language, 'month', this._badiDay);
         if (day.substring(4, 5) === '’' && day.substring(0, 1) === '‘') {
           return day.substring(0, 5);
         } else if (day.substring(0, 1) === '‘') {
           return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
         }
         return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
-      } case 'm':
+      case 'm':
         return String(this._badiMonth);
-      case 'M': {
-        const month = this._formatItemFallback(
+      case 'M':
+        month = this._formatItemFallback(
           language, 'month', this._badiMonth);
         if (month.substring(4, 5) === '’' && month.substring(0, 1) === '‘') {
           return month.substring(0, 5);
@@ -178,7 +406,7 @@ class BadiDate {
           return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
         }
         return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
-      } case 'W':
+      case 'W':
         return this._formatItemFallback(
           language, 'weekdayAbbbr3', (this._gregDate.isoWeekday() + 1) % 7 + 1);
       case 'y':
@@ -226,16 +454,16 @@ class BadiDate {
           ')';
       case 'MML':
         return this._formatItemFallback(language, 'monthL', this._badiMonth);
-      case 'MM+': {
-        const month = this._formatItemFallback(
+      case 'MM+':
+        month = this._formatItemFallback(
           language, 'month', this._badiMonth);
-        const monthL = this._formatItemFallback(
+        monthL = this._formatItemFallback(
           language, 'monthL', this._badiMonth);
         if (month === monthL) {
           return month;
         }
         return month + ' (' + monthL + ')';
-      } case 'WWL':
+      case 'WWL':
         return this._formatItemFallback(
           language, 'weekdayL', (this._gregDate.isoWeekday() + 1) % 7 + 1);
       case 'yyv':
@@ -252,7 +480,7 @@ class BadiDate {
    * @returns {string} next item in fallback order
    */
   _languageFallback(languageCode) {
-    if (languageCode.includes('-')) {
+    if (languageCode.indexOf('-') > -1) {
       return languageCode.split('-')[0];
     // eslint-disable-next-line no-negated-condition
     } else if (languageCode !== 'default') {
@@ -270,7 +498,7 @@ class BadiDate {
    * @returns {string} localized output string
    */
   _formatItemFallback(language, category, index) {
-    if (index === undefined) {
+    if (typeof index === 'undefined') {
       while (typeof badiLocale[language] === 'undefined' ||
              typeof badiLocale[language][category] === 'undefined') {
         language = this._languageFallback(language);
@@ -329,8 +557,11 @@ class BadiDate {
    * @returns {bool} whether the provided datetime is within the valid range
    */
   _notInValidGregRange(datetime) {
-    return datetime.isBefore(moment.utc('1844-03-21')) ||
-        datetime.isAfter(moment.utc('2351-03-20'));
+    if (datetime.isBefore(moment.utc('1844-03-21')) ||
+        datetime.isAfter(moment.utc('2351-03-20'))) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -758,4 +989,4 @@ const badiDateOptions = function (options) {
   }
 };
 
-export {BadiDate, badiDateOptions};
+export { BadiDate, badiDateOptions };

@@ -1,5 +1,4 @@
-Badí' Date
-============
+# Badí' Date
 
 [![MIT License][license-image]][license-url]
 
@@ -13,19 +12,10 @@ commemoration.
 ## Dependencies
 
 badiDate requires [Moment.js](http://momentjs.com/). In order to use the <code>localBadiDate()</code> wrapper function,
-[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon) are also required
+[Moment Timezone](http://momentjs.com/timezone/) and [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon) are also
+required. Versions that bundle MeeusSunMoon are included.
 
 ## [Documentation](DOCUMENTATION.md)
-
-## Files
-
-The following files make up the badiDate module:
-
-* **badiLocale.js** - localization data
-* **badiDate.js** - the main badiDate class
-* **localBadiDate.js** - the wrapper function for local Badí' dates
-
-Minified versions are also provided in <code>min/</code>
 
 ## Accuracy
 
@@ -42,6 +32,9 @@ A detailed analysis of uncertainties is included in the code. The range of dates
 uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm may not be correct.
 
 ## Changelog
+
+### 2.0.0
+Refactored into ES6 modules and distributed via node. **This version is incompatible with previous versions of the module.**
 
 ### 1.1.0
 
