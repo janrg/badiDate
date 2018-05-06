@@ -2070,13 +2070,16 @@
 
     createClass(BadiDate, [{
       key: 'format',
-      value: function format(formatString, language) {
-        // eslint-disable-line complexity
+      value: function format() {
+        var formatString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'd MM+ y BE';
+        var // eslint-disable-line complexity
+        language = arguments[1];
+
         if (!this.isValid()) {
           return 'Not a valid date';
         }
         var formatTokens = [['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv'], ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE'], ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
-        if (typeof language === 'undefined' || typeof badiLocale[language] === 'undefined') {
+        if (language === undefined || typeof badiLocale[language] === 'undefined') {
           // eslint-disable-next-line dot-notation
           if (typeof badiLocale['default'] === 'undefined') {
             language = 'en';
@@ -2084,9 +2087,7 @@
             language = 'default';
           }
         }
-        if (typeof formatString === 'undefined') {
-          formatString = 'd MM+ y BE';
-        } else if (typeof formatString !== 'string') {
+        if (typeof formatString !== 'string') {
           return 'Invalid formatting string.';
         }
         var returnString = '';
@@ -2094,30 +2095,30 @@
         for (var i = 0; i < length; i++) {
           // Text wrapped in {} is output as-is. A '{' without a matching '}'
           // results in invalid input
-          if (formatString.charAt(i) === '{' && i < length - 1) {
+          if (formatString[i] === '{' && i < length - 1) {
             for (var j = i + 1; j <= length; j++) {
               if (j === length) {
                 return 'Invalid formatting string.';
               }
-              if (formatString.charAt(j) === '}') {
+              if (formatString[j] === '}') {
                 i = j;
                 break;
               }
-              returnString += formatString.charAt(j);
+              returnString += formatString[j];
             }
           } else {
-            var next1 = formatString.charAt(i);
-            var next2 = next1 + formatString.charAt(i + 1);
-            var next3 = next2 + formatString.charAt(i + 2);
+            var next1 = formatString[i];
+            var next2 = next1 + formatString[i + 1];
+            var next3 = next2 + formatString[i + 2];
             // First check for match to 3-symbol token, then 2, then 1
             // (Tokens are not uniquely decodable)
-            if (formatTokens[0].indexOf(next3) > -1) {
+            if (formatTokens[0].includes(next3)) {
               returnString += this._getFormatItem(next3, language);
               i += 2;
-            } else if (formatTokens[1].indexOf(next2) > -1) {
+            } else if (formatTokens[1].includes(next2)) {
               returnString += this._getFormatItem(next2, language);
               i += 1;
-            } else if (formatTokens[2].indexOf(next1) > -1) {
+            } else if (formatTokens[2].includes(next1)) {
               returnString += this._getFormatItem(next1, language);
             } else {
               returnString += next1;
@@ -2138,33 +2139,31 @@
       key: '_getFormatItem',
       value: function _getFormatItem(token, language) {
         // eslint-disable-line complexity
-        // ES6 is a bit funny with the scope of let in a switch
-        var day = void 0,
-            month = void 0,
-            monthL = void 0;
         switch (token) {
           // Single character tokens
           case 'd':
             return String(this._badiDay);
           case 'D':
-            day = this._formatItemFallback(language, 'month', this._badiDay);
-            if (day.substring(4, 5) === '’' && day.substring(0, 1) === '‘') {
-              return day.substring(0, 5);
-            } else if (day.substring(0, 1) === '‘') {
-              return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
-            }
-            return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
-          case 'm':
+            {
+              var day = this._formatItemFallback(language, 'month', this._badiDay);
+              if (day.substring(4, 5) === '’' && day.substring(0, 1) === '‘') {
+                return day.substring(0, 5);
+              } else if (day.substring(0, 1) === '‘') {
+                return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
+              }
+              return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
+            }case 'm':
             return String(this._badiMonth);
           case 'M':
-            month = this._formatItemFallback(language, 'month', this._badiMonth);
-            if (month.substring(4, 5) === '’' && month.substring(0, 1) === '‘') {
-              return month.substring(0, 5);
-            } else if (month.substring(0, 1) === '‘') {
-              return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
-            }
-            return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
-          case 'W':
+            {
+              var month = this._formatItemFallback(language, 'month', this._badiMonth);
+              if (month.substring(4, 5) === '’' && month.substring(0, 1) === '‘') {
+                return month.substring(0, 5);
+              } else if (month.substring(0, 1) === '‘') {
+                return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
+              }
+              return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
+            }case 'W':
             return this._formatItemFallback(language, 'weekdayAbbbr3', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'y':
             return String(this._badiYear);
@@ -2205,13 +2204,14 @@
           case 'MML':
             return this._formatItemFallback(language, 'monthL', this._badiMonth);
           case 'MM+':
-            month = this._formatItemFallback(language, 'month', this._badiMonth);
-            monthL = this._formatItemFallback(language, 'monthL', this._badiMonth);
-            if (month === monthL) {
-              return month;
-            }
-            return month + ' (' + monthL + ')';
-          case 'WWL':
+            {
+              var _month = this._formatItemFallback(language, 'month', this._badiMonth);
+              var monthL = this._formatItemFallback(language, 'monthL', this._badiMonth);
+              if (_month === monthL) {
+                return _month;
+              }
+              return _month + ' (' + monthL + ')';
+            }case 'WWL':
             return this._formatItemFallback(language, 'weekdayL', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'yyv':
             return ('0' + String((this._badiYear - 1) % 19 + 1)).slice(-2);
@@ -2230,7 +2230,7 @@
     }, {
       key: '_languageFallback',
       value: function _languageFallback(languageCode) {
-        if (languageCode.indexOf('-') > -1) {
+        if (languageCode.includes('-')) {
           return languageCode.split('-')[0];
           // eslint-disable-next-line no-negated-condition
         } else if (languageCode !== 'default') {
@@ -2251,7 +2251,7 @@
     }, {
       key: '_formatItemFallback',
       value: function _formatItemFallback(language, category, index) {
-        if (typeof index === 'undefined') {
+        if (index === undefined) {
           while (typeof badiLocale[language] === 'undefined' || typeof badiLocale[language][category] === 'undefined') {
             language = this._languageFallback(language);
           }
@@ -2313,10 +2313,7 @@
     }, {
       key: '_notInValidGregRange',
       value: function _notInValidGregRange(datetime) {
-        if (datetime.isBefore(moment.utc('1844-03-21')) || datetime.isAfter(moment.utc('2351-03-20'))) {
-          return true;
-        }
-        return false;
+        return datetime.isBefore(moment.utc('1844-03-21')) || datetime.isAfter(moment.utc('2351-03-20'));
       }
 
       /**
