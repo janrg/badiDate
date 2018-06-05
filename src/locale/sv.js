@@ -46,6 +46,6 @@ const weekdayL = {
 };
 
 const BE = 'B.E.';
-const badiCalendar = 'Badí‘ kalendern';
+const badiCalendar = 'Badí‘kalendern';
 
 export {monthL, holyDay, weekdayL, BE, badiCalendar};

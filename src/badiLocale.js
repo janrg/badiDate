@@ -34,12 +34,29 @@ badiLocale['en-us'] = en_us;
  * @param {string} language that should be set as default
  */
 const setDefaultLanguage = function (language) {
-  if (typeof badiLocale[language] === 'undefined') {
+  if (badiLocale[language] === undefined) {
     // eslint-disable-next-line no-console
-    console.log('Chosen language does not exist. Setting has not been changed');
+    console.log('Chosen language does not exist. Setting has not been ' +
+      'changed.');
   } else {
     badiLocale['default'] = badiLocale[language];
   }
 };
 
-export {badiLocale, setDefaultLanguage};
+let underlineFormat = 'css';
+
+/**
+ * Set underline format for locale items that include underlined characters.
+ * @param {'css'|'u'|'diacritic'} format that should be used for underlining
+ */
+const setUnderlineFormat = function (format) {
+  if (['css', 'u', 'diacritic'].indexOf(format) > -1) {
+    underlineFormat = format;
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('Invalid underline format. Choose one of ' +
+      '["css", "u", "diacritic"]. Setting has not been changed.');
+  }
+};
+
+export {badiLocale, setDefaultLanguage, setUnderlineFormat, underlineFormat};

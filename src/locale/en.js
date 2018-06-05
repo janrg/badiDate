@@ -9,12 +9,12 @@ const month = {
   8: 'Kamál',
   9: 'Asmá’',
   10: '‘Izzat',
-  11: 'Ma<u>sh</u>íyyat',
+  11: 'Ma_sh_íyyat',
   12: '‘Ilm',
   13: 'Qudrat',
   14: 'Qawl',
   15: 'Masá’il',
-  16: '<u>Sh</u>araf',
+  16: '_Sh_araf',
   17: 'Sulṭán',
   18: 'Mulk',
   19: '‘Alá’',
@@ -121,8 +121,13 @@ const yearInVahid = {
   19: 'Váḥid'
 };
 
-const BE = 'BE';
+const vahid = 'Váḥid';
+const kulliShay = 'Kull-i-_Sh_ay’';
+const BE = 'B.E.';
 const badiCalendar = 'Badí‘ Calendar';
+const digitUnicodeOffset = '0'.charCodeAt(0);
+const defaultFormat = 'd MM+ y BE';
 
 export {month, monthL, holyDay, weekday, weekdayAbbr3, weekdayAbbr2, weekdayL,
-  yearInVahid, BE, badiCalendar};
+  yearInVahid, vahid, kulliShay, BE, badiCalendar, digitUnicodeOffset,
+  defaultFormat};

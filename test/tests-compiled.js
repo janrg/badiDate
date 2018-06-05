@@ -825,12 +825,12 @@
     8: 'Kamál',
     9: 'Asmá’',
     10: '‘Izzat',
-    11: 'Ma<u>sh</u>íyyat',
+    11: 'Ma_sh_íyyat',
     12: '‘Ilm',
     13: 'Qudrat',
     14: 'Qawl',
     15: 'Masá’il',
-    16: '<u>Sh</u>araf',
+    16: '_Sh_araf',
     17: 'Sulṭán',
     18: 'Mulk',
     19: '‘Alá’',
@@ -937,8 +937,12 @@
     19: 'Váḥid'
   };
 
-  var BE = 'BE';
+  var vahid = 'Váḥid';
+  var kulliShay = 'Kull-i-_Sh_ay’';
+  var BE = 'B.E.';
   var badiCalendar = 'Badí‘ Calendar';
+  var digitUnicodeOffset = '0'.charCodeAt(0);
+  var defaultFormat = 'd MM+ y BE';
 
   var en = /*#__PURE__*/Object.freeze({
     month: month,
@@ -949,8 +953,12 @@
     weekdayAbbr2: weekdayAbbr2,
     weekdayL: weekdayL,
     yearInVahid: yearInVahid,
+    vahid: vahid,
+    kulliShay: kulliShay,
     BE: BE,
-    badiCalendar: badiCalendar
+    badiCalendar: badiCalendar,
+    digitUnicodeOffset: digitUnicodeOffset,
+    defaultFormat: defaultFormat
   });
 
   var month$1 = {
@@ -976,28 +984,7 @@
     20: 'ايام الهاء'
   };
 
-  var monthL$1 = {
-    1: 'البهاء',
-    2: 'الجلال',
-    3: 'الجمال',
-    4: 'العظمة',
-    5: 'النور',
-    6: 'الرحمة',
-    7: 'الكلمات',
-    8: 'الكمال',
-    9: 'الأسماء',
-    10: 'العزّة',
-    11: 'المشية',
-    12: 'العلم',
-    13: 'القدرة',
-    14: 'القول',
-    15: 'المسائل',
-    16: 'الشرف',
-    17: 'السلطان',
-    18: 'الملك',
-    19: 'العلاء',
-    20: 'ايام الهاء'
-  };
+  var monthL$1 = month$1;
 
   var holyDay$1 = {
     1: 'عيد النَّيروز',
@@ -1075,8 +1062,12 @@
     19: 'واحد'
   };
 
+  var vahid$1 = 'واحد';
+  var kulliShay$1 = 'كل شيء';
   var BE$1 = 'بديع';
   var badiCalendar$1 = 'تقويم بديع';
+  var digitUnicodeOffset$1 = '٠'.charCodeAt(0);
+  var defaultFormat$1 = '&#8207;d MM y BE&#8207;';
 
   var ar = /*#__PURE__*/Object.freeze({
     month: month$1,
@@ -1087,8 +1078,12 @@
     weekdayAbbr2: weekdayAbbr2$1,
     weekdayL: weekdayL$1,
     yearInVahid: yearInVahid$1,
+    vahid: vahid$1,
+    kulliShay: kulliShay$1,
     BE: BE$1,
-    badiCalendar: badiCalendar$1
+    badiCalendar: badiCalendar$1,
+    digitUnicodeOffset: digitUnicodeOffset$1,
+    defaultFormat: defaultFormat$1
   });
 
   var monthL$2 = {
@@ -1329,8 +1324,12 @@
     19: 'واحد'
   };
 
+  var vahid$2 = 'واحد';
+  var kulliShay$2 = 'كل شيء';
   var BE$4 = 'بديع';
   var badiCalendar$4 = 'تقويم بديع';
+  var digitUnicodeOffset$2 = '۰'.charCodeAt(0);
+  var defaultFormat$2 = '&#8207;d MML y BE&#8207;';
 
   var fa = /*#__PURE__*/Object.freeze({
     month: month$2,
@@ -1341,8 +1340,12 @@
     weekdayAbbr2: weekdayAbbr2$2,
     weekdayL: weekdayL$4,
     yearInVahid: yearInVahid$2,
+    vahid: vahid$2,
+    kulliShay: kulliShay$2,
     BE: BE$4,
-    badiCalendar: badiCalendar$4
+    badiCalendar: badiCalendar$4,
+    digitUnicodeOffset: digitUnicodeOffset$2,
+    defaultFormat: defaultFormat$2
   });
 
   var monthL$5 = {
@@ -1699,6 +1702,8 @@
     19: 'Вāх̣ид'
   };
 
+  var vahid$3 = 'Вāх̣ид';
+  var kulliShay$3 = 'кулл-и шай’';
   var BE$9 = 'Э.Б.';
   var badiCalendar$9 = 'Календарь Бадӣ‘';
 
@@ -1711,6 +1716,8 @@
     weekdayAbbr2: weekdayAbbr2$3,
     weekdayL: weekdayL$9,
     yearInVahid: yearInVahid$3,
+    vahid: vahid$3,
+    kulliShay: kulliShay$3,
     BE: BE$9,
     badiCalendar: badiCalendar$9
   });
@@ -1763,7 +1770,7 @@
   };
 
   var BE$10 = 'B.E.';
-  var badiCalendar$10 = 'Badí‘ kalendern';
+  var badiCalendar$10 = 'Badí‘kalendern';
 
   var sv = /*#__PURE__*/Object.freeze({
     monthL: monthL$10,
@@ -1895,6 +1902,8 @@
     19: '瓦希德'
   };
 
+  var vahid$4 = '瓦希德';
+  var kulliShay$4 = '库里沙伊';
   var BE$11 = 'BE';
   var badiCalendar$11 = '巴迪历';
 
@@ -1907,6 +1916,8 @@
     weekdayAbbr2: weekdayAbbr2$4,
     weekdayL: weekdayL$11,
     yearInVahid: yearInVahid$4,
+    vahid: vahid$4,
+    kulliShay: kulliShay$4,
     BE: BE$11,
     badiCalendar: badiCalendar$11
   });
@@ -1943,11 +1954,26 @@
    * @param {string} language that should be set as default
    */
   var setDefaultLanguage = function setDefaultLanguage(language) {
-    if (typeof badiLocale[language] === 'undefined') {
+    if (badiLocale[language] === undefined) {
       // eslint-disable-next-line no-console
-      console.log('Chosen language does not exist. Setting has not been changed');
+      console.log('Chosen language does not exist. Setting has not been ' + 'changed.');
     } else {
       badiLocale['default'] = badiLocale[language];
+    }
+  };
+
+  var underlineFormat = 'css';
+
+  /**
+   * Set underline format for locale items that include underlined characters.
+   * @param {'css'|'u'|'diacritic'} format that should be used for underlining
+   */
+  var setUnderlineFormat = function setUnderlineFormat(format) {
+    if (['css', 'u', 'diacritic'].indexOf(format) > -1) {
+      underlineFormat = format;
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('Invalid underline format. Choose one of ' + '["css", "u", "diacritic"]. Setting has not been changed.');
     }
   };
 
@@ -2061,6 +2087,10 @@
      * kk - Kull-i-Shay with leading zeroes
      * y - year without leading zeroes
      * yy - 3 digit year with leading zeroes
+     * BE - localized variant of "B.E."
+     * BC - localized variant of "Badí' Calendar"
+     * Va - localized variant of "Váḥid"
+     * KiS - localized variant of "Kull-i-Shay’"
      * Anything in between {} will be printed as is.
      * @param {string} formatString gives the output format (see reference above)
      * @param {string} language output language (subject to fallbacks)
@@ -2070,15 +2100,12 @@
 
     createClass(BadiDate, [{
       key: 'format',
-      value: function format() {
-        var formatString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'd MM+ y BE';
-        var // eslint-disable-line complexity
-        language = arguments[1];
-
+      value: function format(formatString, language) {
+        /* eslint-disable-line complexity */
         if (!this.isValid()) {
           return 'Not a valid date';
         }
-        var formatTokens = [['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv'], ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE'], ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
+        var formatTokens = [['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv', 'KiS'], ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE', 'BC', 'Va'], ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
         if (language === undefined || typeof badiLocale[language] === 'undefined') {
           // eslint-disable-next-line dot-notation
           if (typeof badiLocale['default'] === 'undefined') {
@@ -2088,7 +2115,7 @@
           }
         }
         if (typeof formatString !== 'string') {
-          return 'Invalid formatting string.';
+          formatString = this._formatItemFallback(language, 'defaultFormat');
         }
         var returnString = '';
         var length = formatString.length;
@@ -2112,13 +2139,13 @@
             var next3 = next2 + formatString[i + 2];
             // First check for match to 3-symbol token, then 2, then 1
             // (Tokens are not uniquely decodable)
-            if (formatTokens[0].includes(next3)) {
+            if (formatTokens[0].indexOf(next3) > -1) {
               returnString += this._getFormatItem(next3, language);
               i += 2;
-            } else if (formatTokens[1].includes(next2)) {
+            } else if (formatTokens[1].indexOf(next2) > -1) {
               returnString += this._getFormatItem(next2, language);
               i += 1;
-            } else if (formatTokens[2].includes(next1)) {
+            } else if (formatTokens[2].indexOf(next1) > -1) {
               returnString += this._getFormatItem(next1, language);
             } else {
               returnString += next1;
@@ -2126,6 +2153,57 @@
           }
         }
         return returnString;
+      }
+
+      /**
+       * Perform post-processing for locale items that contain underlined
+       * characters. These are written in locale files as e.g. '_Sh_araf'.
+       * Depending on the setting, designated characters are wrapped in a <u> tag
+       * or a CSS style or have the underline combining diacritic added to them.
+       * @param {string} string the locale item that should be processed
+       * @param {undefined|int} crop whether the item should be cropped at a
+       *                             specific number of characters (excluding
+       *                             diacritical marks and punctuation).
+       * @returns {string} processed string
+       */
+
+    }, {
+      key: '_postProcessLocaleItem',
+      value: function _postProcessLocaleItem(string) {
+        var crop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+        /* eslint-disable-line complexity, class-methods-use-this */
+        if (crop && crop < string.length) {
+          var char = 0;
+          var counter = 0;
+          while (counter < crop) {
+            if (!'_’‘'.indexOf(string[char]) > -1) {
+              counter++;
+            }
+            char++;
+          }
+          if ('_’‘'.indexOf(string[char]) > -1) {
+            char++;
+          }
+          string = string.slice(0, char);
+          if (string.split('_').length % 2 === 0) {
+            string += '_';
+          }
+        }
+        var stringComponents = string.split('_');
+        for (var comp = 1; comp < stringComponents.length; comp += 2) {
+          if (underlineFormat === 'css') {
+            stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
+          } else if (underlineFormat === 'diacritic') {
+            var newstring = '';
+            for (var i = 0; i < stringComponents[comp].length; i++) {
+              newstring += stringComponents[comp][i] + '\u0332';
+            }
+            stringComponents[comp] = newstring;
+          } else if (underlineFormat === 'u') {
+            stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+          }
+        }
+        return stringComponents.join('');
       }
 
       /**
@@ -2142,82 +2220,113 @@
         switch (token) {
           // Single character tokens
           case 'd':
-            return String(this._badiDay);
+            return this._digitRewrite(this._badiDay, language);
           case 'D':
             {
-              var day = this._formatItemFallback(language, 'month', this._badiDay);
-              if (day.substring(4, 5) === '’' && day.substring(0, 1) === '‘') {
-                return day.substring(0, 5);
-              } else if (day.substring(0, 1) === '‘') {
-                return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
-              }
-              return day.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
+              return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay), 3);
             }case 'm':
-            return String(this._badiMonth);
+            return this._digitRewrite(this._badiMonth, language);
           case 'M':
             {
-              var month = this._formatItemFallback(language, 'month', this._badiMonth);
-              if (month.substring(4, 5) === '’' && month.substring(0, 1) === '‘') {
-                return month.substring(0, 5);
-              } else if (month.substring(0, 1) === '‘') {
-                return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 4);
-              }
-              return month.replace(/<(?:.|\n)*?>/gm, '').substring(0, 3);
+              return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth), 3);
             }case 'W':
             return this._formatItemFallback(language, 'weekdayAbbbr3', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'y':
-            return String(this._badiYear);
+            return this._digitRewrite(this._badiYear, language);
           case 'v':
-            return String(Math.floor((this._badiYear - 1) / 19) % 19 + 1);
+            return this._digitRewrite(Math.floor((this._badiYear - 1) / 19) % 19 + 1, language);
           case 'k':
-            return String(Math.floor((this._badiYear - 1) / 361) + 1);
+            return this._digitRewrite(Math.floor((this._badiYear - 1) / 361) + 1, language);
           // Two character tokens
           case 'dd':
-            return ('0' + String(this._badiDay)).slice(-2);
+            return this._digitRewrite(('0' + String(this._badiDay)).slice(-2), language);
           case 'DD':
-            return this._formatItemFallback(language, 'month', this._badiDay);
+            return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay));
           case 'mm':
-            return ('0' + String(this._badiMonth)).slice(-2);
+            return this._digitRewrite(('0' + String(this._badiMonth)).slice(-2), language);
           case 'MM':
-            return this._formatItemFallback(language, 'month', this._badiMonth);
+            return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth));
           case 'ww':
             return this._formatItemFallback(language, 'weekdayAbbr2', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'WW':
             return this._formatItemFallback(language, 'weekday', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'yy':
-            return ('00' + String(this._badiYear)).slice(-3);
+            return this._digitRewrite(('00' + String(this._badiYear)).slice(-3), language);
           case 'yv':
-            return String((this._badiYear - 1) % 19 + 1);
+            return this._digitRewrite((this._badiYear - 1) % 19 + 1, language);
           case 'YV':
             return this._formatItemFallback(language, 'yearInVahid', (this._badiYear - 1) % 19 + 1);
           case 'vv':
-            return ('0' + String((Math.floor((this._badiYear - 1) / 19) + 2) % 19 - 1)).slice(-2);
+            return this._digitRewrite(('0' + String((Math.floor((this._badiYear - 1) / 19) + 2) % 19 - 1)).slice(-2), language);
           case 'kk':
-            return ('0' + String(Math.floor((this._badiYear - 1) / 361) + 1)).slice(-2);
+            return this._digitRewrite(('0' + String(Math.floor((this._badiYear - 1) / 361) + 1)).slice(-2), language);
+          case 'Va':
+            return this._formatItemFallback(language, 'vahid');
           case 'BE':
             return this._formatItemFallback(language, 'BE');
+          case 'BC':
+            return this._formatItemFallback(language, 'badiCalendar');
           // Three character tokens
           case 'DDL':
             return this._formatItemFallback(language, 'monthL', this._badiDay);
           case 'DD+':
-            return this._formatItemFallback(language, 'month', this._badiDay) + ' (' + this._formatItemFallback(language, 'monthL', this._badiDay) + ')';
+            {
+              var day = this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay));
+              var dayL = this._formatItemFallback(language, 'monthL', this._badiDay);
+              if (day === dayL) {
+                return day;
+              }
+              if (badiLocale[language] === badiLocale.fa) {
+                return '<span dir="rtl">' + day + ' (' + dayL + ')</span>';
+              }
+              return day + ' (' + dayL + ')';
+            }
           case 'MML':
             return this._formatItemFallback(language, 'monthL', this._badiMonth);
           case 'MM+':
             {
-              var _month = this._formatItemFallback(language, 'month', this._badiMonth);
+              var month = this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth));
               var monthL = this._formatItemFallback(language, 'monthL', this._badiMonth);
-              if (_month === monthL) {
-                return _month;
+              if (month === monthL) {
+                return month;
               }
-              return _month + ' (' + monthL + ')';
-            }case 'WWL':
+              if (badiLocale[language] === badiLocale.fa) {
+                return '<span dir="rtl">' + month + ' (' + monthL + ')</span>';
+              }
+              return month + ' (' + monthL + ')';
+            }
+          case 'WWL':
             return this._formatItemFallback(language, 'weekdayL', (this._gregDate.isoWeekday() + 1) % 7 + 1);
           case 'yyv':
-            return ('0' + String((this._badiYear - 1) % 19 + 1)).slice(-2);
+            return this._digitRewrite(('0' + String((this._badiYear - 1) % 19 + 1)).slice(-2), language);
+          case 'KiS':
+            return this._postProcessLocaleItem(this._formatItemFallback(language, 'kulliShay'));
           default:
             return '';
         }
+      }
+
+      /**
+       * For languages that don't use Western Arabic numerals, rewrite digits into
+       * the proper unicode characters.
+       * @param {int|string} number that should be rewritten
+       * @param {string} language code into which the number should be rewritten
+       * @returns {string} string of digits using the correct glyphs.
+       */
+
+    }, {
+      key: '_digitRewrite',
+      value: function _digitRewrite(number, language) {
+        number = String(number);
+        var unicodeOffset = this._formatItemFallback(language, 'digitUnicodeOffset') - '0'.charCodeAt(0);
+        if (unicodeOffset === 0) {
+          return number;
+        }
+        var codePoints = [];
+        for (var i = 0; i < number.length; i++) {
+          codePoints.push(number[i].charCodeAt(0) + unicodeOffset);
+        }
+        return String.fromCharCode.apply(String, codePoints);
       }
 
       /**
@@ -2230,7 +2339,7 @@
     }, {
       key: '_languageFallback',
       value: function _languageFallback(languageCode) {
-        if (languageCode.includes('-')) {
+        if (languageCode.indexOf('-') > -1) {
           return languageCode.split('-')[0];
           // eslint-disable-next-line no-negated-condition
         } else if (languageCode !== 'default') {
@@ -2662,6 +2771,14 @@
         if (!this._holyDay) {
           return false;
         }
+        if (language === undefined || typeof badiLocale[language] === 'undefined') {
+          // eslint-disable-next-line dot-notation
+          if (typeof badiLocale['default'] === 'undefined') {
+            language = 'en';
+          } else {
+            language = 'default';
+          }
+        }
         return this._formatItemFallback(language, 'holyDay', this._holyDay);
       }
 
@@ -2801,6 +2918,9 @@
   var badiDateOptions = function badiDateOptions(options) {
     if (typeof options.defaultLanguage === 'string') {
       setDefaultLanguage(options.defaultLanguage);
+    }
+    if (typeof options.underlineFormat === 'string') {
+      setUnderlineFormat(options.underlineFormat);
     }
   };
 
@@ -2952,8 +3072,8 @@
     }
     this.badiDate = new BadiDate(date);
     var gregDate = moment.tz(this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
-    var clockLocation = clockLocationFromPolygons(latitude, longitude);
-    if (!clockLocation || clockLocation === 'Finland' && this.badiDate.badiMonth() === 19) {
+    this.clockLocation = clockLocationFromPolygons(latitude, longitude);
+    if (!this.clockLocation || this.clockLocation === 'Finland' && this.badiDate.badiMonth() === 19) {
       this.end = sunset(gregDate, latitude, longitude);
       this.solarNoon = solarNoon(gregDate, longitude);
       this.sunrise = sunrise(gregDate, latitude, longitude);
@@ -2969,11 +3089,11 @@
       this.start = moment.tz(gregDate.subtract(1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
-      if (clockLocation === 'Canada') {
+      if (this.clockLocation === 'Canada') {
         this.sunrise.add(30, 'minutes');
-      } else if (clockLocation === 'Iceland') {
+      } else if (this.clockLocation === 'Iceland') {
         this.solarNoon.add(1, 'hour');
-      } else if (clockLocation === 'Finland' || clockLocation === 'USA') {
+      } else if (this.clockLocation === 'Finland' || this.clockLocation === 'USA') {
         if (this.end.isDST()) {
           this.end.add(1, 'hour');
           this.solarNoon.add(1, 'hour');
@@ -3022,8 +3142,8 @@
 
 
   var badiDateOptions$1 = function badiDateOptions$$1(options$$1) {
-    if (typeof options$$1.defaultLanguage === 'string') {
-      badiDateOptions({ defaultLanguage: options$$1.defaultLanguage });
+    if (typeof options$$1.defaultLanguage === 'string' || typeof options$$1.underlineFormat === 'string') {
+      badiDateOptions(options$$1);
     }
     if (typeof options$$1.useClockLocations === 'boolean') {
       useClockLocations(options$$1.useClockLocations);

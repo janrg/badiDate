@@ -21,28 +21,7 @@ const month = {
   20: 'ايام الهاء'
 };
 
-const monthL = {
-  1: 'البهاء',
-  2: 'الجلال',
-  3: 'الجمال',
-  4: 'العظمة',
-  5: 'النور',
-  6: 'الرحمة',
-  7: 'الكلمات',
-  8: 'الكمال',
-  9: 'الأسماء',
-  10: 'العزّة',
-  11: 'المشية',
-  12: 'العلم',
-  13: 'القدرة',
-  14: 'القول',
-  15: 'المسائل',
-  16: 'الشرف',
-  17: 'السلطان',
-  18: 'الملك',
-  19: 'العلاء',
-  20: 'ايام الهاء'
-};
+const monthL = month;
 
 const holyDay = {
   1: 'عيد النَّيروز',
@@ -120,8 +99,13 @@ const yearInVahid = {
   19: 'واحد'
 };
 
+const vahid = 'واحد';
+const kulliShay = 'كل شيء';
 const BE = 'بديع';
 const badiCalendar = 'تقويم بديع';
+const digitUnicodeOffset = '٠'.charCodeAt(0);
+const defaultFormat = '&#8207;d MM y BE&#8207;';
 
 export {month, monthL, holyDay, weekday, weekdayAbbr3, weekdayAbbr2, weekdayL,
-  yearInVahid, BE, badiCalendar};
+  yearInVahid, vahid, kulliShay, BE, badiCalendar, digitUnicodeOffset,
+  defaultFormat};

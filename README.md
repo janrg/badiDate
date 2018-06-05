@@ -33,7 +33,14 @@ uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm 
 
 ## Changelog
 
+### 2.1.0
+
+*   Added several new tokens to `BadiDate.format()`
+*   More robust handling of locale entries with underlined letters
+*   Improvements to handling of Arabic and Farsi locales
+
 ### 2.0.0
+
 Refactored into ES6 modules and distributed via node. **This version is incompatible with previous versions of the module.**
 
 ### 1.1.0

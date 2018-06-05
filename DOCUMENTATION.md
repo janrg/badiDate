@@ -63,8 +63,8 @@ import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'node_modul
 where MeeusSunMoon is imported in order to be able to set the modules options via `MeeusSunMoon.options()` (see
 [MeeusSunMoon](https://github.com/janrg/MeeusSunMoon)).
 
-If the version of `localBadiDate*.js` without bundled  MeeusSunMoon is used, the module has to be loaded globally via its UMD bundle in order
-for it to be available inside of the LocalBadiDate class.
+If the version of `localBadiDate*.js` without bundled  MeeusSunMoon is used, the module has to be loaded globally
+via its UMD bundle in order for it to be available inside of the LocalBadiDate class.
 
 ## Configuration
 
@@ -74,14 +74,28 @@ There are two configuration options that can be set as
 badiDateOptions({
   useClockLocations: false, // default: true
   defaultLanguage: 'en', // default: 'en'
+  underlineFormat: 'diacritic' // default: 'css'
 });
 ```
 
-(Note that two of the options for MeeusSunMoon, `roundToNearestMinute` and `returnTimeForPNMS`, default to `true` when using the badiDate module.)
+(Note that two of the options for MeeusSunMoon, `roundToNearestMinute` and `returnTimeForPNMS`, default to `true`
+when using the badiDate module.)
 
-`useClockLocations` will use the appropriate times for regions in which fixed times are used rather than the actual times for sunrise, sunset etc.. Setting it to `false` will disable this behaviour. For a list of currently implemented regions, see below. This option is only available if the `LocalBadiDate` class is used.
+`useClockLocations` will use the appropriate times for regions in which fixed times are used rather than the actual
+times for sunrise, sunset etc.. Setting it to `false` will disable this behaviour. For a list of currently implemented
+regions, see below. This option is only available if the `LocalBadiDate` class is used.
 
-`defaultLanguage` sets the default language for output of Badí' dates. (Alternatively this can be overwritten on each call to `format()`, see below.) For a list of available languages see `src/locale/`.
+`defaultLanguage` sets the default language for output of Badí' dates. (Alternatively this can be overwritten on each
+call to `format()`, see below.) For a list of available languages see `src/locale/`.
+
+`underlineFormat` sets how terms that include underlined letters should be rendered. The technically most correct
+choice is `'diacritic'`, where each underlined letter is combined with the symbol U+0332 ("Combining Low Line"),
+as the underlining is not styling but belongs to the letter. This is also the only way in which the underlining
+will remain when copied as plain text. Unfortunately, some fonts will not display this correctly and not connect
+the lines under adjacent characters. The default, and typically most robust option is `'css'`, where the letters
+are wrapped in `<span style="text-decoration:underline;">|</span>`. `'u'`, which will wrap the letters in `<u>|</u>`,
+should only be used if for some reason neither of the others can be used for your situation, as the `<u>` tag has
+been deprecated for many years.
 
 ## The BadiDate Class
 
@@ -91,7 +105,7 @@ The BadiDate object represents a Badí' date with some simplifications in order 
 *   Badí' dates are taken to correspond to Gregorian dates 1-1, i.e. to start at midnight
 *   No other times (e.g. for Holy Day commemorations) are stored
 
-For dates in 172 BE and after (21 March 2015 and after), the new implementation is used to calculate the beginning
+For dates in 172 B.E. and after (21 March 2015 and after), the new implementation is used to calculate the beginning
 of the year, all Holy Days, and the length of Ayyám-i-Há, for earlier dates the earlier implementation, where for the
 Twin Birthdays, the earlier implementation as customary in countries predominantly using the Gregorian calendar (i.e.
 5 'Ilm and 9 Qudrat) is used.
@@ -184,6 +198,9 @@ where `LocalBadiDate.badiDate` is a `BadiDate` object and all other properties a
 
 The output of Badí' dates fully supports localization and a number of different localizations are provided (this will increase
 in the future). Data is stored in `src/locale/`.
+
+Note that entries with letters that should be underlined will be stored in the respective locale file by wrapping the letters
+in question in underscores, like e.g. `Ma_sh_íyyat` or `_Sh_araf`.
 
 ### Language Fallbacks
 
@@ -326,9 +343,13 @@ Outputs the date in the format as given by formatString and in the given languag
 |                   | vv    | Váḥid with leading zeroes
 | **Kull-i-Shay’**  | k     | Kull-i-Shay’ without leading zeroes
 |                   | kk    | Kull-i-Shay’ with leading zeroes
-| **BE**            | BE    | localized version of BE to indicate a Badí' year
+| **Labels**        | BE    | localized version of B.E. to indicate a Badí' year
+|                   | BC    | localized version of the term "Badí' Calendar"
+|                   | Va    | localized version of the term "Váḥid"
+|                   | KiS   | localized version of the term "Kull-i-Shay'"
 
-If no formatting string is given, `format()` defaults to `'d MM+ y BE'`. E.g.
+If no formatting string is given, `format()` defaults to `'d MM+ y BE'` (With some exceptions. The default format can be set in the
+respective locale file.) E.g.
 
 ```js
 const myBadiDate = new BadiDate([172, 1, 1]);
@@ -338,13 +359,16 @@ console.log(myBadiDate.format());
 will print
 
 ```
-1 Bahá (Splendour) 172 BE
+1 Bahá (Splendour) 172 B.E.
 ```
 
 (assuming that the default language is English)
 
 Any text in the formatting string wrapped in `{}` will not be parsed and output as-is.
 A `{` without matching `}` will result in a return value of `"Invalid formatting string."`.
+
+Note that for right-to-left languages such as Arabic, it may be necessary to wrap the formatting string in `U+200F` (Right-To-Left Mark,
+HTML token: `&#8207;`) to achieve the correct display order.
 
 ## Locations for Which Fixed Times are Used
 

@@ -1,6 +1,6 @@
 import * as MeeusSunMoon from '../node_modules/meeussunmoon/src/index.js';
 import {BadiDate,
-  badiDateOptions as defaultLanguageOption} from './badiDate.js';
+  badiDateOptions as badiDateBaseOptions} from './badiDate.js';
 import {clockLocationFromPolygons,
   useClockLocations} from './clockLocations.js';
 
@@ -34,9 +34,10 @@ class LocalBadiDate {
     this.badiDate = new BadiDate(date);
     const gregDate = moment.tz(
       this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
-    const clockLocation = clockLocationFromPolygons(latitude, longitude);
-    if (!clockLocation ||
-        (clockLocation === 'Finland' && this.badiDate.badiMonth() === 19)) {
+    this.clockLocation = clockLocationFromPolygons(latitude, longitude);
+    if (!this.clockLocation ||
+        (this.clockLocation === 'Finland' &&
+         this.badiDate.badiMonth() === 19)) {
       this.end = MeeusSunMoon.sunset(gregDate, latitude, longitude);
       this.solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
       this.sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
@@ -57,11 +58,12 @@ class LocalBadiDate {
         1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
-      if (clockLocation === 'Canada') {
+      if (this.clockLocation === 'Canada') {
         this.sunrise.add(30, 'minutes');
-      } else if (clockLocation === 'Iceland') {
+      } else if (this.clockLocation === 'Iceland') {
         this.solarNoon.add(1, 'hour');
-      } else if (clockLocation === 'Finland' || clockLocation === 'USA') {
+      } else if (this.clockLocation === 'Finland' ||
+                 this.clockLocation === 'USA') {
         if (this.end.isDST()) {
           this.end.add(1, 'hour');
           this.solarNoon.add(1, 'hour');
@@ -109,8 +111,9 @@ class LocalBadiDate {
  * @param {object} options Options to be set.
  */
 const badiDateOptions = function (options) {
-  if (typeof options.defaultLanguage === 'string') {
-    defaultLanguageOption({defaultLanguage: options.defaultLanguage});
+  if (typeof options.defaultLanguage === 'string' ||
+      typeof options.underlineFormat === 'string') {
+    badiDateBaseOptions(options);
   }
   if (typeof options.useClockLocations === 'boolean') {
     useClockLocations(options.useClockLocations);

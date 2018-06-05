@@ -120,8 +120,13 @@ const yearInVahid = {
   19: 'واحد'
 };
 
+const vahid = 'واحد';
+const kulliShay = 'كل شيء';
 const BE = 'بديع';
 const badiCalendar = 'تقويم بديع';
+const digitUnicodeOffset = '۰'.charCodeAt(0);
+const defaultFormat = '&#8207;d MML y BE&#8207;';
 
 export {month, monthL, holyDay, weekday, weekdayAbbr3, weekdayAbbr2, weekdayL,
-  yearInVahid, BE, badiCalendar};
+  yearInVahid, vahid, kulliShay, BE, badiCalendar, digitUnicodeOffset,
+  defaultFormat};

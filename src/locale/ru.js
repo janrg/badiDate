@@ -120,8 +120,10 @@ const yearInVahid = {
   19: 'Вāх̣ид'
 };
 
+const vahid = 'Вāх̣ид';
+const kulliShay = 'кулл-и шай’';
 const BE = 'Э.Б.';
 const badiCalendar = 'Календарь Бадӣ‘';
 
 export {month, monthL, holyDay, weekday, weekdayAbbr3, weekdayAbbr2, weekdayL,
-  yearInVahid, BE, badiCalendar};
+  yearInVahid, vahid, kulliShay, BE, badiCalendar};
