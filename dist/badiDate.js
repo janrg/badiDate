@@ -217,6 +217,16 @@
     };
   }();
 
+  var toConsumableArray = function (arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  };
+
   /**
    * A date in the Badí' calendar.
    */
@@ -405,16 +415,28 @@
         }
         var stringComponents = string.split('_');
         for (var comp = 1; comp < stringComponents.length; comp += 2) {
-          if (underlineFormat === 'css') {
-            stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
-          } else if (underlineFormat === 'diacritic') {
-            var newstring = '';
-            for (var i = 0; i < stringComponents[comp].length; i++) {
-              newstring += stringComponents[comp][i] + '\u0332';
-            }
-            stringComponents[comp] = newstring;
-          } else if (underlineFormat === 'u') {
-            stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+          switch (underlineFormat) {
+            case 'css':
+              {
+                stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
+                break;
+              }
+            case 'diacritic':
+              {
+                var newstring = '';
+                for (var i = 0; i < stringComponents[comp].length; i++) {
+                  newstring += stringComponents[comp][i] + '\u0332';
+                }
+                stringComponents[comp] = newstring;
+                break;
+              }
+            case 'u':
+              {
+                stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+                break;
+              }
+            default:
+              throw new TypeError('Unexpected underlineFormat');
           }
         }
         return stringComponents.join('');
@@ -536,11 +558,10 @@
         if (unicodeOffset === 0) {
           return number;
         }
-        var codePoints = [];
-        for (var i = 0; i < number.length; i++) {
-          codePoints.push(number[i].charCodeAt(0) + unicodeOffset);
-        }
-        return String.fromCharCode.apply(String, codePoints);
+        var codePoints = [].concat(toConsumableArray(number)).map(function (num) {
+          return num.charCodeAt(0) + unicodeOffset;
+        });
+        return String.fromCharCode.apply(String, toConsumableArray(codePoints));
       }
 
       /**
