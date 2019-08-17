@@ -396,7 +396,7 @@ class BadiDate {
     const dateComponents = dateString.split('-');
     // Are all components numerical
     for (let i = 0; i < dateComponents.length; i++) {
-      if (!(/^\d+$/.test(dateComponents[i]))) {
+      if (!((/^\d+$/).test(dateComponents[i]))) {
         return false;
       }
       dateComponents[i] = parseInt(dateComponents[i], 10);

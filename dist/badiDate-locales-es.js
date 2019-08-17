@@ -912,7 +912,7 @@ var ru = /*#__PURE__*/Object.freeze({
   badiCalendar: badiCalendar$9
 });
 
-const monthL$10 = {
+const monthL$a = {
   1: 'Praktfullhet',
   2: 'Härlighet',
   3: 'Skönhet',
@@ -935,7 +935,7 @@ const monthL$10 = {
   20: 'Ayyám-i-Há'
 };
 
-const holyDay$10 = {
+const holyDay$a = {
   1: 'Naw-Rúz',
   2: 'Första Riḍván',
   3: 'Nionde Riḍván',
@@ -949,7 +949,7 @@ const holyDay$10 = {
   11: '‘Abdu’l-Bahás Bortgång'
 };
 
-const weekdayL$10 = {
+const weekdayL$a = {
   1: 'Härlighet',
   2: 'Skönhet',
   3: 'Fullkomlighet',
@@ -959,15 +959,15 @@ const weekdayL$10 = {
   7: 'Oberoende'
 };
 
-const BE$10 = 'B.E.';
-const badiCalendar$10 = 'Badí‘kalendern';
+const BE$a = 'B.E.';
+const badiCalendar$a = 'Badí‘kalendern';
 
 var sv = /*#__PURE__*/Object.freeze({
-  monthL: monthL$10,
-  holyDay: holyDay$10,
-  weekdayL: weekdayL$10,
-  BE: BE$10,
-  badiCalendar: badiCalendar$10
+  monthL: monthL$a,
+  holyDay: holyDay$a,
+  weekdayL: weekdayL$a,
+  BE: BE$a,
+  badiCalendar: badiCalendar$a
 });
 
 const month$4 = {
@@ -993,7 +993,7 @@ const month$4 = {
   20: '阿亚米哈'
 };
 
-const monthL$11 = {
+const monthL$b = {
   1: '耀',
   2: '辉',
   3: '美',
@@ -1016,7 +1016,7 @@ const monthL$11 = {
   20: '哈之日'
 };
 
-const holyDay$11 = {
+const holyDay$b = {
   1: '诺鲁孜节',
   2: '里兹万节第一日',
   3: '里兹万节第九日',
@@ -1060,7 +1060,7 @@ const weekdayAbbr2$4 = {
   7: '伊格'
 };
 
-const weekdayL$11 = {
+const weekdayL$b = {
   1: '辉日',
   2: '美日',
   3: '完日',
@@ -1094,31 +1094,31 @@ const yearInVahid$4 = {
 
 const vahid$4 = '瓦希德';
 const kulliShay$4 = '库里沙伊';
-const BE$11 = 'BE';
-const badiCalendar$11 = '巴迪历';
+const BE$b = 'BE';
+const badiCalendar$b = '巴迪历';
 
 var zh = /*#__PURE__*/Object.freeze({
   month: month$4,
-  monthL: monthL$11,
-  holyDay: holyDay$11,
+  monthL: monthL$b,
+  holyDay: holyDay$b,
   weekday: weekday$4,
   weekdayAbbr3: weekdayAbbr3$4,
   weekdayAbbr2: weekdayAbbr2$4,
-  weekdayL: weekdayL$11,
+  weekdayL: weekdayL$b,
   yearInVahid: yearInVahid$4,
   vahid: vahid$4,
   kulliShay: kulliShay$4,
-  BE: BE$11,
-  badiCalendar: badiCalendar$11
+  BE: BE$b,
+  badiCalendar: badiCalendar$b
 });
 
-const monthL$12 = {
+const monthL$c = {
   1: 'Splendor',
   16: 'Honor'
 };
 
 var en_us = /*#__PURE__*/Object.freeze({
-  monthL: monthL$12
+  monthL: monthL$c
 });
 
 /* eslint-disable dot-notation, line-comment-position, camelcase, sort-imports */
@@ -1603,7 +1603,7 @@ class BadiDate {
     const dateComponents = dateString.split('-');
     // Are all components numerical
     for (let i = 0; i < dateComponents.length; i++) {
-      if (!(/^\d+$/.test(dateComponents[i]))) {
+      if (!((/^\d+$/).test(dateComponents[i]))) {
         return false;
       }
       dateComponents[i] = parseInt(dateComponents[i], 10);

@@ -15,63 +15,69 @@
    * @param {number} deg Angle in degrees.
    * @returns {number} Angle in radians.
    */
-  var deg2rad = function deg2rad(deg) {
+  const deg2rad = function (deg) {
     return deg * 0.017453292519943295;
   };
-
   /**
    * Converts angles in radians to degrees.
    * @param {number} rad Angle in radians.
    * @returns {number} Angle in degrees.
    */
-  var rad2deg = function rad2deg(rad) {
+
+
+  const rad2deg = function (rad) {
     return rad * 57.29577951308232;
   };
-
   /**
    * Calculates the sine of an angle given in degrees.
    * @param {number} deg Angle in degrees.
    * @returns {number} Sine of the angle.
    */
-  var sind = function sind(deg) {
+
+
+  const sind = function (deg) {
     return Math.sin(deg2rad(deg));
   };
-
   /**
    * Calculates the cosine of an angle given in degrees.
    * @param {number} deg Angle in degrees.
    * @returns {number} Cosine of the angle.
    */
-  var cosd = function cosd(deg) {
+
+
+  const cosd = function (deg) {
     return Math.cos(deg2rad(deg));
   };
-
   /**
    * Reduces an angle to the interval 0-360°.
    * @param {number} angle Angle in degrees.
    * @returns {number} Reduced angle in degrees.
    */
-  var reduceAngle = function reduceAngle(angle) {
+
+
+  const reduceAngle = function (angle) {
     return angle - 360 * Math.floor(angle / 360);
   };
-
   /**
    * Evaluates a polynomial in the form A + Bx + Cx^2...
    * @param {number} variable Value of x in the polynomial.
    * @param {array} coeffs Array of coefficients [A, B, C...].
    * @returns {number} Sum of the polynomial.
    */
-  var polynomial = function polynomial(variable, coeffs) {
-    var varPower = 1;
-    var sum = 0.0;
-    var numCoeffs = coeffs.length;
-    for (var i = 0; i < numCoeffs; i++) {
+
+
+  const polynomial = function (variable, coeffs) {
+    let varPower = 1;
+    let sum = 0.0;
+    const numCoeffs = coeffs.length;
+
+    for (let i = 0; i < numCoeffs; i++) {
       sum += varPower * coeffs[i];
       varPower *= variable;
     }
+
     return sum;
   };
-
   /**
    * Interpolates a value from 3 known values (see AA p24 Eq3.3).
    * @param {number} y1 Start value of the interval.
@@ -81,19 +87,24 @@
    * @param {bool} normalize Whether the final result should be normalized.
    * @returns {number} Interpolated result.
    */
-  var interpolateFromThree = function interpolateFromThree(y1, y2, y3, n, normalize) {
-    var a = y2 - y1;
-    var b = y3 - y2;
+
+
+  const interpolateFromThree = function (y1, y2, y3, n, normalize) {
+    let a = y2 - y1;
+    let b = y3 - y2;
+
     if (typeof normalize !== 'undefined' && normalize) {
       if (a < 0) {
         a += 360;
       }
+
       if (b < 0) {
         b += 360;
       }
     }
-    var c = b - a;
-    var y = y2 + n / 2 * (a + b + n * c);
+
+    const c = b - a;
+    const y = y2 + n / 2 * (a + b + n * c);
     return y;
   };
 
@@ -103,60 +114,71 @@
    * @returns {number} Julian date (fractional number of days since 1 January
    *     4713BC according to the proleptic Julian calendar.
    */
-  var datetimeToJD = function datetimeToJD(datetime) {
-    var Y = datetime.year();
-    // Months are zero-indexed
-    var M = datetime.month() + 1;
-    var D = datetime.date() + (datetime.hour() + (datetime.minute() + datetime.second() / 60) / 60) / 24;
+  const datetimeToJD = function (datetime) {
+    let Y = datetime.year(); // Months are zero-indexed
+
+    let M = datetime.month() + 1;
+    const D = datetime.date() + (datetime.hour() + (datetime.minute() + datetime.second() / 60) / 60) / 24;
+
     if (M < 3) {
       Y -= 1;
       M += 12;
     }
-    var A = Math.floor(Y / 100);
-    // Need a different B if we are before introduction of the Gregorian Calendar
-    var gregorianCutoff = moment('1582-10-15T12:00:00Z');
-    var B = 0;
+
+    const A = Math.floor(Y / 100); // Need a different B if we are before introduction of the Gregorian Calendar
+
+    const gregorianCutoff = moment('1582-10-15T12:00:00Z');
+    let B = 0;
+
     if (datetime.isAfter(gregorianCutoff)) {
       B = 2 - A + Math.floor(A / 4);
     }
-    var JD = Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + D + B - 1524.5;
+
+    const JD = Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + D + B - 1524.5;
     return JD;
   };
-
   /**
    * Converts a Julian Date to the corresponding datetime in UTC (see AA p63).
    * @param {number} JD Julian date to be converted
    * @returns {moment} Datetime corresponding to the given Julian date.
    */
-  var JDToDatetime = function JDToDatetime(JD) {
+
+
+  const JDToDatetime = function (JD) {
     JD += 0.5;
-    var Z = Math.floor(JD);
-    var F = JD - Z;
-    var A = Z;
+    const Z = Math.floor(JD);
+    const F = JD - Z;
+    let A = Z;
+
     if (Z >= 2299161) {
-      var alpha = Math.floor((Z - 1867216.25) / 36524.25);
+      const alpha = Math.floor((Z - 1867216.25) / 36524.25);
       A += 1 + alpha - Math.floor(alpha / 4);
     }
-    var B = A + 1524;
-    var C = Math.floor((B - 122.1) / 365.25);
-    var D = Math.floor(365.25 * C);
-    var E = Math.floor((B - D) / 30.6001);
-    var fracDay = B - D - Math.floor(30.6001 * E) + F;
-    var day = Math.floor(fracDay);
-    var hours = Math.floor((fracDay - day) * 24);
-    var minutes = Math.floor(((fracDay - day) * 24 - hours) * 60);
-    var seconds = Math.floor((((fracDay - day) * 24 - hours) * 60 - minutes) * 60);
-    var month = E - 1;
+
+    const B = A + 1524;
+    const C = Math.floor((B - 122.1) / 365.25);
+    const D = Math.floor(365.25 * C);
+    const E = Math.floor((B - D) / 30.6001);
+    const fracDay = B - D - Math.floor(30.6001 * E) + F;
+    const day = Math.floor(fracDay);
+    const hours = Math.floor((fracDay - day) * 24);
+    const minutes = Math.floor(((fracDay - day) * 24 - hours) * 60);
+    const seconds = Math.floor((((fracDay - day) * 24 - hours) * 60 - minutes) * 60);
+    let month = E - 1;
+
     if (E > 13) {
       month -= 12;
     }
-    var year = C - 4715;
+
+    let year = C - 4715;
+
     if (month > 2) {
       year -= 1;
     }
-    var datetime = moment.tz('2000-01-01T12:00:00', 'UTC');
-    datetime.year(year);
-    // Months are zero-indexed
+
+    const datetime = moment.tz('2000-01-01T12:00:00', 'UTC');
+    datetime.year(year); // Months are zero-indexed
+
     datetime.month(month - 1);
     datetime.date(day);
     datetime.hour(hours);
@@ -164,104 +186,125 @@
     datetime.second(seconds);
     return datetime;
   };
-
   /**
    * Converts a Julian date to the number of Julian centuries since
    * 2000-01-01T12:00:00Z (see AA p87 Eq12.1).
    * @param {number} JD Julian date.
    * @returns {number} T.
    */
-  var JDToT = function JDToT(JD) {
+
+
+  const JDToT = function (JD) {
     return (JD - 2451545) / 36525;
   };
-
   /**
    * Converts a datetime in UTC to the number of Julian centuries since
    * 2000-01-01T12:00:00Z.
    * @param {moment} datetime Datetime to be converted.
    * @returns {number} T.
    */
-  var datetimeToT = function datetimeToT(datetime) {
+
+
+  const datetimeToT = function (datetime) {
     return JDToT(datetimeToJD(datetime));
   };
-
   /* eslint-disable complexity */
+
   /**
    * Calculates the value of ΔT=TT−UT (see
    * http://eclipse.gsfc.nasa.gov/SEcat5/deltatpoly.htm).
    * @param {moment} datetime Datetime for which ΔT should be calculated.
    * @returns {number} ΔT.
    */
-  var DeltaT = function DeltaT(datetime) {
-    var y = datetime.year();
-    // Months are zero-indexed
+
+
+  const DeltaT = function (datetime) {
+    let y = datetime.year(); // Months are zero-indexed
+
     y += (datetime.month() + 0.5) / 12;
-    var u = void 0;
-    var t = void 0;
-    var DeltaT = void 0;
+    let u;
+    let t;
+    let DeltaT;
+
     switch (true) {
       case y < -1999:
         DeltaT = false;
         break;
+
       case y < -500:
         u = (y - 1820) / 100;
         DeltaT = -20 + 32 * u * u;
         break;
+
       case y < 500:
         u = y / 100;
         DeltaT = 10583.6 - 1014.41 * u + 33.78311 * u * u - 5.952053 * u * u * u - 0.1798452 * u * u * u * u + 0.022174192 * u * u * u * u * u + 0.0090316521 * u * u * u * u * u * u;
         break;
+
       case y < 1600:
         u = (y - 1000) / 100;
         DeltaT = 1574.2 - 556.01 * u + 71.23472 * u * u + 0.319781 * u * u * u - 0.8503463 * u * u * u * u - 0.005050998 * u * u * u * u * u + 0.0083572073 * u * u * u * u * u * u;
         break;
+
       case y < 1700:
         t = y - 1600;
         DeltaT = 120 - 0.9808 * t - 0.01532 * t * t + t * t * t / 7129;
         break;
+
       case y < 1800:
         t = y - 1700;
         DeltaT = 8.83 + 0.1603 * t - 0.0059285 * t * t + 0.00013336 * t * t * t - t * t * t * t / 1174000;
         break;
+
       case y < 1860:
         t = y - 1800;
         DeltaT = 13.72 - 0.332447 * t + 0.0068612 * t * t + 0.0041116 * t * t * t - 0.00037436 * t * t * t * t + 0.0000121272 * t * t * t * t * t - 0.0000001699 * t * t * t * t * t * t + 0.000000000875 * t * t * t * t * t * t * t;
         break;
+
       case y < 1900:
         t = y - 1860;
         DeltaT = 7.62 + 0.5737 * t - 0.251754 * t * t + 0.01680668 * t * t * t - 0.0004473624 * t * t * t * t + t * t * t * t * t / 233174;
         break;
+
       case y < 1920:
         t = y - 1900;
         DeltaT = -2.79 + 1.494119 * t - 0.0598939 * t * t + 0.0061966 * t * t * t - 0.000197 * t * t * t * t;
         break;
+
       case y < 1941:
         t = y - 1920;
         DeltaT = 21.20 + 0.84493 * t - 0.076100 * t * t + 0.0020936 * t * t * t;
         break;
+
       case y < 1961:
         t = y - 1950;
         DeltaT = 29.07 + 0.407 * t - t * t / 233 + t * t * t / 2547;
         break;
+
       case y < 1986:
         t = y - 1975;
         DeltaT = 45.45 + 1.067 * t - t * t / 260 - t * t * t / 718;
         break;
+
       case y < 2005:
         t = y - 2000;
         DeltaT = 63.86 + 0.3345 * t - 0.060374 * t * t + 0.0017275 * t * t * t + 0.000651814 * t * t * t * t + 0.00002373599 * t * t * t * t * t;
         break;
+
       case y < 2050:
         t = y - 2000;
         DeltaT = 62.92 + 0.32217 * t + 0.005589 * t * t;
         break;
+
       case y < 2150:
         DeltaT = -20 + 32 * ((y - 1820) / 100) * ((y - 1820) / 100) - 0.5628 * (2150 - y);
         break;
+
       default:
         u = (y - 1820) / 100;
         DeltaT = -20 + 32 * u * u;
     }
+
     return DeltaT;
   };
   /* eslint-enable complexity */
@@ -272,17 +315,20 @@
    * @param {moment} datetime Datetime for which k is calculated.
    * @returns {number} k.
    */
-  var approxK = function approxK(datetime) {
-    var year = datetime.year() + (datetime.month() + 1) / 12 + datetime.date() / 365.25;
+
+
+  const approxK = function (datetime) {
+    const year = datetime.year() + (datetime.month() + 1) / 12 + datetime.date() / 365.25;
     return (year - 2000) * 12.3685;
   };
-
   /**
    * Calculates T from k.
    * @param {number} k Fractional number of new moons since 2000-01-06.
    * @returns {number} T Fractional num. of centuries since 2000-01-01:12:00:00Z.
    */
-  var kToT = function kToT(k) {
+
+
+  const kToT = function (k) {
     return k / 1236.85;
   };
 
@@ -295,27 +341,29 @@
    *                    2 -> full moon, 3 -> last quarter.
    * @returns {number} Julian date in ephemeris time of the moon of given phase.
    */
-  var truePhase = function truePhase(k, phase) {
+
+  const truePhase = function (k, phase) {
     k += phase / 4;
-    var T = kToT(k);
-    var E = eccentricityCorrection(T);
-    var JDE = meanPhase(T, k);
-    var M = sunMeanAnomaly(T, k);
-    var MPrime = moonMeanAnomaly(T, k);
-    var F = moonArgumentOfLatitude(T, k);
-    var Omega = moonAscendingNodeLongitude(T, k);
-    var A = planetaryArguments(T, k);
-    var DeltaJDE = 0;
+    const T = kToT(k);
+    const E = eccentricityCorrection(T);
+    let JDE = meanPhase(T, k);
+    const M = sunMeanAnomaly(T, k);
+    const MPrime = moonMeanAnomaly(T, k);
+    const F = moonArgumentOfLatitude(T, k);
+    const Omega = moonAscendingNodeLongitude(T, k);
+    const A = planetaryArguments(T, k);
+    let DeltaJDE = 0;
+
     if (phase === 0 || phase === 2) {
       DeltaJDE += newMoonFullMoonCorrections(E, M, MPrime, F, Omega, phase);
     } else if (phase === 1 || phase === 3) {
       DeltaJDE += quarterCorrections(E, M, MPrime, F, Omega, phase);
     }
+
     DeltaJDE += commonCorrections(A);
     JDE += DeltaJDE;
     return JDE;
   };
-
   /**
    * Calculates the mean phase of the moon as Julian date in ephemeris time (see
    * AA p349 Eq49.1).
@@ -326,11 +374,12 @@
    * @returns {number} Julian date in ephemeris time of the moon of given mean
    *     phase.
    */
-  var meanPhase = function meanPhase(T, k) {
-    var JDE = 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T - 0.000000150 * T * T * T + 0.00000000073 * T * T * T * T;
+
+
+  const meanPhase = function (T, k) {
+    const JDE = 2451550.09766 + 29.530588861 * k + 0.00015437 * T * T - 0.000000150 * T * T * T + 0.00000000073 * T * T * T * T;
     return JDE;
   };
-
   /**
    * Calculates the mean anomaly of the sun (see AA p350 Eq49.4).
    * @param {number} T Fractional number of Julian centuries since
@@ -339,11 +388,12 @@
    *     2000-01-06.
    * @returns {number} Mean anomaly of the sun at the given time.
    */
-  var sunMeanAnomaly = function sunMeanAnomaly(T, k) {
-    var M = 2.5534 + 29.10535670 * k - 0.0000014 * T * T - 0.00000011 * T * T * T;
+
+
+  const sunMeanAnomaly = function (T, k) {
+    const M = 2.5534 + 29.10535670 * k - 0.0000014 * T * T - 0.00000011 * T * T * T;
     return M;
   };
-
   /**
    * Calculates the mean anomaly of the moon (see AA p350 Eq49.5).
    * @param {number} T Fractional number of Julian centuries since
@@ -352,11 +402,12 @@
    *     2000-01-06.
    * @returns {number} Mean anomaly of the moon at the given time.
    */
-  var moonMeanAnomaly = function moonMeanAnomaly(T, k) {
-    var MPrime = 201.5643 + 385.81693528 * k + 0.0107582 * T * T + 0.00001238 * T * T * T - 0.000000058 * T * T * T * T;
+
+
+  const moonMeanAnomaly = function (T, k) {
+    const MPrime = 201.5643 + 385.81693528 * k + 0.0107582 * T * T + 0.00001238 * T * T * T - 0.000000058 * T * T * T * T;
     return MPrime;
   };
-
   /**
    * Calculates the argument of latitude of the moon (see AA p350 Eq49.6).
    * @param {number} T Fractional number of Julian centuries since
@@ -365,11 +416,12 @@
    *     2000-01-06.
    * @returns {number} Argument of latitude of the moon at the given time.
    */
-  var moonArgumentOfLatitude = function moonArgumentOfLatitude(T, k) {
-    var F = 160.7108 + 390.67050284 * k - 0.0016118 * T * T - 0.00000227 * T * T * T + 0.000000011 * T * T * T * T;
+
+
+  const moonArgumentOfLatitude = function (T, k) {
+    const F = 160.7108 + 390.67050284 * k - 0.0016118 * T * T - 0.00000227 * T * T * T + 0.000000011 * T * T * T * T;
     return F;
   };
-
   /**
    * Calculates the longitude of the ascending node of the lunar orbit (see AA
    * p350 Eq49.7).
@@ -380,22 +432,24 @@
    * @returns {number} Longitude of the ascending node of the lunar orbit at the
    *     given time.
    */
-  var moonAscendingNodeLongitude = function moonAscendingNodeLongitude(T, k) {
-    var Omega = 124.7746 - 1.56375588 * k + 0.0020672 * T * T + 0.00000215 * T * T * T;
+
+
+  const moonAscendingNodeLongitude = function (T, k) {
+    const Omega = 124.7746 - 1.56375588 * k + 0.0020672 * T * T + 0.00000215 * T * T * T;
     return Omega;
   };
-
   /**
    * Calculates the correction for the eccentricity of the earth's orbit.
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Eccentricity correction.
    */
-  var eccentricityCorrection = function eccentricityCorrection(T) {
-    var E = 1 - 0.002516 * T - 0.0000074 * T * T;
+
+
+  const eccentricityCorrection = function (T) {
+    const E = 1 - 0.002516 * T - 0.0000074 * T * T;
     return E;
   };
-
   /**
    * Calculates the planetary arguments for the moon phases (see AA p351).
    * @param {number} T Fractional number of Julian centuries since
@@ -404,10 +458,13 @@
    *     2000-01-06.
    * @returns {array} Planetary arguments for the moon phases.
    */
-  var planetaryArguments = function planetaryArguments(T, k) {
-    var A = [];
+
+
+  const planetaryArguments = function (T, k) {
+    const A = [];
     /* eslint-disable no-multi-spaces */
     // Want to follow the numbering conventions from AA
+
     A[0] = 0;
     A[1] = 299.77 + 0.107408 * k - 0.009173 * T * T;
     A[2] = 251.88 + 0.016321 * k;
@@ -424,9 +481,9 @@
     A[13] = 239.56 + 25.513099 * k;
     A[14] = 331.55 + 3.592518 * k;
     /* eslint-enable no-multi-spaces */
+
     return A;
   };
-
   /**
    * Calculates the corrections to the planetary arguments for the moon phases
    * that are common to all phases (see AA p352).
@@ -434,11 +491,12 @@
    * @returns {number} Correction to the Julian date in ephemeris time for the
    *     moon phase.
    */
-  var commonCorrections = function commonCorrections(A) {
-    var DeltaJDE = 0.000325 * sind(A[1]) + 0.000165 * sind(A[2]) + 0.000164 * sind(A[3]) + 0.000126 * sind(A[4]) + 0.000110 * sind(A[5]) + 0.000062 * sind(A[6]) + 0.000060 * sind(A[7]) + 0.000056 * sind(A[8]) + 0.000047 * sind(A[9]) + 0.000042 * sind(A[10]) + 0.000040 * sind(A[11]) + 0.000037 * sind(A[12]) + 0.000035 * sind(A[13]) + 0.000023 * sind(A[14]);
+
+
+  const commonCorrections = function (A) {
+    const DeltaJDE = 0.000325 * sind(A[1]) + 0.000165 * sind(A[2]) + 0.000164 * sind(A[3]) + 0.000126 * sind(A[4]) + 0.000110 * sind(A[5]) + 0.000062 * sind(A[6]) + 0.000060 * sind(A[7]) + 0.000056 * sind(A[8]) + 0.000047 * sind(A[9]) + 0.000042 * sind(A[10]) + 0.000040 * sind(A[11]) + 0.000037 * sind(A[12]) + 0.000035 * sind(A[13]) + 0.000023 * sind(A[14]);
     return DeltaJDE;
   };
-
   /**
    * Calculates the corrections to the planetary arguments for the moon phases
    * for full and new moons (see AA p351).
@@ -452,16 +510,19 @@
    * @returns {number} Correction to the Julian date in ephemeris time for the
    *     moon phase.
    */
-  var newMoonFullMoonCorrections = function newMoonFullMoonCorrections(E, M, MPrime, F, Omega, phase) {
-    var DeltaJDE = -0.00111 * sind(MPrime - 2 * F) - 0.00057 * sind(MPrime + 2 * F) + 0.00056 * E * sind(2 * MPrime + M) - 0.00042 * sind(3 * MPrime) + 0.00042 * E * sind(M + 2 * F) + 0.00038 * E * sind(M - 2 * F) - 0.00024 * E * sind(2 * MPrime - M) - 0.00017 * sind(Omega) - 0.00007 * sind(MPrime + 2 * M) + 0.00004 * sind(2 * MPrime - 2 * F) + 0.00004 * sind(3 * M) + 0.00003 * sind(MPrime + M - 2 * F) + 0.00003 * sind(2 * MPrime + 2 * F) - 0.00003 * sind(MPrime + M + 2 * F) + 0.00003 * sind(MPrime - M + 2 * F) - 0.00002 * sind(MPrime - M - 2 * F) - 0.00002 * sind(3 * MPrime + M) + 0.00002 * sind(4 * MPrime);
+
+
+  const newMoonFullMoonCorrections = function (E, M, MPrime, F, Omega, phase) {
+    let DeltaJDE = -0.00111 * sind(MPrime - 2 * F) - 0.00057 * sind(MPrime + 2 * F) + 0.00056 * E * sind(2 * MPrime + M) - 0.00042 * sind(3 * MPrime) + 0.00042 * E * sind(M + 2 * F) + 0.00038 * E * sind(M - 2 * F) - 0.00024 * E * sind(2 * MPrime - M) - 0.00017 * sind(Omega) - 0.00007 * sind(MPrime + 2 * M) + 0.00004 * sind(2 * MPrime - 2 * F) + 0.00004 * sind(3 * M) + 0.00003 * sind(MPrime + M - 2 * F) + 0.00003 * sind(2 * MPrime + 2 * F) - 0.00003 * sind(MPrime + M + 2 * F) + 0.00003 * sind(MPrime - M + 2 * F) - 0.00002 * sind(MPrime - M - 2 * F) - 0.00002 * sind(3 * MPrime + M) + 0.00002 * sind(4 * MPrime);
+
     if (phase === 0) {
       DeltaJDE += -0.40720 * sind(MPrime) + 0.17241 * E * sind(M) + 0.01608 * sind(2 * MPrime) + 0.01039 * sind(2 * F) + 0.00739 * E * sind(MPrime - M) - 0.00514 * E * sind(MPrime + M) + 0.00208 * E * E * sind(2 * M);
     } else if (phase === 2) {
       DeltaJDE += -0.40614 * sind(MPrime) + 0.17302 * E * sind(M) + 0.01614 * sind(2 * MPrime) + 0.01043 * sind(2 * F) + 0.00734 * E * sind(MPrime - M) - 0.00515 * E * sind(MPrime + M) + 0.00209 * E * E * sind(2 * M);
     }
+
     return DeltaJDE;
   };
-
   /**
    * Calculates the corrections to the planetary arguments for the moon phases
    * for first and last quarters (see AA p352).
@@ -475,45 +536,49 @@
    * @returns {number} Correction to the Julian date in ephemeris time for the
    *     moon phase.
    */
-  var quarterCorrections = function quarterCorrections(E, M, MPrime, F, Omega, phase) {
-    var DeltaJDE = -0.62801 * sind(MPrime) + 0.17172 * E * sind(M) - 0.01183 * E * sind(MPrime + M) + 0.00862 * sind(2 * MPrime) + 0.00804 * sind(2 * F) + 0.00454 * E * sind(MPrime - M) + 0.00204 * E * E * sind(2 * M) - 0.00180 * sind(MPrime - 2 * F) - 0.00070 * sind(MPrime + 2 * F) - 0.00040 * sind(3 * MPrime) - 0.00034 * E * sind(2 * MPrime - M) + 0.00032 * E * sind(M + 2 * F) + 0.00032 * E * sind(M - 2 * F) - 0.00028 * E * E * sind(MPrime + 2 * M) + 0.00027 * E * sind(2 * MPrime + M) - 0.00017 * sind(Omega) - 0.00005 * sind(MPrime - M - 2 * F) + 0.00004 * sind(2 * MPrime + 2 * F) - 0.00004 * sind(MPrime + M + 2 * F) + 0.00004 * sind(MPrime - 2 * M) + 0.00003 * sind(MPrime + M - 2 * F) + 0.00003 * sind(3 * M) + 0.00002 * sind(2 * MPrime - 2 * F) + 0.00002 * sind(MPrime - M + 2 * F) - 0.00002 * sind(3 * MPrime + M);
-    var W = 0.00306 - 0.00038 * E * cosd(M) + 0.00026 * cosd(MPrime) - 0.00002 * cosd(MPrime - M) + 0.00002 * cosd(MPrime + M) + 0.00002 * cosd(2 * F);
+
+
+  const quarterCorrections = function (E, M, MPrime, F, Omega, phase) {
+    let DeltaJDE = -0.62801 * sind(MPrime) + 0.17172 * E * sind(M) - 0.01183 * E * sind(MPrime + M) + 0.00862 * sind(2 * MPrime) + 0.00804 * sind(2 * F) + 0.00454 * E * sind(MPrime - M) + 0.00204 * E * E * sind(2 * M) - 0.00180 * sind(MPrime - 2 * F) - 0.00070 * sind(MPrime + 2 * F) - 0.00040 * sind(3 * MPrime) - 0.00034 * E * sind(2 * MPrime - M) + 0.00032 * E * sind(M + 2 * F) + 0.00032 * E * sind(M - 2 * F) - 0.00028 * E * E * sind(MPrime + 2 * M) + 0.00027 * E * sind(2 * MPrime + M) - 0.00017 * sind(Omega) - 0.00005 * sind(MPrime - M - 2 * F) + 0.00004 * sind(2 * MPrime + 2 * F) - 0.00004 * sind(MPrime + M + 2 * F) + 0.00004 * sind(MPrime - 2 * M) + 0.00003 * sind(MPrime + M - 2 * F) + 0.00003 * sind(3 * M) + 0.00002 * sind(2 * MPrime - 2 * F) + 0.00002 * sind(MPrime - M + 2 * F) - 0.00002 * sind(3 * MPrime + M);
+    const W = 0.00306 - 0.00038 * E * cosd(M) + 0.00026 * cosd(MPrime) - 0.00002 * cosd(MPrime - M) + 0.00002 * cosd(MPrime + M) + 0.00002 * cosd(2 * F);
+
     if (phase === 1) {
       DeltaJDE += W;
     } else if (phase === 3) {
       DeltaJDE -= W;
     }
+
     return DeltaJDE;
   };
 
   /* eslint array-bracket-spacing: "off", indent: "off", no-multi-spaces: "off", standard/array-bracket-even-spacing: "off" */
 
   /** See AA p144 */
-  var sunMeanAnomaly$1 = [357.52772, 35999.050340, -0.0001603, -1 / 300000];
-
+  const sunMeanAnomaly$1 = [357.52772, 35999.050340, -0.0001603, -1 / 300000];
   /** See AA p163 Eq 25.2 */
-  var sunMeanLongitude = [280.46646, 36000.76983, 0.0003032];
 
+  const sunMeanLongitude = [280.46646, 36000.76983, 0.0003032];
   /** See AA p147 Eq22.3 */
-  var meanObliquityOfEcliptic = [84381.448 / 3600, -4680.93 / 3600, -1.55 / 3600, 1999.25 / 3600, -51.38 / 3600, -249.67 / 3600, -39.05 / 3600, 7.12 / 3600, 27.87 / 3600, 5.79 / 3600, 2.45 / 3600];
 
+  const meanObliquityOfEcliptic = [84381.448 / 3600, -4680.93 / 3600, -1.55 / 3600, 1999.25 / 3600, -51.38 / 3600, -249.67 / 3600, -39.05 / 3600, 7.12 / 3600, 27.87 / 3600, 5.79 / 3600, 2.45 / 3600];
   /** See AA p144 */
-  var moonArgumentOfLatitude$1 = [93.27191, 483202.017538, -0.0036825, 1 / 327270];
 
+  const moonArgumentOfLatitude$1 = [93.27191, 483202.017538, -0.0036825, 1 / 327270];
   /** See AA p144 */
-  var moonAscendingNodeLongitude$1 = [125.04452, -1934.136261, 0.0020708, 1 / 450000];
 
+  const moonAscendingNodeLongitude$1 = [125.04452, -1934.136261, 0.0020708, 1 / 450000];
   /** See AA p144 */
-  var moonMeanAnomaly$1 = [134.96298, 477198.867398, 0.0086972, 1 / 56250];
 
+  const moonMeanAnomaly$1 = [134.96298, 477198.867398, 0.0086972, 1 / 56250];
   /** See AA p144 */
-  var moonMeanElongation = [297.85036, 445267.111480, -0.0019142, 1 / 189474];
 
+  const moonMeanElongation = [297.85036, 445267.111480, -0.0019142, 1 / 189474];
   /**
    * Nutations in longitude and obliquity
    * See AA p145f
    */
-  var nutations = [[0, 0, 0, 0, 1, -171996, -174.2, 92025, 8.9], [-2, 0, 0, 2, 2, -13187, -1.6, 5736, -3.1], [0, 0, 0, 2, 2, -2274, -0.2, 977, -0.5], [0, 0, 0, 0, 2, 2062, 0.2, -895, 0.5], [0, 1, 0, 0, 0, 1426, -3.4, 54, -0.1], [0, 0, 1, 0, 0, 712, 0.1, -7, 0], [-2, 1, 0, 2, 2, -517, 1.2, 224, -0.6], [0, 0, 0, 2, 1, -386, -0.4, 200, 0], [0, 0, 1, 2, 2, -301, 0, 129, -0.1], [-2, -1, 0, 2, 2, 217, -0.5, -95, 0.3], [-2, 0, 1, 0, 0, -158, 0, 0, 0], [-2, 0, 0, 2, 1, 129, 0.1, -70, 0], [0, 0, -1, 2, 2, 123, 0, -53, 0], [2, 0, 0, 0, 0, 63, 0, 0, 0], [0, 0, 1, 0, 1, 63, 0.1, -33, 0], [2, 0, -1, 2, 2, -59, 0, 26, 0], [0, 0, -1, 0, 1, -58, -0.1, 32, 0], [0, 0, 1, 2, 1, -51, 0, 27, 0], [-2, 0, 2, 0, 0, 48, 0, 0, 0], [0, 0, -2, 2, 1, 46, 0, -24, 0], [2, 0, 0, 2, 2, -38, 0, 16, 0], [0, 0, 2, 2, 2, -31, 0, 13, 0], [0, 0, 2, 0, 0, 29, 0, 0, 0], [-2, 0, 1, 2, 2, 29, 0, -12, 0], [0, 0, 0, 2, 0, 26, 0, 0, 0], [-2, 0, 0, 2, 0, -22, 0, 0, 0], [0, 0, -1, 2, 1, 21, 0, -10, 0], [0, 2, 0, 0, 0, 17, -0.1, 0, 0], [2, 0, -1, 0, 1, 16, 0, -8, 0], [-2, 2, 0, 2, 2, -16, 0.1, 7, 0], [0, 1, 0, 0, 1, -15, 0, 9, 0], [-2, 0, 1, 0, 1, -13, 0, 7, 0], [0, -1, 0, 0, 1, -12, 0, 6, 0], [0, 0, 2, -2, 0, 11, 0, 0, 0], [2, 0, -1, 2, 1, -10, 0, 5, 0], [2, 0, 1, 2, 2, -8, 0, 3, 0], [0, 1, 0, 2, 2, 7, 0, -3, 0], [-2, 1, 1, 0, 0, -7, 0, 0, 0], [0, -1, 0, 2, 2, -7, 0, 3, 0], [2, 0, 0, 2, 1, -7, 0, 3, 0], [2, 0, 1, 0, 0, 6, 0, 0, 0], [-2, 0, 2, 2, 2, 6, 0, -3, 0], [-2, 0, 1, 2, 1, 6, 0, -3, 0], [2, 0, -2, 0, 1, -6, 0, 3, 0], [2, 0, 0, 0, 1, -6, 0, 3, 0], [0, -1, 1, 0, 0, 5, 0, 0, 0], [-2, -1, 0, 2, 1, -5, 0, 3, 0], [-2, 0, 0, 0, 1, -5, 0, 3, 0], [0, 0, 2, 2, 1, -5, 0, 3, 0], [-2, 0, 2, 0, 1, 4, 0, 0, 0], [-2, 1, 0, 2, 1, 4, 0, 0, 0], [0, 0, 1, -2, 0, 4, 0, 0, 0], [-1, 0, 1, 0, 0, -4, 0, 0, 0], [-2, 1, 0, 0, 0, -4, 0, 0, 0], [1, 0, 0, 0, 0, -4, 0, 0, 0], [0, 0, 1, 2, 0, 3, 0, 0, 0], [0, 0, -2, 2, 2, -3, 0, 0, 0], [-1, -1, 1, 0, 0, -3, 0, 0, 0], [0, 1, 1, 0, 0, -3, 0, 0, 0], [0, -1, 1, 2, 2, -3, 0, 0, 0], [2, -1, -1, 2, 2, -3, 0, 0, 0], [0, 0, 3, 2, 2, 3, 0, 0, 0], [2, -1, 0, 2, 2, -3, 0, 0, 0]];
+
+  const nutations = [[0, 0, 0, 0, 1, -171996, -174.2, 92025, 8.9], [-2, 0, 0, 2, 2, -13187, -1.6, 5736, -3.1], [0, 0, 0, 2, 2, -2274, -0.2, 977, -0.5], [0, 0, 0, 0, 2, 2062, 0.2, -895, 0.5], [0, 1, 0, 0, 0, 1426, -3.4, 54, -0.1], [0, 0, 1, 0, 0, 712, 0.1, -7, 0], [-2, 1, 0, 2, 2, -517, 1.2, 224, -0.6], [0, 0, 0, 2, 1, -386, -0.4, 200, 0], [0, 0, 1, 2, 2, -301, 0, 129, -0.1], [-2, -1, 0, 2, 2, 217, -0.5, -95, 0.3], [-2, 0, 1, 0, 0, -158, 0, 0, 0], [-2, 0, 0, 2, 1, 129, 0.1, -70, 0], [0, 0, -1, 2, 2, 123, 0, -53, 0], [2, 0, 0, 0, 0, 63, 0, 0, 0], [0, 0, 1, 0, 1, 63, 0.1, -33, 0], [2, 0, -1, 2, 2, -59, 0, 26, 0], [0, 0, -1, 0, 1, -58, -0.1, 32, 0], [0, 0, 1, 2, 1, -51, 0, 27, 0], [-2, 0, 2, 0, 0, 48, 0, 0, 0], [0, 0, -2, 2, 1, 46, 0, -24, 0], [2, 0, 0, 2, 2, -38, 0, 16, 0], [0, 0, 2, 2, 2, -31, 0, 13, 0], [0, 0, 2, 0, 0, 29, 0, 0, 0], [-2, 0, 1, 2, 2, 29, 0, -12, 0], [0, 0, 0, 2, 0, 26, 0, 0, 0], [-2, 0, 0, 2, 0, -22, 0, 0, 0], [0, 0, -1, 2, 1, 21, 0, -10, 0], [0, 2, 0, 0, 0, 17, -0.1, 0, 0], [2, 0, -1, 0, 1, 16, 0, -8, 0], [-2, 2, 0, 2, 2, -16, 0.1, 7, 0], [0, 1, 0, 0, 1, -15, 0, 9, 0], [-2, 0, 1, 0, 1, -13, 0, 7, 0], [0, -1, 0, 0, 1, -12, 0, 6, 0], [0, 0, 2, -2, 0, 11, 0, 0, 0], [2, 0, -1, 2, 1, -10, 0, 5, 0], [2, 0, 1, 2, 2, -8, 0, 3, 0], [0, 1, 0, 2, 2, 7, 0, -3, 0], [-2, 1, 1, 0, 0, -7, 0, 0, 0], [0, -1, 0, 2, 2, -7, 0, 3, 0], [2, 0, 0, 2, 1, -7, 0, 3, 0], [2, 0, 1, 0, 0, 6, 0, 0, 0], [-2, 0, 2, 2, 2, 6, 0, -3, 0], [-2, 0, 1, 2, 1, 6, 0, -3, 0], [2, 0, -2, 0, 1, -6, 0, 3, 0], [2, 0, 0, 0, 1, -6, 0, 3, 0], [0, -1, 1, 0, 0, 5, 0, 0, 0], [-2, -1, 0, 2, 1, -5, 0, 3, 0], [-2, 0, 0, 0, 1, -5, 0, 3, 0], [0, 0, 2, 2, 1, -5, 0, 3, 0], [-2, 0, 2, 0, 1, 4, 0, 0, 0], [-2, 1, 0, 2, 1, 4, 0, 0, 0], [0, 0, 1, -2, 0, 4, 0, 0, 0], [-1, 0, 1, 0, 0, -4, 0, 0, 0], [-2, 1, 0, 0, 0, -4, 0, 0, 0], [1, 0, 0, 0, 0, -4, 0, 0, 0], [0, 0, 1, 2, 0, 3, 0, 0, 0], [0, 0, -2, 2, 2, -3, 0, 0, 0], [-1, -1, 1, 0, 0, -3, 0, 0, 0], [0, 1, 1, 0, 0, -3, 0, 0, 0], [0, -1, 1, 2, 2, -3, 0, 0, 0], [2, -1, -1, 2, 2, -3, 0, 0, 0], [0, 0, 3, 2, 2, 3, 0, 0, 0], [2, -1, 0, 2, 2, -3, 0, 0, 0]];
 
   /**
    * Calculates the solar transit time on a date at a given longitude (see AA
@@ -522,29 +587,31 @@
    * @param {number} L Longitude.
    * @returns {moment} Solar transit time.
    */
-  var sunTransit = function sunTransit(datetime, L) {
-    var timezone = datetime.tz();
-    var transit = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-    var DeltaT$$1 = DeltaT(transit);
-    var T = datetimeToT(transit);
-    var Theta0 = apparentSiderealTimeGreenwhich(T);
-    // Want 0h TD for this, not UT
-    var TD = T - DeltaT$$1 / (3600 * 24 * 36525);
-    var alpha = sunApparentRightAscension(TD);
-    // Sign flip for longitude from AA as we take East as positive
-    var m = (alpha - L - Theta0) / 360;
+
+  const sunTransit = function (datetime, L) {
+    const timezone = datetime.tz();
+    const transit = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
+    const DeltaT$$1 = DeltaT(transit);
+    const T = datetimeToT(transit);
+    const Theta0 = apparentSiderealTimeGreenwhich(T); // Want 0h TD for this, not UT
+
+    const TD = T - DeltaT$$1 / (3600 * 24 * 36525);
+    const alpha = sunApparentRightAscension(TD); // Sign flip for longitude from AA as we take East as positive
+
+    let m = (alpha - L - Theta0) / 360;
     m = normalizeM(m, datetime.utcOffset());
-    var DeltaM = sunTransitCorrection(T, Theta0, DeltaT$$1, L, m);
+    const DeltaM = sunTransitCorrection(T, Theta0, DeltaT$$1, L, m);
     m += DeltaM;
     transit.add(Math.floor(m * 3600 * 24 + 0.5), 'seconds');
+
     if (roundToNearestMinute) {
       transit.add(30, 'seconds');
       transit.second(0);
     }
+
     transit.tz(timezone);
     return transit;
   };
-
   /**
    * Calculates the sunrise or sunset time on a date at a given latitude and
    * longitude (see AA p102f).
@@ -553,23 +620,29 @@
    * @param {number} L Longitude.
    * @param {string} flag 'RISE' or 'SET' depending on which event should be
    *     calculated.
+   * @param {number} offset number of degrees below the horizon for the desired
+   *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+   *     astronomical dawn/dusk.
    * @returns {moment} Sunrise or sunset time.
    */
-  var sunRiseSet = function sunRiseSet(datetime, phi, L, flag) {
-    var timezone = datetime.tz();
-    var suntime = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-    var DeltaT$$1 = DeltaT(suntime);
-    var T = datetimeToT(suntime);
-    var Theta0 = apparentSiderealTimeGreenwhich(T);
-    // Want 0h TD for this, not UT
-    var TD = T - DeltaT$$1 / (3600 * 24 * 36525);
-    var alpha = sunApparentRightAscension(TD);
-    var delta = sunApparentDeclination(TD);
-    var H0 = approxLocalHourAngle(phi, delta);
-    // Sign flip for longitude from AA as we take East as positive
-    var m0 = (alpha - L - Theta0) / 360;
+
+
+  const sunRiseSet = function (datetime, phi, L, flag, offset = 50 / 60) {
+    const timezone = datetime.tz();
+    const suntime = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
+    const DeltaT$$1 = DeltaT(suntime);
+    const T = datetimeToT(suntime);
+    const Theta0 = apparentSiderealTimeGreenwhich(T); // Want 0h TD for this, not UT
+
+    const TD = T - DeltaT$$1 / (3600 * 24 * 36525);
+    const alpha = sunApparentRightAscension(TD);
+    const delta = sunApparentDeclination(TD);
+    const H0 = approxLocalHourAngle(phi, delta, offset); // Sign flip for longitude from AA as we take East as positive
+
+    let m0 = (alpha - L - Theta0) / 360;
     m0 = normalizeM(m0, datetime.utcOffset());
-    var m = void 0;
+    let m;
+
     if (flag === 'RISE') {
       m = m0 - H0 / 360;
     } else if (flag === 'SET') {
@@ -577,27 +650,30 @@
     } else {
       return false;
     }
-    var counter = 0;
-    var DeltaM = 1;
-    // Repeat if correction is larger than ~9s
+
+    let counter = 0;
+    let DeltaM = 1; // Repeat if correction is larger than ~9s
+
     while (Math.abs(DeltaM) > 0.0001 && counter < 3) {
-      DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$$1, phi, L, m);
+      DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$$1, phi, L, m, offset);
       m += DeltaM;
       counter++;
     }
+
     if (m > 0) {
       suntime.add(Math.floor(m * 3600 * 24 + 0.5), 'seconds');
     } else {
       suntime.subtract(Math.floor(Math.abs(m) * 3600 * 24 + 0.5), 'seconds');
     }
+
     if (roundToNearestMinute) {
       suntime.add(30, 'seconds');
       suntime.second(0);
     }
+
     suntime.tz(timezone);
     return suntime;
   };
-
   /**
    * Returns 06:00/18:00 (07:00/19:00 during DST) if there is no sunrise or sunset
    * on the date. If returnTimeForPNMS is true, otherwise return whether there is
@@ -605,61 +681,94 @@
    * @param {moment} returnDate The calculated time for sunrise or sunset.
    * @param {moment} date The original date from which the event was calculated.
    * @param {int} hour Hour to which the returned datetime should be set.
+   * @param {int} minute Minute to which the returned datetime should be set.
    * @returns {(moment|string)} Time given by parameter 'hour' (+ correction for
    *     DST if applicable) or a string indicating that the location experiences
    *     midnight sun ('MS') or polar night ('PN') on that date.
    */
-  var returnPNMS = function returnPNMS(returnDate, date, hour) {
+
+
+  const returnPNMS = function (returnDate, date, hour, minute = 0) {
     if (returnTimeForPNMS) {
       if (date.isDST()) {
         hour += 1;
       }
-      returnDate.tz(date.tz()).year(date.year()).month(date.month()).date(date.date()).hour(hour).minute(0).second(0);
+
+      returnDate.tz(date.tz()).year(date.year()).month(date.month()).date(date.date()).hour(hour).minute(minute).second(0);
     }
+
     return returnDate;
   };
-
   /**
    * Calculates the approximate local hour angle of the sun at sunrise or sunset.
    * @param {number} phi Latitude (see AA p102 Eq15.1).
    * @param {number} delta Apparent declination of the sun.
+   * @param {number} offset number of degrees below the horizon for the desired
+   *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+   *     astronomical dawn/dusk.
    * @returns {number} Approximate local hour angle.
    */
-  var approxLocalHourAngle = function approxLocalHourAngle(phi, delta) {
-    var cosH0 = (sind(-50 / 60) - sind(phi) * sind(delta)) / (cosd(phi) * cosd(delta));
+
+
+  const approxLocalHourAngle = function (phi, delta, offset) {
+    const cosH0 = (sind(-offset) - sind(phi) * sind(delta)) / (cosd(phi) * cosd(delta));
+
     if (cosH0 < -1) {
       if (returnTimeForPNMS) {
         throw moment.tz('**2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss', 'Europe/London');
       } else {
-        throw 'MS';
+        let special = 'MS';
+
+        if (offset === 6) {
+          special = 'NCD';
+        } else if (offset === 12) {
+          special = 'NND';
+        } else if (offset === 18) {
+          special = 'NAD';
+        }
+
+        throw special;
       }
     } else if (cosH0 > 1) {
       if (returnTimeForPNMS) {
         throw moment.tz('--2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss', 'Europe/London');
       } else {
-        throw 'PN';
+        let special = 'PN';
+
+        if (offset === 6) {
+          special = 'NCD';
+        } else if (offset === 12) {
+          special = 'NND';
+        } else if (offset === 18) {
+          special = 'NAD';
+        }
+
+        throw special;
       }
     }
-    var H0 = rad2deg(Math.acos(cosH0));
+
+    const H0 = rad2deg(Math.acos(cosH0));
     return H0;
   };
-
   /**
    * Normalizes a fractional time of day to be on the correct date.
    * @param {number} m Fractional time of day
    * @param {int} utcOffset Offset in minutes from UTC.
    * @returns {number} m Normalized m.
    */
-  var normalizeM = function normalizeM(m, utcOffset) {
-    var localM = m + utcOffset / 1440;
+
+
+  const normalizeM = function (m, utcOffset) {
+    const localM = m + utcOffset / 1440;
+
     if (localM < 0) {
       return m + 1;
     } else if (localM > 1) {
       return m - 1;
     }
+
     return m;
   };
-
   /**
    * Calculates the correction for the solar transit time (see AA p103).
    * @param {number} T Fractional number of Julian centuries since
@@ -670,15 +779,16 @@
    * @param {number} m Fractional time of day of the event.
    * @returns {number} Currection for the solar transit time.
    */
-  var sunTransitCorrection = function sunTransitCorrection(T, Theta0, DeltaT$$1, L, m) {
-    var theta0 = Theta0 + 360.985647 * m;
-    var n = m + DeltaT$$1 / 864000;
-    var alpha = interpolatedRa(T, n);
-    var H = localHourAngle(theta0, L, alpha);
-    var DeltaM = -H / 360;
+
+
+  const sunTransitCorrection = function (T, Theta0, DeltaT$$1, L, m) {
+    const theta0 = Theta0 + 360.985647 * m;
+    const n = m + DeltaT$$1 / 864000;
+    const alpha = interpolatedRa(T, n);
+    const H = localHourAngle(theta0, L, alpha);
+    const DeltaM = -H / 360;
     return DeltaM;
   };
-
   /**
    * Calculates the correction for the sunrise/sunset time (see AA p103).
    * @param {number} T Fractional number of Julian centuries since
@@ -688,19 +798,23 @@
    * @param {number} phi Latitude.
    * @param {number} L Longitude.
    * @param {number} m Fractional time of day of the event.
+   * @param {number} offset number of degrees below the horizon for the desired
+   *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+   *     astronomical dawn/dusk.
    * @returns {number} Currection for the sunrise/sunset time.
    */
-  var sunRiseSetCorrection = function sunRiseSetCorrection(T, Theta0, DeltaT$$1, phi, L, m) {
-    var theta0 = Theta0 + 360.985647 * m;
-    var n = m + DeltaT$$1 / 864000;
-    var alpha = interpolatedRa(T, n);
-    var delta = interpolatedDec(T, n);
-    var H = localHourAngle(theta0, L, alpha);
-    var h = altitude(phi, delta, H);
-    var DeltaM = (h + 50 / 60) / (360 * cosd(delta) * cosd(phi) * sind(H));
+
+
+  const sunRiseSetCorrection = function (T, Theta0, DeltaT$$1, phi, L, m, offset) {
+    const theta0 = Theta0 + 360.985647 * m;
+    const n = m + DeltaT$$1 / 864000;
+    const alpha = interpolatedRa(T, n);
+    const delta = interpolatedDec(T, n);
+    const H = localHourAngle(theta0, L, alpha);
+    const h = altitude(phi, delta, H);
+    const DeltaM = (h + offset) / (360 * cosd(delta) * cosd(phi) * sind(H));
     return DeltaM;
   };
-
   /**
    * Calculates the local hour angle of the sun (see AA p103).
    * @param {number} theta0 Sidereal time at Greenwhich in degrees.
@@ -708,15 +822,18 @@
    * @param {number} alpha Apparent right ascension of the sun.
    * @returns {number} Local hour angle of the sun.
    */
-  var localHourAngle = function localHourAngle(theta0, L, alpha) {
+
+
+  const localHourAngle = function (theta0, L, alpha) {
     // Signflip for longitude
-    var H = reduceAngle(theta0 + L - alpha);
+    let H = reduceAngle(theta0 + L - alpha);
+
     if (H > 180) {
       H -= 360;
     }
+
     return H;
   };
-
   /**
    * Calculates the altitude of the sun above the horizon (see AA P93 Eq13.6).
    * @param {number} phi Latitude.
@@ -724,11 +841,12 @@
    * @param {number} H Local hour angle of the sun.
    * @returns {number} Altitude of the sun above the horizon.
    */
-  var altitude = function altitude(phi, delta, H) {
-    var h = rad2deg(Math.asin(sind(phi) * sind(delta) + cosd(phi) * cosd(delta) * cosd(H)));
+
+
+  const altitude = function (phi, delta, H) {
+    const h = rad2deg(Math.asin(sind(phi) * sind(delta) + cosd(phi) * cosd(delta) * cosd(H)));
     return h;
   };
-
   /**
    * Interpolates the sun's right ascension (see AA p103).
    * @param {number} T Fractional number of Julian centuries since
@@ -736,16 +854,17 @@
    * @param {number} n Fractional time of day of the event corrected by ΔT.
    * @returns {number} Interpolated right ascension.
    */
-  var interpolatedRa = function interpolatedRa(T, n) {
-    var alpha1 = sunApparentRightAscension(T - 1 / 36525);
-    var alpha2 = sunApparentRightAscension(T);
-    var alpha3 = sunApparentRightAscension(T + 1 / 36525);
-    // I don't understand why the RA has to be interpolated with normalization
+
+
+  const interpolatedRa = function (T, n) {
+    const alpha1 = sunApparentRightAscension(T - 1 / 36525);
+    const alpha2 = sunApparentRightAscension(T);
+    const alpha3 = sunApparentRightAscension(T + 1 / 36525); // I don't understand why the RA has to be interpolated with normalization
     // but the Dec without, but the returned values are wrong otherwise...
-    var alpha = interpolateFromThree(alpha1, alpha2, alpha3, n, true);
+
+    const alpha = interpolateFromThree(alpha1, alpha2, alpha3, n, true);
     return reduceAngle(alpha);
   };
-
   /**
    * Interpolates the sun's declination (see AA p103).
    * @param {number} T Fractional number of Julian centuries since
@@ -753,186 +872,203 @@
    * @param {number} n Fractional time of day of the event corrected by ΔT.
    * @returns {number} Interpolated declination.
    */
-  var interpolatedDec = function interpolatedDec(T, n) {
-    var delta1 = sunApparentDeclination(T - 1 / 36525);
-    var delta2 = sunApparentDeclination(T);
-    var delta3 = sunApparentDeclination(T + 1 / 36525);
-    var delta = interpolateFromThree(delta1, delta2, delta3, n);
+
+
+  const interpolatedDec = function (T, n) {
+    const delta1 = sunApparentDeclination(T - 1 / 36525);
+    const delta2 = sunApparentDeclination(T);
+    const delta3 = sunApparentDeclination(T + 1 / 36525);
+    const delta = interpolateFromThree(delta1, delta2, delta3, n);
     return reduceAngle(delta);
   };
-
   /**
    * Calculates the apparent right ascension of the sun (see AA p165 Eq25.6).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Apparent right ascension of the sun.
    */
-  var sunApparentRightAscension = function sunApparentRightAscension(T) {
-    var Omega = moonAscendingNodeLongitude$2(T);
-    var epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
-    var lambda = sunApparentLongitude(T);
-    var alpha = rad2deg(Math.atan2(cosd(epsilon) * sind(lambda), cosd(lambda)));
+
+
+  const sunApparentRightAscension = function (T) {
+    const Omega = moonAscendingNodeLongitude$2(T);
+    const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
+    const lambda = sunApparentLongitude(T);
+    const alpha = rad2deg(Math.atan2(cosd(epsilon) * sind(lambda), cosd(lambda)));
     return reduceAngle(alpha);
   };
-
   /**
    * Calculates the apparent declination of the sun (see AA p165 Eq25.7).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Apparent declination of the sun.
    */
-  var sunApparentDeclination = function sunApparentDeclination(T) {
-    var Omega = moonAscendingNodeLongitude$2(T);
-    var epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
-    var lambda = sunApparentLongitude(T);
-    var delta = rad2deg(Math.asin(sind(epsilon) * sind(lambda)));
+
+
+  const sunApparentDeclination = function (T) {
+    const Omega = moonAscendingNodeLongitude$2(T);
+    const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
+    const lambda = sunApparentLongitude(T);
+    const delta = rad2deg(Math.asin(sind(epsilon) * sind(lambda)));
     return delta;
   };
-
   /**
    * Calculates the apparent sidereal time at Greenwhich (see AA p88).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Apparent sidereal time at Greenwhich
    */
-  var apparentSiderealTimeGreenwhich = function apparentSiderealTimeGreenwhich(T) {
-    var theta0 = meanSiderealTimeGreenwhich(T);
-    var epsilon = trueObliquityOfEcliptic(T);
-    var DeltaPsi = nutationInLongitude(T);
-    var theta = theta0 + DeltaPsi * cosd(epsilon);
+
+
+  const apparentSiderealTimeGreenwhich = function (T) {
+    const theta0 = meanSiderealTimeGreenwhich(T);
+    const epsilon = trueObliquityOfEcliptic(T);
+    const DeltaPsi = nutationInLongitude(T);
+    const theta = theta0 + DeltaPsi * cosd(epsilon);
     return reduceAngle(theta);
   };
-
   /**
    * Calculates the mean sidereal time at Greenwhich (see AA p88 Eq12.4).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Mean sidereal time at Greenwhich
    */
-  var meanSiderealTimeGreenwhich = function meanSiderealTimeGreenwhich(T) {
-    var JD2000 = T * 36525;
-    var theta0 = 280.46061837 + 360.98564736629 * JD2000 + 0.000387933 * T * T - T * T * T / 38710000;
+
+
+  const meanSiderealTimeGreenwhich = function (T) {
+    const JD2000 = T * 36525;
+    const theta0 = 280.46061837 + 360.98564736629 * JD2000 + 0.000387933 * T * T - T * T * T / 38710000;
     return theta0;
   };
-
   /**
    * Calculates the true obliquity of the ecliptic (see AA p147).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} True obliquity of the ecliptic.
    */
-  var trueObliquityOfEcliptic = function trueObliquityOfEcliptic(T) {
-    var epsilon0 = meanObliquityOfEcliptic$1(T);
-    var DeltaEpsilon = nutationInObliquity(T);
-    var epsilon = epsilon0 + DeltaEpsilon;
+
+
+  const trueObliquityOfEcliptic = function (T) {
+    const epsilon0 = meanObliquityOfEcliptic$1(T);
+    const DeltaEpsilon = nutationInObliquity(T);
+    const epsilon = epsilon0 + DeltaEpsilon;
     return epsilon;
   };
-
   /**
    * Calculates the mean obliquity of the ecliptic (see AA p147 Eq 22.3).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Mean obliquity of the ecliptic.
    */
-  var meanObliquityOfEcliptic$1 = function meanObliquityOfEcliptic$$1(T) {
-    var U = T / 100;
-    var epsilon0 = polynomial(U, meanObliquityOfEcliptic);
+
+
+  const meanObliquityOfEcliptic$1 = function (T) {
+    const U = T / 100;
+    const epsilon0 = polynomial(U, meanObliquityOfEcliptic);
     return epsilon0;
   };
-
   /**
    * Calculates the apparent longitude of the sun (see AA p164).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Apparent longitude of the sun.
    */
-  var sunApparentLongitude = function sunApparentLongitude(T) {
-    var Sol = sunTrueLongitude(T);
-    var Omega = moonAscendingNodeLongitude$2(T);
-    var lambda = Sol - 0.00569 - 0.00478 * sind(Omega);
+
+
+  const sunApparentLongitude = function (T) {
+    const Sol = sunTrueLongitude(T);
+    const Omega = moonAscendingNodeLongitude$2(T);
+    const lambda = Sol - 0.00569 - 0.00478 * sind(Omega);
     return lambda;
   };
-
   /**
    * Calculates the true longitude of the sun (see AA p164).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} True longitude of the sun.
    */
-  var sunTrueLongitude = function sunTrueLongitude(T) {
-    var L0 = sunMeanLongitude$1(T);
-    var C = sunEquationOfCenter(T);
-    var Sol = L0 + C;
+
+
+  const sunTrueLongitude = function (T) {
+    const L0 = sunMeanLongitude$1(T);
+    const C = sunEquationOfCenter(T);
+    const Sol = L0 + C;
     return Sol;
   };
-
   /**
    * Calculates the equation of center of the sun (see AA p164).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Equation of center of the sun.
    */
-  var sunEquationOfCenter = function sunEquationOfCenter(T) {
-    var M = sunMeanAnomaly$2(T);
-    var C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * sind(M) + (0.019993 - 0.000101 * T) * sind(2 * M) + 0.000290 * sind(3 * M);
+
+
+  const sunEquationOfCenter = function (T) {
+    const M = sunMeanAnomaly$2(T);
+    const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * sind(M) + (0.019993 - 0.000101 * T) * sind(2 * M) + 0.000290 * sind(3 * M);
     return C;
   };
-
   /**
    * Calculates the nutation in longitude of the sun (see AA p144ff).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Nutation in longitude of the sun.
    */
-  var nutationInLongitude = function nutationInLongitude(T) {
-    var D = moonMeanElongation$1(T);
-    var M = sunMeanAnomaly$2(T);
-    var MPrime = moonMeanAnomaly$2(T);
-    var F = moonArgumentOfLatitude$2(T);
-    var Omega = moonAscendingNodeLongitude$2(T);
-    var DeltaPsi = 0;
-    var sineArg = void 0;
-    for (var i = 0; i < 63; i++) {
+
+
+  const nutationInLongitude = function (T) {
+    const D = moonMeanElongation$1(T);
+    const M = sunMeanAnomaly$2(T);
+    const MPrime = moonMeanAnomaly$2(T);
+    const F = moonArgumentOfLatitude$2(T);
+    const Omega = moonAscendingNodeLongitude$2(T);
+    let DeltaPsi = 0;
+    let sineArg;
+
+    for (let i = 0; i < 63; i++) {
       sineArg = nutations[i][0] * D + nutations[i][1] * M + nutations[i][2] * MPrime + nutations[i][3] * F + nutations[i][4] * Omega;
       DeltaPsi += (nutations[i][5] + nutations[i][6] * T) * sind(sineArg);
     }
+
     DeltaPsi /= 36000000;
     return DeltaPsi;
   };
-
   /**
    * Calculates the nutation in obliquity of the sun (see AA p144ff).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Nutation in obliquity of the sun.
    */
-  var nutationInObliquity = function nutationInObliquity(T) {
-    var D = moonMeanElongation$1(T);
-    var M = sunMeanAnomaly$2(T);
-    var MPrime = moonMeanAnomaly$2(T);
-    var F = moonArgumentOfLatitude$2(T);
-    var Omega = moonAscendingNodeLongitude$2(T);
-    var DeltaEpsilon = 0;
-    var cosArg = void 0;
-    for (var i = 0; i < 63; i++) {
+
+
+  const nutationInObliquity = function (T) {
+    const D = moonMeanElongation$1(T);
+    const M = sunMeanAnomaly$2(T);
+    const MPrime = moonMeanAnomaly$2(T);
+    const F = moonArgumentOfLatitude$2(T);
+    const Omega = moonAscendingNodeLongitude$2(T);
+    let DeltaEpsilon = 0;
+    let cosArg;
+
+    for (let i = 0; i < 63; i++) {
       cosArg = nutations[i][0] * D + nutations[i][1] * M + nutations[i][2] * MPrime + nutations[i][3] * F + nutations[i][4] * Omega;
       DeltaEpsilon += (nutations[i][7] + nutations[i][8] * T) * cosd(cosArg);
     }
+
     DeltaEpsilon /= 36000000;
     return DeltaEpsilon;
   };
-
   /**
    * Calculates the argument of latitude of the moon (see AA p144).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Argument of latitude of the moon.
    */
-  var moonArgumentOfLatitude$2 = function moonArgumentOfLatitude(T) {
-    var F = polynomial(T, moonArgumentOfLatitude$1);
+
+
+  const moonArgumentOfLatitude$2 = function (T) {
+    const F = polynomial(T, moonArgumentOfLatitude$1);
     return reduceAngle(F);
   };
-
   /**
    * Calculates the longitude of the ascending node of the Moon's mean orbit on
    * the ecliptic, measured from the mean equinox of the datea (see AA p144).
@@ -940,44 +1076,48 @@
    *     2000-01-01T12:00:00Z.
    * @returns {number} Longitude of the asc. node of the moon's mean orbit.
    */
-  var moonAscendingNodeLongitude$2 = function moonAscendingNodeLongitude(T) {
-    var Omega = polynomial(T, moonAscendingNodeLongitude$1);
+
+
+  const moonAscendingNodeLongitude$2 = function (T) {
+    const Omega = polynomial(T, moonAscendingNodeLongitude$1);
     return reduceAngle(Omega);
   };
-
   /**
    * Calculates the mean anomaly of the moon (see AA p144).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Mean anomaly of the moon.
    */
-  var moonMeanAnomaly$2 = function moonMeanAnomaly(T) {
-    var MPrime = polynomial(T, moonMeanAnomaly$1);
+
+
+  const moonMeanAnomaly$2 = function (T) {
+    const MPrime = polynomial(T, moonMeanAnomaly$1);
     return reduceAngle(MPrime);
   };
-
   /**
    * Calculates the mean elongation of the moon from the sun (see AA p144).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Mean elongation of the moon from the sun.
    */
-  var moonMeanElongation$1 = function moonMeanElongation$$1(T) {
-    var D = polynomial(T, moonMeanElongation);
+
+
+  const moonMeanElongation$1 = function (T) {
+    const D = polynomial(T, moonMeanElongation);
     return reduceAngle(D);
   };
-
   /**
    * Calculates the mean anomaly of the sun (see AA p144).
    * @param {number} T Fractional number of Julian centuries since
    *     2000-01-01T12:00:00Z.
    * @returns {number} Mean anomaly of the sun.
    */
-  var sunMeanAnomaly$2 = function sunMeanAnomaly(T) {
-    var M = polynomial(T, sunMeanAnomaly$1);
+
+
+  const sunMeanAnomaly$2 = function (T) {
+    const M = polynomial(T, sunMeanAnomaly$1);
     return reduceAngle(M);
   };
-
   /**
    * Calculates the mean longitude of the sun referred to the mean equinox of the
    * date (see AA p163).
@@ -986,34 +1126,38 @@
    * @returns {number} Mean longitude of the sun referred to the mean equinox of
    *     the date.
    */
-  var sunMeanLongitude$1 = function sunMeanLongitude$$1(T) {
-    var L0 = polynomial(T, sunMeanLongitude);
+
+
+  const sunMeanLongitude$1 = function (T) {
+    const L0 = polynomial(T, sunMeanLongitude);
     return reduceAngle(L0);
   };
 
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-  var roundToNearestMinute = false;
-  var returnTimeForPNMS = false;
-  var dateFormatKeys = { '**': '‡', '--': '†' };
-
+  let roundToNearestMinute = false;
+  let returnTimeForPNMS = false;
+  let dateFormatKeys = {
+    '**': '‡',
+    '--': '†'
+  };
   /**
    * Sets options (roundToNearestMinute, returnTimeForPNMS, dateFormatKey) for the
    * module.
    * @param {object} options Options to be set.
    */
-  var options = function options(_options) {
-    if (typeof _options.roundToNearestMinute === 'boolean') {
-      roundToNearestMinute = _options.roundToNearestMinute;
+
+  const options = function (options) {
+    if (typeof options.roundToNearestMinute === 'boolean') {
+      roundToNearestMinute = options.roundToNearestMinute;
     }
-    if (typeof _options.returnTimeForPNMS === 'boolean') {
-      returnTimeForPNMS = _options.returnTimeForPNMS;
+
+    if (typeof options.returnTimeForPNMS === 'boolean') {
+      returnTimeForPNMS = options.returnTimeForPNMS;
     }
-    if (_typeof(_options.dateFormatKeys) === 'object') {
-      dateFormatKeys = _options.dateFormatKeys;
+
+    if (typeof options.dateFormatKeys === 'object') {
+      dateFormatKeys = options.dateFormatKeys;
     }
   };
-
   /**
    * Uses the extra information encoded into the moment object for dates without
    * a sunrise or sunset if returnTimeForPNMS is true to mark the output string.
@@ -1021,15 +1165,18 @@
    * @param {string} formatString Valid moment format string.
    * @returns {string} Formatted string with marker appended.
    */
-  var formatCI = function formatCI(datetime, formatString) {
-    var customKey = datetime.creationData().input.slice(0, 2);
-    var datestring = datetime.format(formatString);
+
+
+  const formatCI = function (datetime, formatString) {
+    const customKey = datetime.creationData().input.slice(0, 2);
+    let datestring = datetime.format(formatString);
+
     if (dateFormatKeys[customKey]) {
       datestring += dateFormatKeys[customKey];
     }
+
     return datestring;
   };
-
   /**
    * Calculates sunrise on the provided date.
    * @param {moment} datetime Datetime for which sunrise is calculated. Should
@@ -1041,16 +1188,19 @@
    *     location experiences midnight sun ('MS') or polar night ('PN') on that
    *     date (unless returnTimeForPNMS is true).
    */
-  var sunrise = function sunrise(datetime, phi, L) {
-    var sunrise = void 0;
+
+
+  const sunrise = function (datetime, phi, L) {
+    let sunrise;
+
     try {
       sunrise = sunRiseSet(datetime, phi, L, 'RISE');
     } catch (err) {
       return returnPNMS(err, datetime, 6);
     }
+
     return sunrise;
   };
-
   /**
    * Calculates sunset on the provided date.
    * @param {moment} datetime Datetime for which sunset is calculated. Should
@@ -1062,16 +1212,163 @@
    *     location experiences midnight sun ('MS') or polar night ('PN') on that
    *     date (unless returnTimeForPNMS is true).
    */
-  var sunset = function sunset(datetime, phi, L) {
-    var sunset = void 0;
+
+
+  const sunset = function (datetime, phi, L) {
+    let sunset;
+
     try {
       sunset = sunRiseSet(datetime, phi, L, 'SET');
     } catch (err) {
       return returnPNMS(err, datetime, 18);
     }
+
     return sunset;
   };
+  /**
+   * Calculates civil dawn (sun 6° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which civil dawn is calculated. Should
+   *     always contain a timezone or be in UTC, lone UTC offsets might lead to
+   *     unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of civil dawn or a string ('NCD') indicating
+   *     that the location does not experience civil dawn on that date (unless
+   *     returnTimeForPNMS is true).
+   */
 
+
+  const civilDawn = function (datetime, phi, L) {
+    let civilDawn;
+
+    try {
+      civilDawn = sunRiseSet(datetime, phi, L, 'RISE', 6);
+    } catch (err) {
+      return returnPNMS(err, datetime, 5, 30);
+    }
+
+    return civilDawn;
+  };
+  /**
+   * Calculates civil dusk (sun 6° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which civil dusk is calculated. Should
+   *     always contain a timezone or be in UTC, lone UTC offsets might lead to
+   *     unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of civil dusk or a string ('NCD') indicating
+   *     that the location does not experience civil dusk on that date (unless
+   *     returnTimeForPNMS is true).
+   */
+
+
+  const civilDusk = function (datetime, phi, L) {
+    let civilDusk;
+
+    try {
+      civilDusk = sunRiseSet(datetime, phi, L, 'SET', 6);
+    } catch (err) {
+      return returnPNMS(err, datetime, 18, 30);
+    }
+
+    return civilDusk;
+  };
+  /**
+   * Calculates nautical dawn (sun 12° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which nautical dawn is calculated.
+   *     Should always contain a timezone or be in UTC, lone UTC offsets might
+   *     lead to unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of nautical dawn or a string ('NND')
+   *     indicating that the location does not experience nautical dawn on that
+   *     date (unless returnTimeForPNMS is true).
+   */
+
+
+  const nauticalDawn = function (datetime, phi, L) {
+    let nauticalDawn;
+
+    try {
+      nauticalDawn = sunRiseSet(datetime, phi, L, 'RISE', 12);
+    } catch (err) {
+      return returnPNMS(err, datetime, 5);
+    }
+
+    return nauticalDawn;
+  };
+  /**
+   * Calculates nautical dusk (sun 12° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which nautical dusk is calculated.
+   *     Should always contain a timezone or be in UTC, lone UTC offsets might
+   *     lead to unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of nautical dusk or a string ('NND')
+   *     indicating that the location does not experience nautical dusk on that
+   *     date (unless returnTimeForPNMS is true).
+   */
+
+
+  const nauticalDusk = function (datetime, phi, L) {
+    let nauticalDusk;
+
+    try {
+      nauticalDusk = sunRiseSet(datetime, phi, L, 'SET', 12);
+    } catch (err) {
+      return returnPNMS(err, datetime, 19);
+    }
+
+    return nauticalDusk;
+  };
+  /**
+   * Calculates astronomical dawn (sun 18° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which astronomical dawn is calculated.
+   *     Should always contain a timezone or be in UTC, lone UTC offsets might
+   *     lead to unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of astronomical dawn or a string ('NAD')
+   *     indicating that the location does not experience astronomical dawn on
+   *     that date (unless returnTimeForPNMS is true).
+   */
+
+
+  const astronomicalDawn = function (datetime, phi, L) {
+    let astronomicalDawn;
+
+    try {
+      astronomicalDawn = sunRiseSet(datetime, phi, L, 'RISE', 18);
+    } catch (err) {
+      return returnPNMS(err, datetime, 4, 30);
+    }
+
+    return astronomicalDawn;
+  };
+  /**
+   * Calculates astronomical dusk (sun 18° below horizon) on the provided date.
+   * @param {moment} datetime Datetime for which astronomical dusk is calculated.
+   *     Should always contain a timezone or be in UTC, lone UTC offsets might
+   *     lead to unexpected behaviour.
+   * @param {number} phi Latitude of target location.
+   * @param {number} L longitude of target location.
+   * @returns {(moment|string)} Time of astronomical dusk or a string ('NAD')
+   *     indicating that the location does not experience astronomical dusk on
+   *     that date (unless returnTimeForPNMS is true).
+   */
+
+
+  const astronomicalDusk = function (datetime, phi, L) {
+    let astronomicalDusk;
+
+    try {
+      astronomicalDusk = sunRiseSet(datetime, phi, L, 'SET', 18);
+    } catch (err) {
+      return returnPNMS(err, datetime, 19, 30);
+    }
+
+    return astronomicalDusk;
+  };
   /**
    * Calculates solar noon on the provided date.
    * @param {moment} datetime Datetime for which solar noon is calculated. Should
@@ -1080,11 +1377,12 @@
    * @param {number} L longitude of target location.
    * @returns {moment} Time of solar noon at the given longitude.
    */
-  var solarNoon = function solarNoon(datetime, L) {
-    var transit = sunTransit(datetime, L);
+
+
+  const solarNoon = function (datetime, L) {
+    const transit = sunTransit(datetime, L);
     return transit;
   };
-
   /**
    * Calculates all moons of the given phase that occur within the given
    * Gregorian calendar year.
@@ -1094,40 +1392,50 @@
    * @param {string} timezone Optional: IANA timezone string.
    * @returns {array} Array of moment objects for moons of the given phase.
    */
-  var yearMoonPhases = function yearMoonPhases(year, phase, timezone) {
-    var yearBegin = moment([year]);
-    var yearEnd = moment([year + 1]);
-    // this will give us k for the first new moon of the year or earlier
-    var k = Math.floor(approxK(yearBegin)) - 1;
-    // taking 15 events will make sure we catch every event in the year
-    var phaseTimes = [];
-    var JDE = void 0;
-    var moonDatetime = void 0;
-    var DeltaT$$1 = void 0;
-    for (var i = 0; i < 15; i++) {
-      JDE = truePhase(k, phase);
-      // we pretend it's JD and not JDE
-      moonDatetime = JDToDatetime(JDE);
-      // now use that to calculate deltaT
+
+
+  const yearMoonPhases = function (year, phase, timezone) {
+    const yearBegin = moment([year]);
+    const yearEnd = moment([year + 1]); // this will give us k for the first new moon of the year or earlier
+
+    let k = Math.floor(approxK(yearBegin)) - 1; // taking 15 events will make sure we catch every event in the year
+
+    const phaseTimes = [];
+    let JDE;
+    let moonDatetime;
+    let DeltaT$$1;
+
+    for (let i = 0; i < 15; i++) {
+      JDE = truePhase(k, phase); // we pretend it's JD and not JDE
+
+      moonDatetime = JDToDatetime(JDE); // now use that to calculate deltaT
+
       DeltaT$$1 = DeltaT(moonDatetime);
+
       if (DeltaT$$1 > 0) {
         moonDatetime.subtract(Math.abs(DeltaT$$1), 'seconds');
       } else {
         moonDatetime.add(Math.abs(DeltaT$$1), 'seconds');
       }
+
       if (roundToNearestMinute) {
         moonDatetime.add(30, 'seconds');
         moonDatetime.second(0);
       }
+
       if (typeof timezone === 'undefined') {
         timezone = 'UTC';
       }
+
       moonDatetime.tz(timezone);
+
       if (moonDatetime.isAfter(yearBegin) && moonDatetime.isBefore(yearEnd)) {
         phaseTimes.push(moonDatetime);
       }
+
       k++;
     }
+
     return phaseTimes;
   };
 
@@ -1136,11 +1444,97 @@
     formatCI: formatCI,
     sunrise: sunrise,
     sunset: sunset,
+    civilDawn: civilDawn,
+    civilDusk: civilDusk,
+    nauticalDawn: nauticalDawn,
+    nauticalDusk: nauticalDusk,
+    astronomicalDawn: astronomicalDawn,
+    astronomicalDusk: astronomicalDusk,
     solarNoon: solarNoon,
     yearMoonPhases: yearMoonPhases,
     get roundToNearestMinute () { return roundToNearestMinute; },
     get returnTimeForPNMS () { return returnTimeForPNMS; }
   });
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  function _defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  function _createClass(Constructor, protoProps, staticProps) {
+    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) _defineProperties(Constructor, staticProps);
+    return Constructor;
+  }
+
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
+  }
+
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  }
+
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    }
+  }
+
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+
+  function _iterableToArray(iter) {
+    if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  }
+
+  function _iterableToArrayLimit(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"] != null) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
+    }
+
+    return _arr;
+  }
+
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance");
+  }
+
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  }
 
   var month = {
     1: 'Bahá',
@@ -1164,7 +1558,6 @@
     19: '‘Alá’',
     20: 'Ayyám-i-Há'
   };
-
   var monthL = {
     1: 'Splendour',
     2: 'Glory',
@@ -1187,7 +1580,6 @@
     19: 'Loftiness',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay = {
     1: 'Naw-Rúz',
     2: 'First day of Riḍván',
@@ -1200,9 +1592,8 @@
     9: 'Birth of Bahá’u’lláh',
     10: 'Day of the Covenant',
     11: 'Ascension of ‘Abdu’l-Bahá'
-  };
+  }; // CAREFUL: Numbering corresponds to Badí' week, i.e. 1 is Jalál (-> Saturday)
 
-  // CAREFUL: Numbering corresponds to Badí' week, i.e. 1 is Jalál (-> Saturday)
   var weekday = {
     1: 'Jalál',
     2: 'Jamál',
@@ -1212,7 +1603,6 @@
     6: 'Istijlál',
     7: 'Istiqlál'
   };
-
   var weekdayAbbr3 = {
     1: 'Jal',
     2: 'Jam',
@@ -1222,7 +1612,6 @@
     6: 'Isj',
     7: 'Isq'
   };
-
   var weekdayAbbr2 = {
     1: 'Jl',
     2: 'Jm',
@@ -1232,7 +1621,6 @@
     6: 'Ij',
     7: 'Iq'
   };
-
   var weekdayL = {
     1: 'Glory',
     2: 'Beauty',
@@ -1242,7 +1630,6 @@
     6: 'Majesty',
     7: 'Independence'
   };
-
   var yearInVahid = {
     1: 'Alif',
     2: 'Bá’',
@@ -1264,7 +1651,6 @@
     18: 'Abhá',
     19: 'Váḥid'
   };
-
   var vahid = 'Váḥid';
   var kulliShay = 'Kull-i-_Sh_ay’';
   var BE = 'B.E.';
@@ -1311,9 +1697,7 @@
     19: 'العلاء',
     20: 'ايام الهاء'
   };
-
   var monthL$1 = month$1;
-
   var holyDay$1 = {
     1: 'عيد النَّيروز',
     2: 'اليوم الأول من عيد الرِّضوان',
@@ -1327,7 +1711,6 @@
     10: 'يوم الميثاق',
     11: 'يوم صعود حضرة عبد البهاء'
   };
-
   var weekday$1 = {
     1: 'الجلال',
     2: 'الجمال',
@@ -1337,7 +1720,6 @@
     6: 'الأستجلال',
     7: 'الاستقلال'
   };
-
   var weekdayAbbr3$1 = {
     1: 'جلا',
     2: 'جما',
@@ -1347,7 +1729,6 @@
     6: 'اسج',
     7: 'اسق'
   };
-
   var weekdayAbbr2$1 = {
     1: 'جل',
     2: 'جم',
@@ -1357,7 +1738,6 @@
     6: 'اج',
     7: 'اق'
   };
-
   var weekdayL$1 = {
     1: 'الجلال',
     2: 'الجمال',
@@ -1367,7 +1747,6 @@
     6: 'الأستجلال',
     7: 'أستقلال'
   };
-
   var yearInVahid$1 = {
     1: 'ألف',
     2: 'باء',
@@ -1389,7 +1768,6 @@
     18: 'ابهى',
     19: 'واحد'
   };
-
   var vahid$1 = 'واحد';
   var kulliShay$1 = 'كل شيء';
   var BE$1 = 'بديع';
@@ -1436,7 +1814,6 @@
     19: 'Erhabenheit',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$2 = {
     1: 'Naw-Rúz',
     2: 'Erster Riḍván-Tag',
@@ -1450,7 +1827,6 @@
     10: 'Tag des Bundes',
     11: 'Hinscheiden ‘Abdu’l-Bahás'
   };
-
   var weekdayL$2 = {
     1: 'Ruhm',
     2: 'Schönheit',
@@ -1460,7 +1836,6 @@
     6: 'Majestät',
     7: 'Unabhängigkeit'
   };
-
   var BE$2 = 'B.E.';
   var badiCalendar$2 = 'Badí‘ Kalender';
 
@@ -1494,7 +1869,6 @@
     19: 'Sublimidad',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$3 = {
     1: 'Naw-Rúz',
     2: 'Primer día de Riḍván',
@@ -1508,7 +1882,6 @@
     10: 'Día de la Alianza',
     11: 'Fallecimiento de ‘Abdu’l-Bahá'
   };
-
   var weekdayL$3 = {
     1: 'Gloria',
     2: 'Belleza',
@@ -1518,7 +1891,6 @@
     6: 'Majestuosidad',
     7: 'Independencia'
   };
-
   var BE$3 = 'E.B.';
   var badiCalendar$3 = 'Calendario Badí‘';
 
@@ -1552,7 +1924,6 @@
     19: 'العلاء',
     20: 'ايام الهاء'
   };
-
   var monthL$4 = {
     1: 'بهاء',
     2: 'جلال',
@@ -1575,7 +1946,6 @@
     19: 'علاء',
     20: 'ايام ها'
   };
-
   var holyDay$4 = {
     1: 'عید نوروز',
     2: 'روز اوّل عید رضوان',
@@ -1589,7 +1959,6 @@
     10: 'روز عهد و میثاق',
     11: 'صعود حضرت عبدالبها'
   };
-
   var weekday$2 = {
     1: 'یوم الجلال',
     2: 'یوم الجمال',
@@ -1599,7 +1968,6 @@
     6: 'یوم الأستجلال',
     7: 'یوم الاستقلال'
   };
-
   var weekdayAbbr3$2 = {
     1: 'جلا',
     2: 'جما',
@@ -1609,7 +1977,6 @@
     6: 'اسج',
     7: 'اسق'
   };
-
   var weekdayAbbr2$2 = {
     1: 'جل',
     2: 'جم',
@@ -1619,7 +1986,6 @@
     6: 'اج',
     7: 'اق'
   };
-
   var weekdayL$4 = {
     1: 'جلال',
     2: 'جمال',
@@ -1629,7 +1995,6 @@
     6: 'استجلال',
     7: 'استقلال'
   };
-
   var yearInVahid$2 = {
     1: 'ألف',
     2: 'باء',
@@ -1651,7 +2016,6 @@
     18: 'ابهى',
     19: 'واحد'
   };
-
   var vahid$2 = 'واحد';
   var kulliShay$2 = 'كل شيء';
   var BE$4 = 'بديع';
@@ -1698,7 +2062,6 @@
     19: 'Élévation',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$5 = {
     1: 'Naw-Rúz',
     2: 'Premier jour de Riḍván',
@@ -1712,7 +2075,6 @@
     10: 'Jour de l’Alliance',
     11: 'Ascension de ‘Abdu’l-Bahá'
   };
-
   var weekdayL$5 = {
     1: 'Gloire',
     2: 'Beauté',
@@ -1722,7 +2084,6 @@
     6: 'Majesté',
     7: 'Indépendance'
   };
-
   var BE$5 = 'E.B.';
   var badiCalendar$5 = 'Calendrier Badí‘';
 
@@ -1756,7 +2117,6 @@
     19: 'Cēlums',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$6 = {
     1: 'Naw-Rúz',
     2: 'Riḍván pirmā diena',
@@ -1770,7 +2130,6 @@
     10: 'Derības diena',
     11: '‘Abdu’l-Bahá Debessbraukšana'
   };
-
   var weekdayL$6 = {
     1: 'Slava',
     2: 'Skaistums',
@@ -1780,7 +2139,6 @@
     6: 'Majestātiskums',
     7: 'Neatkarība'
   };
-
   var BE$6 = 'B.Ē.';
   var badiCalendar$6 = 'Badí‘ kalendārs';
 
@@ -1814,7 +2172,6 @@
     19: 'Verhevenheid',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$7 = {
     1: 'Naw-Rúz',
     2: 'Eerste dag van Riḍván',
@@ -1828,7 +2185,6 @@
     10: 'Dag van het Verbond',
     11: 'Heengaan van ‘Abdu’l-Bahá'
   };
-
   var weekdayL$7 = {
     1: 'Heerlijkheid',
     2: 'Schoonheid',
@@ -1838,7 +2194,6 @@
     6: 'Majesteit',
     7: 'Onafhankelijkheid'
   };
-
   var BE$7 = 'B.E.';
   var badiCalendar$7 = 'Badí‘-Kalender';
 
@@ -1872,7 +2227,6 @@
     19: 'Sublimidade',
     20: 'Ayyám-i-Há'
   };
-
   var holyDay$8 = {
     1: 'Naw-Rúz',
     2: '1º dia do Riḍván',
@@ -1886,7 +2240,6 @@
     10: 'Dia do Convênio',
     11: 'Ascensão de ‘Abdu’l-Bahá'
   };
-
   var weekdayL$8 = {
     1: 'Glória',
     2: 'Beleza',
@@ -1896,7 +2249,6 @@
     6: 'Majestade',
     7: 'Independência'
   };
-
   var BE$8 = 'E.B.';
   var badiCalendar$8 = 'Calendário Badí‘';
 
@@ -1930,7 +2282,6 @@
     19: '‘Алā’',
     20: 'Аййāм-и Хā'
   };
-
   var monthL$9 = {
     1: 'Великолепие',
     2: 'Слава',
@@ -1953,7 +2304,6 @@
     19: 'Возвышенность',
     20: 'Аййāм-и Хā'
   };
-
   var holyDay$9 = {
     1: 'Нау-Рӯз',
     2: '1-й день Рид̣вāна',
@@ -1967,7 +2317,6 @@
     10: 'День Завета',
     11: 'Вознесение Абдул-Баха'
   };
-
   var weekday$3 = {
     1: 'Джалāл',
     2: 'Джамāл',
@@ -1977,7 +2326,6 @@
     6: 'Истиджлāл',
     7: 'Истик̣лāл'
   };
-
   var weekdayAbbr3$3 = {
     1: 'Джл',
     2: 'Джм',
@@ -1987,7 +2335,6 @@
     6: 'Исд',
     7: 'Иск̣'
   };
-
   var weekdayAbbr2$3 = {
     1: 'Дл',
     2: 'Дм',
@@ -1997,7 +2344,6 @@
     6: 'Ид',
     7: 'Ик̣'
   };
-
   var weekdayL$9 = {
     1: 'Слава',
     2: 'Красота',
@@ -2007,7 +2353,6 @@
     6: 'Величие',
     7: 'Независимость'
   };
-
   var yearInVahid$3 = {
     1: 'Алиф',
     2: 'Бā’',
@@ -2029,7 +2374,6 @@
     18: 'Абхā',
     19: 'Вāх̣ид'
   };
-
   var vahid$3 = 'Вāх̣ид';
   var kulliShay$3 = 'кулл-и шай’';
   var BE$9 = 'Э.Б.';
@@ -2050,7 +2394,7 @@
     badiCalendar: badiCalendar$9
   });
 
-  var monthL$10 = {
+  var monthL$a = {
     1: 'Praktfullhet',
     2: 'Härlighet',
     3: 'Skönhet',
@@ -2072,8 +2416,7 @@
     19: 'Upphöjdhet',
     20: 'Ayyám-i-Há'
   };
-
-  var holyDay$10 = {
+  var holyDay$a = {
     1: 'Naw-Rúz',
     2: 'Första Riḍván',
     3: 'Nionde Riḍván',
@@ -2086,8 +2429,7 @@
     10: 'Förbundets dag',
     11: '‘Abdu’l-Bahás Bortgång'
   };
-
-  var weekdayL$10 = {
+  var weekdayL$a = {
     1: 'Härlighet',
     2: 'Skönhet',
     3: 'Fullkomlighet',
@@ -2096,16 +2438,15 @@
     6: 'Majestät',
     7: 'Oberoende'
   };
-
-  var BE$10 = 'B.E.';
-  var badiCalendar$10 = 'Badí‘kalendern';
+  var BE$a = 'B.E.';
+  var badiCalendar$a = 'Badí‘kalendern';
 
   var sv = /*#__PURE__*/Object.freeze({
-    monthL: monthL$10,
-    holyDay: holyDay$10,
-    weekdayL: weekdayL$10,
-    BE: BE$10,
-    badiCalendar: badiCalendar$10
+    monthL: monthL$a,
+    holyDay: holyDay$a,
+    weekdayL: weekdayL$a,
+    BE: BE$a,
+    badiCalendar: badiCalendar$a
   });
 
   var month$4 = {
@@ -2130,8 +2471,7 @@
     19: '阿拉',
     20: '阿亚米哈'
   };
-
-  var monthL$11 = {
+  var monthL$b = {
     1: '耀',
     2: '辉',
     3: '美',
@@ -2153,8 +2493,7 @@
     19: '崇',
     20: '哈之日'
   };
-
-  var holyDay$11 = {
+  var holyDay$b = {
     1: '诺鲁孜节',
     2: '里兹万节第一日',
     3: '里兹万节第九日',
@@ -2167,7 +2506,6 @@
     10: '圣约日',
     11: '阿博都-巴哈升天日'
   };
-
   var weekday$4 = {
     1: '贾拉勒',
     2: '贾迈勒',
@@ -2177,7 +2515,6 @@
     6: '伊斯提杰拉勒',
     7: '伊斯提格拉勒'
   };
-
   var weekdayAbbr3$4 = {
     1: '贾拉勒',
     2: '贾迈勒',
@@ -2187,7 +2524,6 @@
     6: '伊斯杰',
     7: '伊斯格'
   };
-
   var weekdayAbbr2$4 = {
     1: '贾拉',
     2: '贾迈',
@@ -2197,8 +2533,7 @@
     6: '伊杰',
     7: '伊格'
   };
-
-  var weekdayL$11 = {
+  var weekdayL$b = {
     1: '辉日',
     2: '美日',
     3: '完日',
@@ -2207,7 +2542,6 @@
     6: '威日',
     7: '独日'
   };
-
   var yearInVahid$4 = {
     1: '艾利夫',
     2: '巴',
@@ -2229,38 +2563,36 @@
     18: '阿卜哈',
     19: '瓦希德'
   };
-
   var vahid$4 = '瓦希德';
   var kulliShay$4 = '库里沙伊';
-  var BE$11 = 'BE';
-  var badiCalendar$11 = '巴迪历';
+  var BE$b = 'BE';
+  var badiCalendar$b = '巴迪历';
 
   var zh = /*#__PURE__*/Object.freeze({
     month: month$4,
-    monthL: monthL$11,
-    holyDay: holyDay$11,
+    monthL: monthL$b,
+    holyDay: holyDay$b,
     weekday: weekday$4,
     weekdayAbbr3: weekdayAbbr3$4,
     weekdayAbbr2: weekdayAbbr2$4,
-    weekdayL: weekdayL$11,
+    weekdayL: weekdayL$b,
     yearInVahid: yearInVahid$4,
     vahid: vahid$4,
     kulliShay: kulliShay$4,
-    BE: BE$11,
-    badiCalendar: badiCalendar$11
+    BE: BE$b,
+    badiCalendar: badiCalendar$b
   });
 
-  var monthL$12 = {
+  var monthL$c = {
     1: 'Splendor',
     16: 'Honor'
   };
 
   var en_us = /*#__PURE__*/Object.freeze({
-    monthL: monthL$12
+    monthL: monthL$c
   });
 
   /* eslint-disable dot-notation, line-comment-position, camelcase, sort-imports */
-
   var badiLocale = {};
   badiLocale['en'] = en;
   badiLocale['ar'] = ar;
@@ -2275,12 +2607,12 @@
   badiLocale['sv'] = sv;
   badiLocale['zh'] = zh;
   badiLocale['en-us'] = en_us;
-
   /**
    * Set default language for localization. If the language doesn't exist,
    * nothing is changed.
    * @param {string} language that should be set as default
    */
+
   var setDefaultLanguage = function setDefaultLanguage(language) {
     if (badiLocale[language] === undefined) {
       // eslint-disable-next-line no-console
@@ -2291,11 +2623,11 @@
   };
 
   var underlineFormat = 'css';
-
   /**
    * Set underline format for locale items that include underlined characters.
    * @param {'css'|'u'|'diacritic'} format that should be used for underlining
    */
+
   var setUnderlineFormat = function setUnderlineFormat(format) {
     if (['css', 'u', 'diacritic'].indexOf(format) > -1) {
       underlineFormat = format;
@@ -2307,83 +2639,13 @@
 
   var badiYears = ['l4da', 'k4ci', 'k5c7', 'l4d6', 'l4ce', 'k4c4', 'k5d4', 'l4cb', 'l4c1', 'k4cj', 'k5c8', 'l4d7', 'l4cf', 'k4c5', 'k4d5', 'k5ce', 'l4c2', 'k4d2', 'k4ca', 'k5da', 'l4ch', 'k4c6', 'k4d6', 'k5cf', 'l4c4', 'k4d4', 'k4cc', 'k5c1', 'l4cj', 'k4c8', 'k4d8', 'k5cg', 'l4c5', 'k4d5', 'k4ce', 'k5c3', 'l4d2', 'k4ca', 'k4d9', 'k5ci', 'l4c6', 'k4d6', 'k4cf', 'k4c4', 'k5d4', 'k4cb', 'k4bj', 'k4cj', 'k5c9', 'k4d8', 'k4cg', 'k4c6', 'k5d6', 'k4cd', 'k4c2', 'k4d2', 'k5ca', 'k4d9', 'k4ci', 'k4c7', 'k5d7', 'k4cf', 'k4c4', 'k4d4', 'k5cc', 'k4bj', 'k4cj', 'k4c9', 'k5d9', 'k4cg', 'k4c6', 'k4d5', 'k5cd', 'k4c2', 'k4d1', 'k4ca', 'k4da', 'j5cj', 'k4c7', 'k4d7', 'k4cf', 'j5c4', 'k4d3', 'k4cb', 'k4c1', 'k5d1', 'l4c9', 'l4d9', 'l4ch', 'k5c6', 'l4d5', 'l4cd', 'l4c2', 'k5d2', 'l4ca', 'l4da', 'l4cj', 'k5c8', 'l4d7', 'l4cf', 'l4c4', 'k5d4', 'l4cb', 'l4c1', 'l4d1', 'k5c9', 'l4d8', 'l4cg', 'l4c5', 'k4d5', 'k5ce', 'l4c2', 'l4d2', 'k4cb', 'k5db', 'l4ci', 'l4c7', 'k4d7', 'k5cf', 'l4c4', 'l4d4', 'k4cc', 'k5c2', 'l4d1', 'l4c9', 'k4d9', 'k5ch', 'l4c5', 'l4d5', 'k4ce', 'k5c3', 'l4d2', 'l4cb', 'k4da', 'k5ci', 'l4c6', 'l4d6', 'k4cf', 'k5c5', 'l4d4', 'l4cc', 'k4c1', 'k4d1', 'k5c9', 'l4d8', 'k4cg', 'k4c6', 'k5d6', 'l4ce', 'k4c3', 'k4d3', 'k5cb', 'l4da', 'k4ci', 'k4c7', 'k5d7', 'l4cf', 'k4c5', 'k4d5', 'k5cd', 'l4c1', 'k4cj', 'k4c9', 'k5d9', 'l4cg', 'k4c6', 'k4d6', 'k5ce', 'l4c3', 'k4d2', 'k4ca', 'k5bj', 'l4ci', 'k4c7', 'k4d7', 'k4cg', 'k5c5', 'k4d4', 'k4cc', 'k4c1', 'k5d1', 'k4c9', 'k4d9', 'k4ch', 'k5c7', 'l4d6', 'l4ce', 'l4c3', 'l5d3', 'l4ca', 'l4da', 'l4cj', 'l5c8', 'l4d7', 'l4cg', 'l4c5', 'l5d4', 'l4cb', 'l4c1', 'l4d1', 'l5ca', 'l4d9', 'l4ch', 'l4c6', 'l5d6', 'l4cd', 'l4c2', 'l4d2', 'l4cb', 'k5c1', 'l4cj', 'l4c8', 'l4d8', 'k5cg', 'l4c4', 'l4d4', 'l4cc', 'k5c2', 'l4d1', 'l4ca', 'l4da', 'k5ci', 'l4c6', 'l4d5', 'l4ce', 'k5c3', 'l4d2', 'l4cb', 'l4db', 'k5cj', 'l4c8', 'l4d7', 'l4cf', 'k5c5', 'l4d4', 'l4cc', 'l4c2', 'k5d2', 'l4c9', 'l4d9', 'l4ch', 'k4c6', 'k5d6', 'l4ce', 'l4c3', 'k4d3', 'k5cc', 'l4db', 'l4cj', 'k4c8', 'k5d8', 'l4cf', 'l4c4', 'k4d5', 'k5cd', 'l4c2', 'l4d2', 'k4ca', 'k5d9', 'l4cg', 'l4c6', 'k4d6', 'k5cf', 'l4c3', 'l4d3', 'k4cb', 'k5bj', 'l4ci', 'l4c7', 'k4d7', 'k5cg', 'l4c5', 'l4d5', 'k4cd', 'k4c2', 'k5d2', 'l4c9', 'k4d9', 'k4ch', 'k5c7', 'l4d6', 'k4cf', 'k4c4', 'k5d4', 'l4cb', 'l4bj', 'l4cj', 'l5c8', 'm4d7', 'l4cg', 'l4c5', 'l5d5', 'm4cc', 'l4c1', 'l4d1', 'l5ca', 'm4d9', 'l4ch', 'l4c7', 'l5d7', 'm4ce', 'l4c3', 'l4d3', 'l5cb', 'm4bi', 'l4ci', 'l4c8', 'l4d8', 'l5ch', 'l4c5', 'l4d5', 'l4cd', 'l5c2', 'l4d1', 'l4c9', 'l4da', 'l5ci', 'l4c7', 'l4d7', 'l4cf', 'l5c4', 'l4d2', 'l4cb', 'l4bj', 'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2', 'l4c9', 'l4da', 'l4ci'];
 
-  var classCallCheck = function (instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var slicedToArray = function () {
-    function sliceIterator(arr, i) {
-      var _arr = [];
-      var _n = true;
-      var _d = false;
-      var _e = undefined;
-
-      try {
-        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-          _arr.push(_s.value);
-
-          if (i && _arr.length === i) break;
-        }
-      } catch (err) {
-        _d = true;
-        _e = err;
-      } finally {
-        try {
-          if (!_n && _i["return"]) _i["return"]();
-        } finally {
-          if (_d) throw _e;
-        }
-      }
-
-      return _arr;
-    }
-
-    return function (arr, i) {
-      if (Array.isArray(arr)) {
-        return arr;
-      } else if (Symbol.iterator in Object(arr)) {
-        return sliceIterator(arr, i);
-      } else {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-    };
-  }();
-
-  var toConsumableArray = function (arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    } else {
-      return Array.from(arr);
-    }
-  };
-
   /**
    * A date in the Badí' calendar.
    */
 
-  var BadiDate = function () {
+  var BadiDate =
+  /*#__PURE__*/
+  function () {
     /**
      * Accepts a number of different sets of arguments for instantiation: JS Date
      * object, moment object, ISO 8601 date string, Badí' date string in the
@@ -2393,7 +2655,8 @@
      * @param {(Date|moment|string|Array)} date input date
      */
     function BadiDate(date) {
-      classCallCheck(this, BadiDate);
+      _classCallCheck(this, BadiDate);
+
       // eslint-disable-line complexity
       this._gregDate = 0;
       this._badiYear = 0;
@@ -2411,15 +2674,16 @@
         this._gregDate = moment.utc([date.year(), date.month(), date.date(), 12]);
       } else if (typeof date === 'string') {
         var dateArray = this._parseBadiDateString(date);
+
         if (dateArray) {
-          this._setFromBadiDate(dateArray);
-          // Looks like the input was a Gregorian datestring
+          this._setFromBadiDate(dateArray); // Looks like the input was a Gregorian datestring
+
         } else {
           // Attempt to handle a malformed string which moment complains about but
           // Date makes a best guess at.
           var tempDate = new Date(date);
-          this._gregDate = moment.utc([tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate(), 12]);
-          // Check if it's before 1 BE or after 356 BE (which we can't handle)
+          this._gregDate = moment.utc([tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate(), 12]); // Check if it's before 1 BE or after 356 BE (which we can't handle)
+
           if (this._notInValidGregRange(this._gregDate)) {
             this._setInvalid();
           }
@@ -2431,15 +2695,16 @@
           this._setFromBadiDate(date);
         }
       }
+
       if (this._badiYear === 0) {
         // We haven't set the Badí' date yet
         this._setFromGregorianDate();
       }
+
       if (this._valid) {
         this._setHolyDay();
       }
     }
-
     /**
      * Formats the output as defined by the given format string
      * The following tokens are accepted:
@@ -2474,14 +2739,16 @@
      */
 
 
-    createClass(BadiDate, [{
-      key: 'format',
+    _createClass(BadiDate, [{
+      key: "format",
       value: function format(formatString, language) {
         /* eslint-disable-line complexity */
         if (!this.isValid()) {
           return 'Not a valid date';
         }
+
         var formatTokens = [['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv', 'KiS'], ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE', 'BC', 'Va'], ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
+
         if (language === undefined || typeof badiLocale[language] === 'undefined') {
           // eslint-disable-next-line dot-notation
           if (typeof badiLocale['default'] === 'undefined') {
@@ -2490,11 +2757,14 @@
             language = 'default';
           }
         }
+
         if (typeof formatString !== 'string') {
           formatString = this._formatItemFallback(language, 'defaultFormat');
         }
+
         var returnString = '';
         var length = formatString.length;
+
         for (var i = 0; i < length; i++) {
           // Text wrapped in {} is output as-is. A '{' without a matching '}'
           // results in invalid input
@@ -2503,18 +2773,20 @@
               if (j === length) {
                 return 'Invalid formatting string.';
               }
+
               if (formatString[j] === '}') {
                 i = j;
                 break;
               }
+
               returnString += formatString[j];
             }
           } else {
             var next1 = formatString[i];
             var next2 = next1 + formatString[i + 1];
-            var next3 = next2 + formatString[i + 2];
-            // First check for match to 3-symbol token, then 2, then 1
+            var next3 = next2 + formatString[i + 2]; // First check for match to 3-symbol token, then 2, then 1
             // (Tokens are not uniquely decodable)
+
             if (formatTokens[0].indexOf(next3) > -1) {
               returnString += this._getFormatItem(next3, language);
               i += 2;
@@ -2528,9 +2800,9 @@
             }
           }
         }
+
         return returnString;
       }
-
       /**
        * Perform post-processing for locale items that contain underlined
        * characters. These are written in locale files as e.g. '_Sh_araf'.
@@ -2544,28 +2816,36 @@
        */
 
     }, {
-      key: '_postProcessLocaleItem',
+      key: "_postProcessLocaleItem",
       value: function _postProcessLocaleItem(string) {
         var crop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
         /* eslint-disable-line complexity, class-methods-use-this */
         if (crop && crop < string.length) {
           var char = 0;
           var counter = 0;
+
           while (counter < crop) {
             if (!'_’‘'.indexOf(string[char]) > -1) {
               counter++;
             }
+
             char++;
           }
+
           if ('_’‘'.indexOf(string[char]) > -1) {
             char++;
           }
+
           string = string.slice(0, char);
+
           if (string.split('_').length % 2 === 0) {
             string += '_';
           }
         }
+
         var stringComponents = string.split('_');
+
         for (var comp = 1; comp < stringComponents.length; comp += 2) {
           switch (underlineFormat) {
             case 'css':
@@ -2573,27 +2853,32 @@
                 stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
                 break;
               }
+
             case 'diacritic':
               {
                 var newstring = '';
+
                 for (var i = 0; i < stringComponents[comp].length; i++) {
-                  newstring += stringComponents[comp][i] + '\u0332';
+                  newstring += stringComponents[comp][i] + "\u0332";
                 }
+
                 stringComponents[comp] = newstring;
                 break;
               }
+
             case 'u':
               {
                 stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
                 break;
               }
+
             default:
               throw new TypeError('Unexpected underlineFormat');
           }
         }
+
         return stringComponents.join('');
       }
-
       /**
        * Retrieve the appropriate output for a given formatting token and language.
        * @param {string} token identifying the date component for output
@@ -2602,98 +2887,136 @@
        */
 
     }, {
-      key: '_getFormatItem',
+      key: "_getFormatItem",
       value: function _getFormatItem(token, language) {
         // eslint-disable-line complexity
         switch (token) {
           // Single character tokens
           case 'd':
             return this._digitRewrite(this._badiDay, language);
+
           case 'D':
             {
               return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay), 3);
-            }case 'm':
+            }
+
+          case 'm':
             return this._digitRewrite(this._badiMonth, language);
+
           case 'M':
             {
               return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth), 3);
-            }case 'W':
+            }
+
+          case 'W':
             return this._formatItemFallback(language, 'weekdayAbbbr3', (this._gregDate.isoWeekday() + 1) % 7 + 1);
+
           case 'y':
             return this._digitRewrite(this._badiYear, language);
+
           case 'v':
             return this._digitRewrite(Math.floor((this._badiYear - 1) / 19) % 19 + 1, language);
+
           case 'k':
             return this._digitRewrite(Math.floor((this._badiYear - 1) / 361) + 1, language);
           // Two character tokens
+
           case 'dd':
             return this._digitRewrite(('0' + String(this._badiDay)).slice(-2), language);
+
           case 'DD':
             return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay));
+
           case 'mm':
             return this._digitRewrite(('0' + String(this._badiMonth)).slice(-2), language);
+
           case 'MM':
             return this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth));
+
           case 'ww':
             return this._formatItemFallback(language, 'weekdayAbbr2', (this._gregDate.isoWeekday() + 1) % 7 + 1);
+
           case 'WW':
             return this._formatItemFallback(language, 'weekday', (this._gregDate.isoWeekday() + 1) % 7 + 1);
+
           case 'yy':
             return this._digitRewrite(('00' + String(this._badiYear)).slice(-3), language);
+
           case 'yv':
             return this._digitRewrite((this._badiYear - 1) % 19 + 1, language);
+
           case 'YV':
             return this._formatItemFallback(language, 'yearInVahid', (this._badiYear - 1) % 19 + 1);
+
           case 'vv':
             return this._digitRewrite(('0' + String((Math.floor((this._badiYear - 1) / 19) + 2) % 19 - 1)).slice(-2), language);
+
           case 'kk':
             return this._digitRewrite(('0' + String(Math.floor((this._badiYear - 1) / 361) + 1)).slice(-2), language);
+
           case 'Va':
             return this._formatItemFallback(language, 'vahid');
+
           case 'BE':
             return this._formatItemFallback(language, 'BE');
+
           case 'BC':
             return this._formatItemFallback(language, 'badiCalendar');
           // Three character tokens
+
           case 'DDL':
             return this._formatItemFallback(language, 'monthL', this._badiDay);
+
           case 'DD+':
             {
               var day = this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiDay));
+
               var dayL = this._formatItemFallback(language, 'monthL', this._badiDay);
+
               if (day === dayL) {
                 return day;
               }
+
               if (badiLocale[language] === badiLocale.fa) {
-                return '<span dir="rtl">' + day + ' (' + dayL + ')</span>';
+                return "<span dir=\"rtl\">".concat(day, " (").concat(dayL, ")</span>");
               }
-              return day + ' (' + dayL + ')';
+
+              return "".concat(day, " (").concat(dayL, ")");
             }
+
           case 'MML':
             return this._formatItemFallback(language, 'monthL', this._badiMonth);
+
           case 'MM+':
             {
               var month = this._postProcessLocaleItem(this._formatItemFallback(language, 'month', this._badiMonth));
+
               var monthL = this._formatItemFallback(language, 'monthL', this._badiMonth);
+
               if (month === monthL) {
                 return month;
               }
+
               if (badiLocale[language] === badiLocale.fa) {
-                return '<span dir="rtl">' + month + ' (' + monthL + ')</span>';
+                return "<span dir=\"rtl\">".concat(month, " (").concat(monthL, ")</span>");
               }
-              return month + ' (' + monthL + ')';
+
+              return "".concat(month, " (").concat(monthL, ")");
             }
+
           case 'WWL':
             return this._formatItemFallback(language, 'weekdayL', (this._gregDate.isoWeekday() + 1) % 7 + 1);
+
           case 'yyv':
             return this._digitRewrite(('0' + String((this._badiYear - 1) % 19 + 1)).slice(-2), language);
+
           case 'KiS':
             return this._postProcessLocaleItem(this._formatItemFallback(language, 'kulliShay'));
+
           default:
             return '';
         }
       }
-
       /**
        * For languages that don't use Western Arabic numerals, rewrite digits into
        * the proper unicode characters.
@@ -2703,19 +3026,21 @@
        */
 
     }, {
-      key: '_digitRewrite',
+      key: "_digitRewrite",
       value: function _digitRewrite(number, language) {
         number = String(number);
         var unicodeOffset = this._formatItemFallback(language, 'digitUnicodeOffset') - '0'.charCodeAt(0);
+
         if (unicodeOffset === 0) {
           return number;
         }
-        var codePoints = [].concat(toConsumableArray(number)).map(function (num) {
+
+        var codePoints = _toConsumableArray(number).map(function (num) {
           return num.charCodeAt(0) + unicodeOffset;
         });
-        return String.fromCharCode.apply(String, toConsumableArray(codePoints));
-      }
 
+        return String.fromCharCode.apply(String, _toConsumableArray(codePoints));
+      }
       /**
        * Determine the next language in the fallback order:
        * regional variant -> primary language -> default language -> English
@@ -2724,17 +3049,16 @@
        */
 
     }, {
-      key: '_languageFallback',
+      key: "_languageFallback",
       value: function _languageFallback(languageCode) {
         if (languageCode.indexOf('-') > -1) {
-          return languageCode.split('-')[0];
-          // eslint-disable-next-line no-negated-condition
+          return languageCode.split('-')[0]; // eslint-disable-next-line no-negated-condition
         } else if (languageCode !== 'default') {
           return 'default';
         }
+
         return 'en';
       }
-
       /**
        * Retrieve element from localization with fallback
        * @param {string} language output language (subject to fallbacks)
@@ -2745,20 +3069,22 @@
        */
 
     }, {
-      key: '_formatItemFallback',
+      key: "_formatItemFallback",
       value: function _formatItemFallback(language, category, index) {
         if (index === undefined) {
           while (typeof badiLocale[language] === 'undefined' || typeof badiLocale[language][category] === 'undefined') {
             language = this._languageFallback(language);
           }
+
           return badiLocale[language][category];
         }
+
         while (typeof badiLocale[language] === 'undefined' || typeof badiLocale[language][category] === 'undefined' || typeof badiLocale[language][category][index] === 'undefined') {
           language = this._languageFallback(language);
         }
+
         return badiLocale[language][category][index];
       }
-
       /**
        * Check whether a string supplied to the constructor describes a valid Badí'
        * date, either as year-month-day or year-holyDay and if yes, return an array
@@ -2770,36 +3096,41 @@
        */
 
     }, {
-      key: '_parseBadiDateString',
+      key: "_parseBadiDateString",
       value: function _parseBadiDateString(dateString) {
         // eslint-disable-line complexity
-        var dateComponents = dateString.split('-');
-        // Are all components numerical
+        var dateComponents = dateString.split('-'); // Are all components numerical
+
         for (var i = 0; i < dateComponents.length; i++) {
           if (!/^\d+$/.test(dateComponents[i])) {
             return false;
           }
+
           dateComponents[i] = parseInt(dateComponents[i], 10);
-        }
-        // If only two numbers are supplied, the second designates a Holy Day and
+        } // If only two numbers are supplied, the second designates a Holy Day and
         // must be between 1 and 11
+
+
         if (dateComponents.length !== 3) {
           if (dateComponents.length === 2 && dateComponents[1] > 0 && dateComponents[1] < 12) {
             return dateComponents;
           }
+
           return false;
-        }
-        // Are the month and day numbers in sensible ranges?
+        } // Are the month and day numbers in sensible ranges?
         // We call Ayyám-i-Há month 20
+
+
         if (dateComponents[1] > 20 || dateComponents[1] < 1) {
           return false;
         }
+
         if (dateComponents[2] > 19 || dateComponents[2] < 1) {
           return false;
         }
+
         return dateComponents;
       }
-
       /**
        * Check whether a moment object is within the valid range of dates.
        * @param {moment} datetime date to be checked
@@ -2807,23 +3138,25 @@
        */
 
     }, {
-      key: '_notInValidGregRange',
+      key: "_notInValidGregRange",
       value: function _notInValidGregRange(datetime) {
         return datetime.isBefore(moment.utc('1844-03-21')) || datetime.isAfter(moment.utc('2351-03-20'));
       }
-
       /**
        * Generate date from input corresponding to a Gregorian date.
        */
 
     }, {
-      key: '_setFromGregorianDate',
+      key: "_setFromGregorianDate",
       value: function _setFromGregorianDate() {
         if (this._notInValidGregRange(this._gregDate)) {
           this._setInvalid();
+
           return;
         }
+
         var gregYear = this._gregDate.year();
+
         if (this._gregDate.isBefore(moment.utc('2015-03-21'))) {
           // Old implementation for day before Naw-Rúz 172
           if (this._gregDate.isBefore(gregYear + '-03-21')) {
@@ -2833,25 +3166,29 @@
             this._nawRuz = moment.utc(gregYear.toString() + '-03-21');
             this._badiYear = gregYear - 1843;
           }
+
           this._setOldAyyamiHaLength();
+
           this._yearTB = [12, 5, 13, 9];
         } else {
           // New implementation
           this._badiYear = gregYear - 1843;
+
           this._setBadiYearInfo(true);
-        }
-        // Now need to set Badí' month and date from the gregorian date
+        } // Now need to set Badí' month and date from the gregorian date
+
+
         this._setBadiMonthDay();
       }
-
       /**
        * Set Badí' month and day from Gregorian date
        */
 
     }, {
-      key: '_setBadiMonthDay',
+      key: "_setBadiMonthDay",
       value: function _setBadiMonthDay() {
         var dayOfBadiYear = this._dayOfYear(this._gregDate);
+
         if (dayOfBadiYear < 343) {
           this._badiMonth = Math.floor((dayOfBadiYear - 1) / 19 + 1);
           this._badiDay = (dayOfBadiYear - 1) % 19 + 1;
@@ -2863,7 +3200,6 @@
           this._badiDay = dayOfBadiYear - (342 + this._ayyamiHaLength);
         }
       }
-
       /**
        * Generate date from input that supplied the Badí' year and either Badí'
        * month and day or a Holy Day number.
@@ -2872,28 +3208,33 @@
        */
 
     }, {
-      key: '_setFromBadiDate',
+      key: "_setFromBadiDate",
       value: function _setFromBadiDate(dateArray) {
         // eslint-disable-line complexity
-        this._badiYear = parseInt(dateArray[0], 10);
-        // Are we in the valid range?
+        this._badiYear = parseInt(dateArray[0], 10); // Are we in the valid range?
+
         if (this._badiYear < 1 || this._badiYear > 507) {
           this._setInvalid();
+
           return;
         } else if (this._badiYear < 172) {
           // Old implementation for dates before Naw-Rúz 172
           this._nawRuz = moment.utc([1843 + this._badiYear, 2, 21]);
+
           this._setOldAyyamiHaLength();
+
           this._yearTB = [12, 5, 13, 9];
         } else {
           // New implementation
           this._setBadiYearInfo();
-        }
-        // If all three components exist, we have a year, month, and day
+        } // If all three components exist, we have a year, month, and day
         // eslint-disable-next-line no-negated-condition
+
+
         if (typeof dateArray[2] !== 'undefined') {
           this._badiMonth = parseInt(dateArray[1], 10);
           this._badiDay = parseInt(dateArray[2], 10);
+
           if (this._badiMonth === 20 && this._badiDay > this._ayyamiHaLength) {
             // If only off by one day, we'll bubble up so that 5th Ayyám-i-Há in a
             // year with only 4 days of Ayyám-i-Há can be salvaged
@@ -2903,93 +3244,112 @@
             } else {
               this._setInvalid();
             }
-          }
-          // Otherwise input designated a Holy Day
+          } // Otherwise input designated a Holy Day
+
         } else {
           var holyDayNum = parseInt(dateArray[1], 10);
+
           switch (holyDayNum) {
             case 1:
               // Naw-Rúz
               this._badiMonth = 1;
               this._badiDay = 1;
               break;
+
             case 2:
               // First Day of Ridván
               this._badiMonth = 2;
               this._badiDay = 13;
               break;
+
             case 3:
               // Ninth Day of Ridván
               this._badiMonth = 3;
               this._badiDay = 2;
               break;
+
             case 4:
               // Twelfth Day of Ridván
               this._badiMonth = 3;
               this._badiDay = 5;
               break;
+
             case 5:
               // Declaration of the Báb
               this._badiMonth = 4;
               this._badiDay = 8;
+
               if (this._badiYear < 172) {
                 // Date was different in old implementation
                 this._badiDay = 7;
               }
+
               break;
+
             case 6:
               // Ascension of Bahá'u'lláh
               this._badiMonth = 4;
               this._badiDay = 13;
               break;
+
             case 7:
               // Martyrdom of the Báb
               this._badiMonth = 6;
               this._badiDay = 17;
+
               if (this._badiYear < 172) {
                 // Date was different in old implementation
                 this._badiDay = 16;
               }
+
               break;
+
             case 8:
               // Birth of the Báb
               this._badiMonth = this._yearTB[0];
               this._badiDay = this._yearTB[1];
               break;
+
             case 9:
               // Birth of Bahá'u'lláh
               this._badiMonth = this._yearTB[2];
               this._badiDay = this._yearTB[3];
               break;
+
             case 10:
               // Day of the Covenant
               this._badiMonth = 14;
               this._badiDay = 4;
               break;
+
             case 11:
               // Ascension of 'Abdu'l-Bahá
               this._badiMonth = 14;
               this._badiDay = 6;
               break;
+
             default:
               this._setInvalid();
+
               return;
           }
-        }
-        // Finally we set the Gregorian date for this Badí' date
+        } // Finally we set the Gregorian date for this Badí' date
+
+
         var dayOfGregYear = this._nawRuz.diff(moment.utc([this._badiYear + 1843]), 'days') + this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
-        this._gregDate = moment.utc([this._badiYear + 1843]);
-        // Bubbles up to next year if necessary
+
+        this._gregDate = moment.utc([this._badiYear + 1843]); // Bubbles up to next year if necessary
+
         this._gregDate.dayOfYear(dayOfGregYear);
+
         this._gregDate.hour(12);
       }
-
       /**
        * Set the length of Ayyám-i-Há for dates before the new implementation.
        */
 
     }, {
-      key: '_setOldAyyamiHaLength',
+      key: "_setOldAyyamiHaLength",
       value: function _setOldAyyamiHaLength() {
         if (moment([this._nawRuz.year() + 1]).isLeapYear()) {
           this._ayyamiHaLength = 5;
@@ -2997,7 +3357,6 @@
           this._ayyamiHaLength = 4;
         }
       }
-
       /**
        * Set year parameters for the given year.
        * @param {bool} fromGregDate whether we are generating the date object from
@@ -3005,18 +3364,19 @@
        */
 
     }, {
-      key: '_setBadiYearInfo',
+      key: "_setBadiYearInfo",
       value: function _setBadiYearInfo(fromGregDate) {
         var yearData = this._extractBadiYearInfo();
+
         if (fromGregDate === true && this._gregDate.isBefore(moment.utc(yearData.NR))) {
           this._badiYear -= 1;
           yearData = this._extractBadiYearInfo();
         }
+
         this._nawRuz = moment.utc(yearData.NR);
         this._ayyamiHaLength = yearData.aHL;
         this._yearTB = yearData.TB;
       }
-
       /**
        * Unpack the info for the Badí' year from the base36 encoded version.
        * @returns {object} Object containing the date of Naw-Rúz, the length of
@@ -3025,10 +3385,10 @@
        */
 
     }, {
-      key: '_extractBadiYearInfo',
+      key: "_extractBadiYearInfo",
       value: function _extractBadiYearInfo() {
-        var yearData = {};
-        // Check whether data needs to be unpacked or exists in the verbose version
+        var yearData = {}; // Check whether data needs to be unpacked or exists in the verbose version
+
         if (badiYears[0] === 'l4da') {
           var components = badiYears[this._badiYear - 172].split('');
           yearData.NR = String(this._badiYear - 172 + 2015) + '-03-' + String(parseInt(components[0], 36));
@@ -3039,9 +3399,9 @@
         } else {
           yearData = badiYears[this._badiYear];
         }
+
         return yearData;
       }
-
       /**
        * Get the days since Naw-Rúz (NR itself is '1') of the Badí' or Gregorian
        * date provided.
@@ -3051,9 +3411,10 @@
        */
 
     }, {
-      key: '_dayOfYear',
+      key: "_dayOfYear",
       value: function _dayOfYear(date) {
         var numDays = 0;
+
         if (date.constructor === Array) {
           // We have a Badí' date
           if (date[1] < 19) {
@@ -3066,15 +3427,15 @@
         } else {
           numDays = date.diff(this._nawRuz, 'days') + 1;
         }
+
         return numDays;
       }
-
       /**
        * Set the member variables to invalid values.
        */
 
     }, {
-      key: '_setInvalid',
+      key: "_setInvalid",
       value: function _setInvalid() {
         this._gregDate = moment.utc('0000-00-00');
         this._badiYear = -1;
@@ -3084,13 +3445,12 @@
         this._nawRuz = moment.utc('0000-00-00');
         this._valid = false;
       }
-
       /**
        * If the date is a Holy Day, assign it
        */
 
     }, {
-      key: '_setHolyDay',
+      key: "_setHolyDay",
       value: function _setHolyDay() {
         // eslint-disable-line complexity
         // First the dates that haven't changed with the new implementation
@@ -3115,17 +3475,19 @@
         } else if (this._badiMonth === 14 && this._badiDay === 6) {
           // Ascension of 'Abdu'l-Bahá
           this._holyDay = 11;
-        }
-        // Twin birthdays are set in the instance at this point regardless of
+        } // Twin birthdays are set in the instance at this point regardless of
         // implementation
+
+
         if (this._badiMonth === this._yearTB[0] && this._badiDay === this._yearTB[1]) {
           // Birth of the Báb
           this._holyDay = 8;
         } else if (this._badiMonth === this._yearTB[2] && this._badiDay === this._yearTB[3]) {
           // Birth of Bahá'u'lláh
           this._holyDay = 9;
-        }
-        // Finally the two dates that have changed by one day
+        } // Finally the two dates that have changed by one day
+
+
         if (this._badiYear < 172) {
           if (this._badiMonth === 4 && this._badiDay === 7) {
             // Declaration of the Báb
@@ -3142,7 +3504,6 @@
           this._holyDay = 7;
         }
       }
-
       /**
        * Get the name of the Holy Day (if any) in the given language (using
        * localization fallbacks as necessary).
@@ -3153,11 +3514,12 @@
        */
 
     }, {
-      key: 'holyDay',
+      key: "holyDay",
       value: function holyDay(language) {
         if (!this._holyDay) {
           return false;
         }
+
         if (language === undefined || typeof badiLocale[language] === 'undefined') {
           // eslint-disable-next-line dot-notation
           if (typeof badiLocale['default'] === 'undefined') {
@@ -3166,31 +3528,29 @@
             language = 'default';
           }
         }
+
         return this._formatItemFallback(language, 'holyDay', this._holyDay);
       }
-
       /**
        * Check whether this is a valid date (i.e. created from valid input).
        * @returns {bool} whether this is a valid date.
        */
 
     }, {
-      key: 'isValid',
+      key: "isValid",
       value: function isValid() {
         return this._valid;
       }
-
       /**
        * Get the Badí' day as a number.
        * @returns {int} number of the day in the Badí' month (between 1 and 19)
        */
 
     }, {
-      key: 'badiDay',
+      key: "badiDay",
       value: function badiDay() {
         return this._badiDay;
       }
-
       /**
        * Get the Badí' month as a number.
        * @returns {int} number of the Badí' month (between 1 and 20 where 20 is
@@ -3198,22 +3558,20 @@
        */
 
     }, {
-      key: 'badiMonth',
+      key: "badiMonth",
       value: function badiMonth() {
         return this._badiMonth;
       }
-
       /**
        * Get the Badí' year.
        * @returns {int} number of the Badí' year.
        */
 
     }, {
-      key: 'badiYear',
+      key: "badiYear",
       value: function badiYear() {
         return this._badiYear;
       }
-
       /**
        * Get number of the Badí' weekday between 1 (Jalál ~> Saturday) and
        * 7 (Istiqlál ~> Friday).
@@ -3221,80 +3579,74 @@
        */
 
     }, {
-      key: 'badiWeekday',
+      key: "badiWeekday",
       value: function badiWeekday() {
         return (this._gregDate.isoWeekday() + 1) % 7 + 1;
       }
-
       /**
        * Get number of the year in the Váḥid the current date is in.
        * @returns {int} number of year in Váḥid (between 1 and 19)
        */
 
     }, {
-      key: 'yearInVahid',
+      key: "yearInVahid",
       value: function yearInVahid() {
         return (this._badiYear - 1) % 19 + 1;
       }
-
       /**
        * Get number of the Váḥid (19 year period) the current date is in.
        * @returns {int} number of Váḥid (between 1 and 19)
        */
 
     }, {
-      key: 'vahid',
+      key: "vahid",
       value: function vahid() {
         return Math.floor((this._badiYear - 1) / 19) % 19 + 1;
       }
-
       /**
        * Get number of the Kull-i-Shay' (361 year period) the current date is in.
        * @returns {int} number of Kull-i-Shay' (1 for most supported dates)
        */
 
     }, {
-      key: 'kullIShay',
+      key: "kullIShay",
       value: function kullIShay() {
         return Math.floor((this._badiYear - 1) / 361) + 1;
       }
-
       /**
        * Get the Gregorian date on whose sunset the Badí' date ends.
        * @returns {moment} Gregorian date, with time set to 12:00:00
        */
 
     }, {
-      key: 'gregorianDate',
+      key: "gregorianDate",
       value: function gregorianDate() {
         return this._gregDate;
       }
-
       /**
        * Get the length of Ayyám-i-Há for the year this date is in.
        * @returns {int} Number of days of Ayyám-i-Há
        */
 
     }, {
-      key: 'ayyamiHaLength',
+      key: "ayyamiHaLength",
       value: function ayyamiHaLength() {
         return this._ayyamiHaLength;
       }
-
       /**
        * Get the number (between 1 and 11) of the Holy Day.
        * @returns {(int|false)} number of Holy Day or false if none.
        */
 
     }, {
-      key: 'holyDayNumber',
+      key: "holyDayNumber",
       value: function holyDayNumber() {
         return this._holyDay;
       }
     }]);
+
     return BadiDate;
   }();
-
   /**
    * Sets option (defaultLanguage) for the
    * module.
@@ -3306,6 +3658,7 @@
     if (typeof options.defaultLanguage === 'string') {
       setDefaultLanguage(options.defaultLanguage);
     }
+
     if (typeof options.underlineFormat === 'string') {
       setUnderlineFormat(options.underlineFormat);
     }
@@ -3324,15 +3677,14 @@
   /* eslint-enable max-len */
 
   var usingClockLocations = true;
-
   /**
    * Toggle the use of clock locations on or off
    * @param {bool} useCL whether clock locations should be used.
    */
+
   var useClockLocations = function useClockLocations(useCL) {
     usingClockLocations = useCL;
   };
-
   /**
    * Determine whether a point lies within a polygon.
    * All coordinates are given as [longitude, latitude].
@@ -3340,21 +3692,23 @@
    * @param {array} polygon given by an array of pairs of x and y coordinates
    * @returns {bool} whether the point given by coords is inside the polygon
    */
+
+
   var inPolygon = function inPolygon(coords, polygon) {
-    var _coords = slicedToArray(coords, 2),
+    var _coords = _slicedToArray(coords, 2),
         x = _coords[0],
         y = _coords[1];
 
     var inside = false;
+
     for (var i = 0, j = polygon.length - 1; i < polygon.length; i++) {
-      var _polygon$i = slicedToArray(polygon[i], 2),
+      var _polygon$i = _slicedToArray(polygon[i], 2),
           xi = _polygon$i[0],
           yi = _polygon$i[1];
 
-      var _polygon$j = slicedToArray(polygon[j], 2),
+      var _polygon$j = _slicedToArray(polygon[j], 2),
           xj = _polygon$j[0],
-          yj = _polygon$j[1];
-      // Check that a) the segment crosses the y coordinate of the point
+          yj = _polygon$j[1]; // Check that a) the segment crosses the y coordinate of the point
       //            b) at least one of the two vertices is left of the point
       //            c) at the y coordinate of the point, the segment is left of it
 
@@ -3362,11 +3716,12 @@
       if (yi < y !== yj < y && (xi <= x || xj <= x) && xi + (y - yi) * (xj - xi) / (yj - yi) < x) {
         inside = !inside;
       }
+
       j = i;
     }
+
     return inside;
   };
-
   /**
    * Determine whether coordinates are within a region where fixed times are used
    * as "sunrise" and "sunset" using polygons. The name of a country being
@@ -3376,54 +3731,66 @@
    * @param {number} longitude of the point to be checked
    * @returns {(string|false)} the appropriate region or false
    */
+
+
   var clockLocationFromPolygons = function clockLocationFromPolygons(latitude, longitude) {
     if (!usingClockLocations) {
       return false;
-    }
-    // First exclude as large an area as possible from having to check polygons
+    } // First exclude as large an area as possible from having to check polygons
+
+
     if (latitude < 51.0) {
       return false;
     }
+
     if (latitude < 57.0 && longitude > -129.0 && longitude < 172.0) {
       return false;
-    }
-    // Make a list of plausible areas based on longitude, then only check those
+    } // Make a list of plausible areas based on longitude, then only check those
+
+
     var countries = [];
     var labels = [];
+
     if (longitude < -129.9 || longitude > 172.4) {
       countries.push(clockLocations.USA);
       labels.push('USA');
     }
+
     if (longitude > -141.1 && longitude < -61.1) {
       countries.push(clockLocations.Canada);
       labels.push('Canada');
-    }
-    // Greenland doesn't currently have a rule for this
+    } // Greenland doesn't currently have a rule for this
     // if (longitude > -73.1 && longitude < -11.3) {
     //   countries.push(clockLocations.Greenland);
     //   labels.push('Greenland');
     // }
+
+
     if (longitude > -25.0 && longitude < -12.8) {
       countries.push(clockLocations.Iceland);
       labels.push('Iceland');
     }
+
     if (longitude > -9.2 && longitude < 33.6) {
       countries.push(clockLocations.Norway);
       labels.push('Norway');
     }
+
     if (longitude > 10.9 && longitude < 24.2) {
       countries.push(clockLocations.Sweden);
       labels.push('Sweden');
     }
+
     if (longitude > 19.1 && longitude < 31.6) {
       countries.push(clockLocations.Finland);
       labels.push('Finland');
-    }
-    // Russia currently doesn't have a rule for this
+    } // Russia currently doesn't have a rule for this
     // if (longitude > 27.3 || longitude < -169.6) {
     //  countries.push(clockLocations.Russia);
     //  labels.push('Russia');
     // }
+
+
     for (var i = 0; i < countries.length; i++) {
       for (var j = 0; j < countries[i].length; j++) {
         if (inPolygon([longitude, latitude], countries[i][j])) {
@@ -3431,6 +3798,7 @@
         }
       }
     }
+
     return false;
   };
 
@@ -3453,26 +3821,29 @@
    * @param {string} timezoneId as per IANA time zone database
    */
   function LocalBadiDate(date, latitude, longitude, timezoneId) {
-    classCallCheck(this, LocalBadiDate);
+    _classCallCheck(this, LocalBadiDate);
 
     // If a moment object is being passed, we use date and time, not just the
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
     if (date instanceof moment) {
       var sunset$$1 = sunset(date, latitude, longitude);
+
       if (date.isAfter(sunset$$1)) {
         date.add(1, 'day');
       }
     }
+
     this.badiDate = new BadiDate(date);
     var gregDate = moment.tz(this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
+
     if (!this.clockLocation || this.clockLocation === 'Finland' && this.badiDate.badiMonth() === 19) {
       this.end = sunset(gregDate, latitude, longitude);
       this.solarNoon = solarNoon(gregDate, longitude);
       this.sunrise = sunrise(gregDate, latitude, longitude);
-      this.start = sunset(gregDate.subtract(1, 'day'), latitude, longitude);
-      // add() and subtract() mutate the object, so we have to undo it
+      this.start = sunset(gregDate.subtract(1, 'day'), latitude, longitude); // add() and subtract() mutate the object, so we have to undo it
+
       gregDate.add(1, 'day');
     } else {
       // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
@@ -3480,9 +3851,10 @@
       this.end = moment.tz(gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       this.solarNoon = moment.tz(gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
       this.sunrise = moment.tz(gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
-      this.start = moment.tz(gregDate.subtract(1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
-      // add() and subtract() mutate the object, so we have to undo it
+      this.start = moment.tz(gregDate.subtract(1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId); // add() and subtract() mutate the object, so we have to undo it
+
       gregDate.add(1, 'day');
+
       if (this.clockLocation === 'Canada') {
         this.sunrise.add(30, 'minutes');
       } else if (this.clockLocation === 'Iceland') {
@@ -3493,32 +3865,39 @@
           this.solarNoon.add(1, 'hour');
           this.sunrise.add(1, 'hour');
         }
+
         if (this.start.isDST()) {
           this.start.add(1, 'hour');
         }
       }
     }
+
     this.holyDayCommemoration = false;
+
     switch (this.badiDate.holyDayNumber()) {
       case 2:
         // First Day of Ridvan: 15:00 local standard time
         this.holyDayCommemoration = gregDate;
         this.holyDayCommemoration.hour(gregDate.isDST() ? 16 : 15);
         break;
+
       case 5:
         // Declaration of the Báb: 2 hours 11 minutes after sunset
         this.holyDayCommemoration = moment.tz(this.start, timezoneId);
         this.holyDayCommemoration.add(131, 'minutes');
         break;
+
       case 6:
         // Ascension of Bahá'u'lláh: 03:00 local standard time
         this.holyDayCommemoration = gregDate;
         this.holyDayCommemoration.hour(gregDate.isDST() ? 4 : 3);
         break;
+
       case 7:
         // Martyrdom of the Báb: solar noon
         this.holyDayCommemoration = this.solarNoon;
         break;
+
       case 11:
         // Ascension of 'Abdu'l-Bahá: 01:00 local standard time
         this.holyDayCommemoration = gregDate;
@@ -3527,7 +3906,6 @@
       // skip default
     }
   };
-
   /**
    * Sets options (defaultLanguage, useClockLocations) for the
    * module.
@@ -3539,12 +3917,16 @@
     if (typeof options$$1.defaultLanguage === 'string' || typeof options$$1.underlineFormat === 'string') {
       badiDateOptions(options$$1);
     }
+
     if (typeof options$$1.useClockLocations === 'boolean') {
       useClockLocations(options$$1.useClockLocations);
     }
   };
 
-  options({ returnTimeForPNMS: true, roundToNearestMinute: true });
+  options({
+    returnTimeForPNMS: true,
+    roundToNearestMinute: true
+  });
 
   exports.MeeusSunMoon = index;
   exports.BadiDate = BadiDate;
