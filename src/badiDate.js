@@ -161,7 +161,7 @@ class BadiDate {
    * @param {string} string the locale item that should be processed
    * @param {undefined|int} crop whether the item should be cropped at a
    *                             specific number of characters (excluding
-   *                             diacritical marks and punctuation).
+   *                             apostrophes and underline markers).
    * @returns {string} processed string
    */
   _postProcessLocaleItem(string, crop = undefined) { /* eslint-disable-line complexity, class-methods-use-this */
@@ -169,7 +169,7 @@ class BadiDate {
       let char = 0;
       let counter = 0;
       while (counter < crop) {
-        if (!'_’‘'.indexOf(string[char]) > -1) {
+        if ('_’‘'.indexOf(string[char]) === -1) {
           counter++;
         }
         char++;

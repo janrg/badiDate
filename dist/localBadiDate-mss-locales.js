@@ -2826,7 +2826,7 @@
           var counter = 0;
 
           while (counter < crop) {
-            if (!'_’‘'.indexOf(string[_char]) > -1) {
+            if ('_’‘'.indexOf(string[_char]) === -1) {
               counter++;
             }
 

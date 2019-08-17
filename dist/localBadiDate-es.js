@@ -418,7 +418,7 @@ class BadiDate {
       let char = 0;
       let counter = 0;
       while (counter < crop) {
-        if (!'_’‘'.indexOf(string[char]) > -1) {
+        if ('_’‘'.indexOf(string[char]) === -1) {
           counter++;
         }
         char++;

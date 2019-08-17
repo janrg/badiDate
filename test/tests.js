@@ -254,3 +254,18 @@ QUnit.test('Clock Locations', function (assert) {
     }
   }
 });
+
+QUnit.test('Format Cropping', function (assert) {
+  const expectedResults = {
+    4: '‘Aẓa',
+    10: '‘Izz',
+    11: 'Ma<span style="text-decoration:underline">s</span>',
+    12: '‘Ilm',
+    16: '<span style="text-decoration:underline">Sh</span>a',
+    19: '‘Alá’'
+  };
+  for (const [month, string] of Object.entries(expectedResults)) {
+    const badiDate1 = new BadiDate([172, month, 1]);
+    assert.strictEqual(badiDate1.format('M'), string);
+  }
+});
