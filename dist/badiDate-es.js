@@ -4,6 +4,8 @@
  * licensed under MIT
  */
 
+import * as momentNs from 'moment-timezone';
+
 const month = {
   1: 'Bahá',
   2: 'Jalál',
@@ -251,6 +253,8 @@ const badiYears = [
   'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
   'l4c9', 'l4da', 'l4ci'];
 
+const moment = momentNs;
+
 /**
  * A date in the Badí' calendar.
  */
@@ -410,7 +414,7 @@ class BadiDate {
    * @param {string} string the locale item that should be processed
    * @param {undefined|int} crop whether the item should be cropped at a
    *                             specific number of characters (excluding
-   *                             diacritical marks and punctuation).
+   *                             apostrophes and underline markers).
    * @returns {string} processed string
    */
   _postProcessLocaleItem(string, crop = undefined) { /* eslint-disable-line complexity, class-methods-use-this */

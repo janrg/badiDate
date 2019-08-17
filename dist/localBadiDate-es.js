@@ -4,6 +4,8 @@
  * licensed under MIT
  */
 
+import * as momentNs from 'moment-timezone';
+
 const month = {
   1: 'Bahá',
   2: 'Jalál',
@@ -251,6 +253,8 @@ const badiYears = [
   'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
   'l4c9', 'l4da', 'l4ci'];
 
+const moment = momentNs;
+
 /**
  * A date in the Badí' calendar.
  */
@@ -410,7 +414,7 @@ class BadiDate {
    * @param {string} string the locale item that should be processed
    * @param {undefined|int} crop whether the item should be cropped at a
    *                             specific number of characters (excluding
-   *                             diacritical marks and punctuation).
+   *                             apostrophes and underline markers).
    * @returns {string} processed string
    */
   _postProcessLocaleItem(string, crop = undefined) { /* eslint-disable-line complexity, class-methods-use-this */
@@ -1231,6 +1235,8 @@ const clockLocationFromPolygons = function (latitude, longitude) {
   return false;
 };
 
+const moment$1 = momentNs;
+
 /* eslint-disable complexity */
 
 /**
@@ -1252,14 +1258,14 @@ class LocalBadiDate {
     // If a moment object is being passed, we use date and time, not just the
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
-    if (date instanceof moment) {
+    if (date instanceof moment$1) {
       const sunset = MeeusSunMoon.sunset(date, latitude, longitude);
       if (date.isAfter(sunset)) {
         date.add(1, 'day');
       }
     }
     this.badiDate = new BadiDate(date);
-    const gregDate = moment.tz(
+    const gregDate = moment$1.tz(
       this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
     if (!this.clockLocation ||
@@ -1275,13 +1281,13 @@ class LocalBadiDate {
     } else {
       // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
       // then made depending on the region.
-      this.end = moment.tz(
+      this.end = moment$1.tz(
         gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
-      this.solarNoon = moment.tz(
+      this.solarNoon = moment$1.tz(
         gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
-      this.sunrise = moment.tz(
+      this.sunrise = moment$1.tz(
         gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
-      this.start = moment.tz(gregDate.subtract(
+      this.start = moment$1.tz(gregDate.subtract(
         1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
@@ -1310,7 +1316,7 @@ class LocalBadiDate {
         break;
       case 5:
         // Declaration of the Báb: 2 hours 11 minutes after sunset
-        this.holyDayCommemoration = moment.tz(this.start, timezoneId);
+        this.holyDayCommemoration = moment$1.tz(this.start, timezoneId);
         this.holyDayCommemoration.add(131, 'minutes');
         break;
       case 6:

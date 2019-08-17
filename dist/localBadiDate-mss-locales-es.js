@@ -4,6 +4,8 @@
  * licensed under MIT
  */
 
+import * as momentNs from 'moment-timezone';
+
 /**
  * Converts angles in degrees to radians.
  * @param {number} deg Angle in degrees.
@@ -2684,6 +2686,8 @@ const badiYears = [
   'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
   'l4c9', 'l4da', 'l4ci'];
 
+const moment$1 = momentNs;
+
 /**
  * A date in the Badí' calendar.
  */
@@ -2708,10 +2712,10 @@ class BadiDate {
     this._valid = true;
 
     if (date instanceof Date) {
-      this.gregDate = moment.utc(
+      this.gregDate = moment$1.utc(
         [date.getFullYear(), date.getMonth(), date.getDate(), 12]);
-    } else if (date instanceof moment) {
-      this._gregDate = moment.utc([date.year(), date.month(), date.date(), 12]);
+    } else if (date instanceof moment$1) {
+      this._gregDate = moment$1.utc([date.year(), date.month(), date.date(), 12]);
     } else if (typeof date === 'string') {
       const dateArray = this._parseBadiDateString(date);
       if (dateArray) {
@@ -2721,7 +2725,7 @@ class BadiDate {
         // Attempt to handle a malformed string which moment complains about but
         // Date makes a best guess at.
         const tempDate = new Date(date);
-        this._gregDate = moment.utc([tempDate.getFullYear(),
+        this._gregDate = moment$1.utc([tempDate.getFullYear(),
           tempDate.getMonth(), tempDate.getDate(), 12]);
         // Check if it's before 1 BE or after 356 BE (which we can't handle)
         if (this._notInValidGregRange(this._gregDate)) {
@@ -2843,7 +2847,7 @@ class BadiDate {
    * @param {string} string the locale item that should be processed
    * @param {undefined|int} crop whether the item should be cropped at a
    *                             specific number of characters (excluding
-   *                             diacritical marks and punctuation).
+   *                             apostrophes and underline markers).
    * @returns {string} processed string
    */
   _postProcessLocaleItem(string, crop = undefined) { /* eslint-disable-line complexity, class-methods-use-this */
@@ -3109,8 +3113,8 @@ class BadiDate {
    * @returns {bool} whether the provided datetime is within the valid range
    */
   _notInValidGregRange(datetime) {
-    return datetime.isBefore(moment.utc('1844-03-21')) ||
-        datetime.isAfter(moment.utc('2351-03-20'));
+    return datetime.isBefore(moment$1.utc('1844-03-21')) ||
+        datetime.isAfter(moment$1.utc('2351-03-20'));
   }
 
   /**
@@ -3122,13 +3126,13 @@ class BadiDate {
       return;
     }
     const gregYear = this._gregDate.year();
-    if (this._gregDate.isBefore(moment.utc('2015-03-21'))) {
+    if (this._gregDate.isBefore(moment$1.utc('2015-03-21'))) {
       // Old implementation for day before Naw-Rúz 172
       if (this._gregDate.isBefore(gregYear + '-03-21')) {
-        this._nawRuz = moment.utc((gregYear - 1).toString() + '-03-21');
+        this._nawRuz = moment$1.utc((gregYear - 1).toString() + '-03-21');
         this._badiYear = gregYear - 1844;
       } else {
-        this._nawRuz = moment.utc(gregYear.toString() + '-03-21');
+        this._nawRuz = moment$1.utc(gregYear.toString() + '-03-21');
         this._badiYear = gregYear - 1843;
       }
       this._setOldAyyamiHaLength();
@@ -3173,7 +3177,7 @@ class BadiDate {
       return;
     } else if (this._badiYear < 172) {
       // Old implementation for dates before Naw-Rúz 172
-      this._nawRuz = moment.utc([1843 + this._badiYear, 2, 21]);
+      this._nawRuz = moment$1.utc([1843 + this._badiYear, 2, 21]);
       this._setOldAyyamiHaLength();
       this._yearTB = [12, 5, 13, 9];
     } else {
@@ -3269,9 +3273,9 @@ class BadiDate {
     }
     // Finally we set the Gregorian date for this Badí' date
     const dayOfGregYear = this._nawRuz.diff(
-      moment.utc([this._badiYear + 1843]), 'days') +
+      moment$1.utc([this._badiYear + 1843]), 'days') +
       this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
-    this._gregDate = moment.utc([this._badiYear + 1843]);
+    this._gregDate = moment$1.utc([this._badiYear + 1843]);
     // Bubbles up to next year if necessary
     this._gregDate.dayOfYear(dayOfGregYear);
     this._gregDate.hour(12);
@@ -3281,7 +3285,7 @@ class BadiDate {
    * Set the length of Ayyám-i-Há for dates before the new implementation.
    */
   _setOldAyyamiHaLength() {
-    if (moment([this._nawRuz.year() + 1]).isLeapYear()) {
+    if (moment$1([this._nawRuz.year() + 1]).isLeapYear()) {
       this._ayyamiHaLength = 5;
     } else {
       this._ayyamiHaLength = 4;
@@ -3296,11 +3300,11 @@ class BadiDate {
   _setBadiYearInfo(fromGregDate) {
     let yearData = this._extractBadiYearInfo();
     if (fromGregDate === true &&
-        this._gregDate.isBefore(moment.utc(yearData.NR))) {
+        this._gregDate.isBefore(moment$1.utc(yearData.NR))) {
       this._badiYear -= 1;
       yearData = this._extractBadiYearInfo();
     }
-    this._nawRuz = moment.utc(yearData.NR);
+    this._nawRuz = moment$1.utc(yearData.NR);
     this._ayyamiHaLength = yearData.aHL;
     this._yearTB = yearData.TB;
   }
@@ -3356,12 +3360,12 @@ class BadiDate {
    * Set the member variables to invalid values.
    */
   _setInvalid() {
-    this._gregDate = moment.utc('0000-00-00');
+    this._gregDate = moment$1.utc('0000-00-00');
     this._badiYear = -1;
     this._badiMonth = -1;
     this._badiDay = -1;
     this._ayyamiHaLength = -1;
-    this._nawRuz = moment.utc('0000-00-00');
+    this._nawRuz = moment$1.utc('0000-00-00');
     this._valid = false;
   }
 
@@ -3664,6 +3668,8 @@ const clockLocationFromPolygons = function (latitude, longitude) {
   return false;
 };
 
+const moment$2 = momentNs;
+
 /* eslint-disable complexity */
 
 /**
@@ -3685,14 +3691,14 @@ class LocalBadiDate {
     // If a moment object is being passed, we use date and time, not just the
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
-    if (date instanceof moment) {
+    if (date instanceof moment$2) {
       const sunset$1 = sunset(date, latitude, longitude);
       if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
     this.badiDate = new BadiDate(date);
-    const gregDate = moment.tz(
+    const gregDate = moment$2.tz(
       this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
     if (!this.clockLocation ||
@@ -3708,13 +3714,13 @@ class LocalBadiDate {
     } else {
       // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
       // then made depending on the region.
-      this.end = moment.tz(
+      this.end = moment$2.tz(
         gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
-      this.solarNoon = moment.tz(
+      this.solarNoon = moment$2.tz(
         gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
-      this.sunrise = moment.tz(
+      this.sunrise = moment$2.tz(
         gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
-      this.start = moment.tz(gregDate.subtract(
+      this.start = moment$2.tz(gregDate.subtract(
         1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
@@ -3743,7 +3749,7 @@ class LocalBadiDate {
         break;
       case 5:
         // Declaration of the Báb: 2 hours 11 minutes after sunset
-        this.holyDayCommemoration = moment.tz(this.start, timezoneId);
+        this.holyDayCommemoration = moment$2.tz(this.start, timezoneId);
         this.holyDayCommemoration.add(131, 'minutes');
         break;
       case 6:

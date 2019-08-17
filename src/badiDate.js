@@ -1,6 +1,9 @@
+import * as momentNs from 'moment-timezone';
 import {badiLocale, setDefaultLanguage, setUnderlineFormat,
   underlineFormat} from './badiLocale.js';
 import {badiYears} from './badiYears.js';
+
+const moment = momentNs;
 
 /**
  * A date in the Badí' calendar.
