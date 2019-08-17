@@ -184,17 +184,26 @@ class BadiDate {
     }
     const stringComponents = string.split('_');
     for (let comp = 1; comp < stringComponents.length; comp += 2) {
-      if (underlineFormat === 'css') {
-        stringComponents[comp] = '<span style="text-decoration:underline">' +
-          stringComponents[comp] + '</span>';
-      } else if (underlineFormat === 'diacritic') {
-        let newstring = '';
-        for (let i = 0; i < stringComponents[comp].length; i++) {
-          newstring += stringComponents[comp][i] + '\u0332';
+      switch (underlineFormat) {
+        case 'css': {
+          stringComponents[comp] = '<span style="text-decoration:underline">' +
+            stringComponents[comp] + '</span>';
+          break;
         }
-        stringComponents[comp] = newstring;
-      } else if (underlineFormat === 'u') {
-        stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+        case 'diacritic': {
+          let newstring = '';
+          for (let i = 0; i < stringComponents[comp].length; i++) {
+            newstring += stringComponents[comp][i] + '\u0332';
+          }
+          stringComponents[comp] = newstring;
+          break;
+        }
+        case 'u': {
+          stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+          break;
+        }
+        default:
+          throw new TypeError('Unexpected underlineFormat');
       }
     }
     return stringComponents.join('');
@@ -328,10 +337,9 @@ class BadiDate {
     if (unicodeOffset === 0) {
       return number;
     }
-    const codePoints = [];
-    for (let i = 0; i < number.length; i++) {
-      codePoints.push(number[i].charCodeAt(0) + unicodeOffset);
-    }
+    const codePoints = [...number].map((num) => {
+      return num.charCodeAt(0) + unicodeOffset;
+    });
     return String.fromCharCode(...codePoints);
   }
 

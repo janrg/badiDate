@@ -433,17 +433,26 @@ class BadiDate {
     }
     const stringComponents = string.split('_');
     for (let comp = 1; comp < stringComponents.length; comp += 2) {
-      if (underlineFormat === 'css') {
-        stringComponents[comp] = '<span style="text-decoration:underline">' +
-          stringComponents[comp] + '</span>';
-      } else if (underlineFormat === 'diacritic') {
-        let newstring = '';
-        for (let i = 0; i < stringComponents[comp].length; i++) {
-          newstring += stringComponents[comp][i] + '\u0332';
+      switch (underlineFormat) {
+        case 'css': {
+          stringComponents[comp] = '<span style="text-decoration:underline">' +
+            stringComponents[comp] + '</span>';
+          break;
         }
-        stringComponents[comp] = newstring;
-      } else if (underlineFormat === 'u') {
-        stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+        case 'diacritic': {
+          let newstring = '';
+          for (let i = 0; i < stringComponents[comp].length; i++) {
+            newstring += stringComponents[comp][i] + '\u0332';
+          }
+          stringComponents[comp] = newstring;
+          break;
+        }
+        case 'u': {
+          stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+          break;
+        }
+        default:
+          throw new TypeError('Unexpected underlineFormat');
       }
     }
     return stringComponents.join('');
@@ -577,10 +586,9 @@ class BadiDate {
     if (unicodeOffset === 0) {
       return number;
     }
-    const codePoints = [];
-    for (let i = 0; i < number.length; i++) {
-      codePoints.push(number[i].charCodeAt(0) + unicodeOffset);
-    }
+    const codePoints = [...number].map((num) => {
+      return num.charCodeAt(0) + unicodeOffset;
+    });
     return String.fromCharCode(...codePoints);
   }
 
@@ -1139,14 +1147,11 @@ const useClockLocations = function (useCL) {
  * @returns {bool} whether the point given by coords is inside the polygon
  */
 const inPolygon = function (coords, polygon) {
-  const x = coords[0];
-  const y = coords[1];
+  const [x, y] = coords;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; i++) {
-    const xi = polygon[i][0];
-    const yi = polygon[i][1];
-    const xj = polygon[j][0];
-    const yj = polygon[j][1];
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
     // Check that a) the segment crosses the y coordinate of the point
     //            b) at least one of the two vertices is left of the point
     //            c) at the y coordinate of the point, the segment is left of it

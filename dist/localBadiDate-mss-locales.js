@@ -2331,6 +2331,54 @@
     };
   }();
 
+  var slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var toConsumableArray = function (arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  };
+
   /**
    * A date in the Badí' calendar.
    */
@@ -2519,16 +2567,28 @@
         }
         var stringComponents = string.split('_');
         for (var comp = 1; comp < stringComponents.length; comp += 2) {
-          if (underlineFormat === 'css') {
-            stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
-          } else if (underlineFormat === 'diacritic') {
-            var newstring = '';
-            for (var i = 0; i < stringComponents[comp].length; i++) {
-              newstring += stringComponents[comp][i] + '\u0332';
-            }
-            stringComponents[comp] = newstring;
-          } else if (underlineFormat === 'u') {
-            stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+          switch (underlineFormat) {
+            case 'css':
+              {
+                stringComponents[comp] = '<span style="text-decoration:underline">' + stringComponents[comp] + '</span>';
+                break;
+              }
+            case 'diacritic':
+              {
+                var newstring = '';
+                for (var i = 0; i < stringComponents[comp].length; i++) {
+                  newstring += stringComponents[comp][i] + '\u0332';
+                }
+                stringComponents[comp] = newstring;
+                break;
+              }
+            case 'u':
+              {
+                stringComponents[comp] = '<u>' + stringComponents[comp] + '</u>';
+                break;
+              }
+            default:
+              throw new TypeError('Unexpected underlineFormat');
           }
         }
         return stringComponents.join('');
@@ -2650,11 +2710,10 @@
         if (unicodeOffset === 0) {
           return number;
         }
-        var codePoints = [];
-        for (var i = 0; i < number.length; i++) {
-          codePoints.push(number[i].charCodeAt(0) + unicodeOffset);
-        }
-        return String.fromCharCode.apply(String, codePoints);
+        var codePoints = [].concat(toConsumableArray(number)).map(function (num) {
+          return num.charCodeAt(0) + unicodeOffset;
+        });
+        return String.fromCharCode.apply(String, toConsumableArray(codePoints));
       }
 
       /**
@@ -3282,17 +3341,24 @@
    * @returns {bool} whether the point given by coords is inside the polygon
    */
   var inPolygon = function inPolygon(coords, polygon) {
-    var x = coords[0];
-    var y = coords[1];
+    var _coords = slicedToArray(coords, 2),
+        x = _coords[0],
+        y = _coords[1];
+
     var inside = false;
     for (var i = 0, j = polygon.length - 1; i < polygon.length; i++) {
-      var xi = polygon[i][0];
-      var yi = polygon[i][1];
-      var xj = polygon[j][0];
-      var yj = polygon[j][1];
+      var _polygon$i = slicedToArray(polygon[i], 2),
+          xi = _polygon$i[0],
+          yi = _polygon$i[1];
+
+      var _polygon$j = slicedToArray(polygon[j], 2),
+          xj = _polygon$j[0],
+          yj = _polygon$j[1];
       // Check that a) the segment crosses the y coordinate of the point
       //            b) at least one of the two vertices is left of the point
       //            c) at the y coordinate of the point, the segment is left of it
+
+
       if (yi < y !== yj < y && (xi <= x || xj <= x) && xi + (y - yi) * (xj - xi) / (yj - yi) < x) {
         inside = !inside;
       }

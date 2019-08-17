@@ -28,14 +28,11 @@ const useClockLocations = function (useCL) {
  * @returns {bool} whether the point given by coords is inside the polygon
  */
 const inPolygon = function (coords, polygon) {
-  const x = coords[0];
-  const y = coords[1];
+  const [x, y] = coords;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; i++) {
-    const xi = polygon[i][0];
-    const yi = polygon[i][1];
-    const xj = polygon[j][0];
-    const yj = polygon[j][1];
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
     // Check that a) the segment crosses the y coordinate of the point
     //            b) at least one of the two vertices is left of the point
     //            c) at the y coordinate of the point, the segment is left of it
@@ -142,27 +139,37 @@ const clockLocationFromReverseGeocode = function (revGCJson, latitude) {
       adminLevel1 = addressComps[i].long_name;
     }
   }
-  if (country === '') {
-    return false;
-  } else if (country === 'United States') {
-    if (adminLevel1 === 'Alaska') {
-      return 'USA';
+  switch (country) {
+    case '': {
+      return false;
     }
-  } else if (country === 'Canada') {
-    if (latitude >= 60) {
-      return 'Canada';
+    case 'United States': {
+      if (adminLevel1 === 'Alaska') {
+        return 'USA';
+      }
+      break;
     }
-  } else if (country === 'Iceland' || country === 'Norway' ||
-             country === 'Finland') {
-    return country;
-  } else if (country === 'Sweden') {
-    const counties = ['Norrbottens län', 'Västerbottens län', 'Jämtlands län',
-      'Västernorrlands län', 'Gävleborgs län'];
-    for (let i = 0; i < counties.length; i++) {
-      if (counties[i] === adminLevel1) {
+    case 'Canada': {
+      if (latitude >= 60) {
+        return 'Canada';
+      }
+      break;
+    }
+    case 'Iceland': case 'Norway': case 'Finland': {
+      return country;
+    }
+    case 'Sweden': {
+      const counties = ['Norrbottens län', 'Västerbottens län', 'Jämtlands län',
+        'Västernorrlands län', 'Gävleborgs län'];
+      if (counties.some((county) => {
+        return county === adminLevel1;
+      })) {
         return 'Sweden';
       }
+      break;
     }
+    default:
+      break;
   }
   return false;
 };
