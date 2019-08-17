@@ -677,16 +677,16 @@ const sunTransit = function (datetime, L) {
   const timezone = datetime.tz();
   const transit = moment.tz(
     [datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-  const DeltaT$$1 = DeltaT(transit);
+  const DeltaT$1 = DeltaT(transit);
   const T = datetimeToT(transit);
   const Theta0 = apparentSiderealTimeGreenwhich(T);
   // Want 0h TD for this, not UT
-  const TD = T - (DeltaT$$1 / (3600 * 24 * 36525));
+  const TD = T - (DeltaT$1 / (3600 * 24 * 36525));
   const alpha = sunApparentRightAscension(TD);
   // Sign flip for longitude from AA as we take East as positive
   let m = (alpha - L - Theta0) / 360;
   m = normalizeM(m, datetime.utcOffset());
-  const DeltaM = sunTransitCorrection(T, Theta0, DeltaT$$1, L, m);
+  const DeltaM = sunTransitCorrection(T, Theta0, DeltaT$1, L, m);
   m += DeltaM;
   transit.add(Math.floor(m * 3600 * 24 + 0.5), 'seconds');
   if (roundToNearestMinute) {
@@ -714,11 +714,11 @@ const sunRiseSet = function (datetime, phi, L, flag, offset = 50 / 60) {
   const timezone = datetime.tz();
   const suntime = moment.tz(
     [datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-  const DeltaT$$1 = DeltaT(suntime);
+  const DeltaT$1 = DeltaT(suntime);
   const T = datetimeToT(suntime);
   const Theta0 = apparentSiderealTimeGreenwhich(T);
   // Want 0h TD for this, not UT
-  const TD = T - (DeltaT$$1 / (3600 * 24 * 36525));
+  const TD = T - (DeltaT$1 / (3600 * 24 * 36525));
   const alpha = sunApparentRightAscension(TD);
   const delta = sunApparentDeclination(TD);
   const H0 = approxLocalHourAngle(phi, delta, offset);
@@ -737,7 +737,7 @@ const sunRiseSet = function (datetime, phi, L, flag, offset = 50 / 60) {
   let DeltaM = 1;
   // Repeat if correction is larger than ~9s
   while ((Math.abs(DeltaM) > 0.0001) && (counter < 3)) {
-    DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$$1, phi, L, m, offset);
+    DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$1, phi, L, m, offset);
     m += DeltaM;
     counter++;
   }
@@ -856,9 +856,9 @@ const normalizeM = function (m, utcOffset) {
  * @param {number} m Fractional time of day of the event.
  * @returns {number} Currection for the solar transit time.
  */
-const sunTransitCorrection = function (T, Theta0, DeltaT$$1, L, m) {
+const sunTransitCorrection = function (T, Theta0, DeltaT, L, m) {
   const theta0 = Theta0 + 360.985647 * m;
-  const n = m + DeltaT$$1 / 864000;
+  const n = m + DeltaT / 864000;
   const alpha = interpolatedRa(T, n);
   const H = localHourAngle(theta0, L, alpha);
   const DeltaM = -H / 360;
@@ -879,9 +879,9 @@ const sunTransitCorrection = function (T, Theta0, DeltaT$$1, L, m) {
  *     astronomical dawn/dusk.
  * @returns {number} Currection for the sunrise/sunset time.
  */
-const sunRiseSetCorrection = function (T, Theta0, DeltaT$$1, phi, L, m, offset) {
+const sunRiseSetCorrection = function (T, Theta0, DeltaT, phi, L, m, offset) {
   const theta0 = Theta0 + 360.985647 * m;
-  const n = m + DeltaT$$1 / 864000;
+  const n = m + DeltaT / 864000;
   const alpha = interpolatedRa(T, n);
   const delta = interpolatedDec(T, n);
   const H = localHourAngle(theta0, L, alpha);
@@ -1434,17 +1434,17 @@ const yearMoonPhases = function (year, phase, timezone) {
   const phaseTimes = [];
   let JDE;
   let moonDatetime;
-  let DeltaT$$1;
+  let DeltaT$1;
   for (let i = 0; i < 15; i++) {
     JDE = truePhase(k, phase);
     // we pretend it's JD and not JDE
     moonDatetime = JDToDatetime(JDE);
     // now use that to calculate deltaT
-    DeltaT$$1 = DeltaT(moonDatetime);
-    if (DeltaT$$1 > 0) {
-      moonDatetime.subtract(Math.abs(DeltaT$$1), 'seconds');
+    DeltaT$1 = DeltaT(moonDatetime);
+    if (DeltaT$1 > 0) {
+      moonDatetime.subtract(Math.abs(DeltaT$1), 'seconds');
     } else {
-      moonDatetime.add(Math.abs(DeltaT$$1), 'seconds');
+      moonDatetime.add(Math.abs(DeltaT$1), 'seconds');
     }
     if (roundToNearestMinute) {
       moonDatetime.add(30, 'seconds');
@@ -3686,8 +3686,8 @@ class LocalBadiDate {
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
     if (date instanceof moment) {
-      const sunset$$1 = sunset(date, latitude, longitude);
-      if (date.isAfter(sunset$$1)) {
+      const sunset$1 = sunset(date, latitude, longitude);
+      if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
@@ -3770,16 +3770,16 @@ class LocalBadiDate {
  * module.
  * @param {object} options Options to be set.
  */
-const badiDateOptions$1 = function (options$$1) {
-  if (typeof options$$1.defaultLanguage === 'string' ||
-      typeof options$$1.underlineFormat === 'string') {
-    badiDateOptions(options$$1);
+const badiDateOptions$1 = function (options) {
+  if (typeof options.defaultLanguage === 'string' ||
+      typeof options.underlineFormat === 'string') {
+    badiDateOptions(options);
   }
-  if (typeof options$$1.useClockLocations === 'boolean') {
-    useClockLocations(options$$1.useClockLocations);
+  if (typeof options.useClockLocations === 'boolean') {
+    useClockLocations(options.useClockLocations);
   }
 };
 
 options({returnTimeForPNMS: true, roundToNearestMinute: true});
 
-export { index as MeeusSunMoon, BadiDate, LocalBadiDate, badiDateOptions$1 as badiDateOptions };
+export { BadiDate, LocalBadiDate, index as MeeusSunMoon, badiDateOptions$1 as badiDateOptions };

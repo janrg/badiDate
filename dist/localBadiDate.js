@@ -7,8 +7,8 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.window = global.window || {})));
-}(this, (function (exports) { 'use strict';
+  (global = global || self, factory(global.window = global.window || {}));
+}(this, function (exports) { 'use strict';
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -447,22 +447,22 @@
 
         /* eslint-disable-line complexity, class-methods-use-this */
         if (crop && crop < string.length) {
-          var char = 0;
+          var _char = 0;
           var counter = 0;
 
           while (counter < crop) {
-            if (!'_’‘'.indexOf(string[char]) > -1) {
+            if (!'_’‘'.indexOf(string[_char]) > -1) {
               counter++;
             }
 
-            char++;
+            _char++;
           }
 
-          if ('_’‘'.indexOf(string[char]) > -1) {
-            char++;
+          if ('_’‘'.indexOf(string[_char]) > -1) {
+            _char++;
           }
 
-          string = string.slice(0, char);
+          string = string.slice(0, _char);
 
           if (string.split('_').length % 2 === 0) {
             string += '_';
@@ -1538,7 +1538,7 @@
    */
 
 
-  var badiDateOptions$1 = function badiDateOptions$$1(options) {
+  var badiDateOptions$1 = function badiDateOptions$1(options) {
     if (typeof options.defaultLanguage === 'string' || typeof options.underlineFormat === 'string') {
       badiDateOptions(options);
     }
@@ -1559,4 +1559,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-})));
+}));

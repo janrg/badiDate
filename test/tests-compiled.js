@@ -4,11 +4,10 @@
  * licensed under MIT
  */
 
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+(function (factory) {
   typeof define === 'function' && define.amd ? define(factory) :
-  (factory());
-}(this, (function () { 'use strict';
+  factory();
+}(function () { 'use strict';
 
   /* eslint-disable indent */
   var UHJListDates = [['2015-03-21', 4, [13, 10, 13, 11]], ['2016-03-20', 4, [12, 18, 12, 19]], ['2017-03-20', 5, [12, 7, 12, 8]], ['2018-03-21', 4, [13, 6, 13, 7]], ['2019-03-21', 4, [12, 14, 12, 15]], ['2020-03-20', 4, [12, 4, 12, 5]], ['2021-03-20', 5, [13, 4, 13, 5]], ['2022-03-21', 4, [12, 11, 12, 12]], ['2023-03-21', 4, [12, 1, 12, 2]], ['2024-03-20', 4, [12, 19, 13, 1]], ['2025-03-20', 5, [12, 8, 12, 9]], ['2026-03-21', 4, [13, 7, 13, 8]], ['2027-03-21', 4, [12, 15, 12, 16]], ['2028-03-20', 4, [12, 5, 12, 6]], ['2029-03-20', 4, [13, 5, 13, 6]], ['2030-03-20', 5, [12, 14, 12, 15]], ['2031-03-21', 4, [12, 2, 12, 3]], ['2032-03-20', 4, [13, 2, 13, 3]], ['2033-03-20', 4, [12, 10, 12, 11]], ['2034-03-20', 5, [13, 10, 13, 11]], ['2035-03-21', 4, [12, 17, 12, 18]], ['2036-03-20', 4, [12, 6, 12, 7]], ['2037-03-20', 4, [13, 6, 13, 7]], ['2038-03-20', 5, [12, 15, 12, 16]], ['2039-03-21', 4, [12, 4, 12, 5]], ['2040-03-20', 4, [13, 4, 13, 5]], ['2041-03-20', 4, [12, 12, 12, 13]], ['2042-03-20', 5, [12, 1, 12, 2]], ['2043-03-21', 4, [12, 19, 13, 1]], ['2044-03-20', 4, [12, 8, 12, 9]], ['2045-03-20', 4, [13, 8, 13, 9]], ['2046-03-20', 5, [12, 16, 12, 17]], ['2047-03-21', 4, [12, 5, 12, 6]], ['2048-03-20', 4, [13, 5, 13, 6]], ['2049-03-20', 4, [12, 14, 12, 15]], ['2050-03-20', 5, [12, 3, 12, 4]], ['2051-03-21', 4, [13, 2, 13, 3]], ['2052-03-20', 4, [12, 10, 12, 11]], ['2053-03-20', 4, [13, 9, 13, 10]], ['2054-03-20', 5, [12, 18, 12, 19]], ['2055-03-21', 4, [12, 6, 12, 7]], ['2056-03-20', 4, [13, 6, 13, 7]], ['2057-03-20', 4, [12, 15, 12, 16]], ['2058-03-20', 4, [12, 4, 12, 5]], ['2059-03-20', 5, [13, 4, 13, 5]], ['2060-03-20', 4, [12, 11, 12, 12]], ['2061-03-20', 4, [11, 19, 12, 1]], ['2062-03-20', 4, [12, 19, 13, 1]], ['2063-03-20', 5, [12, 9, 12, 10]], ['2064-03-20', 4, [13, 8, 13, 9]]];
@@ -349,7 +348,7 @@
   /* eslint array-bracket-spacing: "off", indent: "off", no-multi-spaces: "off", standard/array-bracket-even-spacing: "off" */
 
   /** See AA p144 */
-  const sunMeanAnomaly$1 = [357.52772, 35999.050340, -0.0001603, -1 / 300000];
+  const sunMeanAnomaly = [357.52772, 35999.050340, -0.0001603, -1 / 300000];
   /** See AA p163 Eq 25.2 */
 
   const sunMeanLongitude = [280.46646, 36000.76983, 0.0003032];
@@ -358,13 +357,13 @@
   const meanObliquityOfEcliptic = [84381.448 / 3600, -4680.93 / 3600, -1.55 / 3600, 1999.25 / 3600, -51.38 / 3600, -249.67 / 3600, -39.05 / 3600, 7.12 / 3600, 27.87 / 3600, 5.79 / 3600, 2.45 / 3600];
   /** See AA p144 */
 
-  const moonArgumentOfLatitude$1 = [93.27191, 483202.017538, -0.0036825, 1 / 327270];
+  const moonArgumentOfLatitude = [93.27191, 483202.017538, -0.0036825, 1 / 327270];
   /** See AA p144 */
 
-  const moonAscendingNodeLongitude$1 = [125.04452, -1934.136261, 0.0020708, 1 / 450000];
+  const moonAscendingNodeLongitude = [125.04452, -1934.136261, 0.0020708, 1 / 450000];
   /** See AA p144 */
 
-  const moonMeanAnomaly$1 = [134.96298, 477198.867398, 0.0086972, 1 / 56250];
+  const moonMeanAnomaly = [134.96298, 477198.867398, 0.0086972, 1 / 56250];
   /** See AA p144 */
 
   const moonMeanElongation = [297.85036, 445267.111480, -0.0019142, 1 / 189474];
@@ -386,16 +385,16 @@
   const sunTransit = function (datetime, L) {
     const timezone = datetime.tz();
     const transit = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-    const DeltaT$$1 = DeltaT(transit);
+    const DeltaT$1 = DeltaT(transit);
     const T = datetimeToT(transit);
     const Theta0 = apparentSiderealTimeGreenwhich(T); // Want 0h TD for this, not UT
 
-    const TD = T - DeltaT$$1 / (3600 * 24 * 36525);
+    const TD = T - DeltaT$1 / (3600 * 24 * 36525);
     const alpha = sunApparentRightAscension(TD); // Sign flip for longitude from AA as we take East as positive
 
     let m = (alpha - L - Theta0) / 360;
     m = normalizeM(m, datetime.utcOffset());
-    const DeltaM = sunTransitCorrection(T, Theta0, DeltaT$$1, L, m);
+    const DeltaM = sunTransitCorrection(T, Theta0, DeltaT$1, L, m);
     m += DeltaM;
     transit.add(Math.floor(m * 3600 * 24 + 0.5), 'seconds');
 
@@ -425,11 +424,11 @@
   const sunRiseSet = function (datetime, phi, L, flag, offset = 50 / 60) {
     const timezone = datetime.tz();
     const suntime = moment.tz([datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
-    const DeltaT$$1 = DeltaT(suntime);
+    const DeltaT$1 = DeltaT(suntime);
     const T = datetimeToT(suntime);
     const Theta0 = apparentSiderealTimeGreenwhich(T); // Want 0h TD for this, not UT
 
-    const TD = T - DeltaT$$1 / (3600 * 24 * 36525);
+    const TD = T - DeltaT$1 / (3600 * 24 * 36525);
     const alpha = sunApparentRightAscension(TD);
     const delta = sunApparentDeclination(TD);
     const H0 = approxLocalHourAngle(phi, delta, offset); // Sign flip for longitude from AA as we take East as positive
@@ -450,7 +449,7 @@
     let DeltaM = 1; // Repeat if correction is larger than ~9s
 
     while (Math.abs(DeltaM) > 0.0001 && counter < 3) {
-      DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$$1, phi, L, m, offset);
+      DeltaM = sunRiseSetCorrection(T, Theta0, DeltaT$1, phi, L, m, offset);
       m += DeltaM;
       counter++;
     }
@@ -576,9 +575,9 @@
    */
 
 
-  const sunTransitCorrection = function (T, Theta0, DeltaT$$1, L, m) {
+  const sunTransitCorrection = function (T, Theta0, DeltaT, L, m) {
     const theta0 = Theta0 + 360.985647 * m;
-    const n = m + DeltaT$$1 / 864000;
+    const n = m + DeltaT / 864000;
     const alpha = interpolatedRa(T, n);
     const H = localHourAngle(theta0, L, alpha);
     const DeltaM = -H / 360;
@@ -600,9 +599,9 @@
    */
 
 
-  const sunRiseSetCorrection = function (T, Theta0, DeltaT$$1, phi, L, m, offset) {
+  const sunRiseSetCorrection = function (T, Theta0, DeltaT, phi, L, m, offset) {
     const theta0 = Theta0 + 360.985647 * m;
-    const n = m + DeltaT$$1 / 864000;
+    const n = m + DeltaT / 864000;
     const alpha = interpolatedRa(T, n);
     const delta = interpolatedDec(T, n);
     const H = localHourAngle(theta0, L, alpha);
@@ -685,7 +684,7 @@
 
 
   const sunApparentRightAscension = function (T) {
-    const Omega = moonAscendingNodeLongitude$2(T);
+    const Omega = moonAscendingNodeLongitude$1(T);
     const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
     const lambda = sunApparentLongitude(T);
     const alpha = rad2deg(Math.atan2(cosd(epsilon) * sind(lambda), cosd(lambda)));
@@ -700,7 +699,7 @@
 
 
   const sunApparentDeclination = function (T) {
-    const Omega = moonAscendingNodeLongitude$2(T);
+    const Omega = moonAscendingNodeLongitude$1(T);
     const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
     const lambda = sunApparentLongitude(T);
     const delta = rad2deg(Math.asin(sind(epsilon) * sind(lambda)));
@@ -771,7 +770,7 @@
 
   const sunApparentLongitude = function (T) {
     const Sol = sunTrueLongitude(T);
-    const Omega = moonAscendingNodeLongitude$2(T);
+    const Omega = moonAscendingNodeLongitude$1(T);
     const lambda = Sol - 0.00569 - 0.00478 * sind(Omega);
     return lambda;
   };
@@ -798,7 +797,7 @@
 
 
   const sunEquationOfCenter = function (T) {
-    const M = sunMeanAnomaly$2(T);
+    const M = sunMeanAnomaly$1(T);
     const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * sind(M) + (0.019993 - 0.000101 * T) * sind(2 * M) + 0.000290 * sind(3 * M);
     return C;
   };
@@ -812,10 +811,10 @@
 
   const nutationInLongitude = function (T) {
     const D = moonMeanElongation$1(T);
-    const M = sunMeanAnomaly$2(T);
-    const MPrime = moonMeanAnomaly$2(T);
-    const F = moonArgumentOfLatitude$2(T);
-    const Omega = moonAscendingNodeLongitude$2(T);
+    const M = sunMeanAnomaly$1(T);
+    const MPrime = moonMeanAnomaly$1(T);
+    const F = moonArgumentOfLatitude$1(T);
+    const Omega = moonAscendingNodeLongitude$1(T);
     let DeltaPsi = 0;
     let sineArg;
 
@@ -837,10 +836,10 @@
 
   const nutationInObliquity = function (T) {
     const D = moonMeanElongation$1(T);
-    const M = sunMeanAnomaly$2(T);
-    const MPrime = moonMeanAnomaly$2(T);
-    const F = moonArgumentOfLatitude$2(T);
-    const Omega = moonAscendingNodeLongitude$2(T);
+    const M = sunMeanAnomaly$1(T);
+    const MPrime = moonMeanAnomaly$1(T);
+    const F = moonArgumentOfLatitude$1(T);
+    const Omega = moonAscendingNodeLongitude$1(T);
     let DeltaEpsilon = 0;
     let cosArg;
 
@@ -860,8 +859,8 @@
    */
 
 
-  const moonArgumentOfLatitude$2 = function (T) {
-    const F = polynomial(T, moonArgumentOfLatitude$1);
+  const moonArgumentOfLatitude$1 = function (T) {
+    const F = polynomial(T, moonArgumentOfLatitude);
     return reduceAngle(F);
   };
   /**
@@ -873,8 +872,8 @@
    */
 
 
-  const moonAscendingNodeLongitude$2 = function (T) {
-    const Omega = polynomial(T, moonAscendingNodeLongitude$1);
+  const moonAscendingNodeLongitude$1 = function (T) {
+    const Omega = polynomial(T, moonAscendingNodeLongitude);
     return reduceAngle(Omega);
   };
   /**
@@ -885,8 +884,8 @@
    */
 
 
-  const moonMeanAnomaly$2 = function (T) {
-    const MPrime = polynomial(T, moonMeanAnomaly$1);
+  const moonMeanAnomaly$1 = function (T) {
+    const MPrime = polynomial(T, moonMeanAnomaly);
     return reduceAngle(MPrime);
   };
   /**
@@ -909,8 +908,8 @@
    */
 
 
-  const sunMeanAnomaly$2 = function (T) {
-    const M = polynomial(T, sunMeanAnomaly$1);
+  const sunMeanAnomaly$1 = function (T) {
+    const M = polynomial(T, sunMeanAnomaly);
     return reduceAngle(M);
   };
   /**
@@ -2302,22 +2301,22 @@
 
         /* eslint-disable-line complexity, class-methods-use-this */
         if (crop && crop < string.length) {
-          var char = 0;
+          var _char = 0;
           var counter = 0;
 
           while (counter < crop) {
-            if (!'_’‘'.indexOf(string[char]) > -1) {
+            if (!'_’‘'.indexOf(string[_char]) > -1) {
               counter++;
             }
 
-            char++;
+            _char++;
           }
 
-          if ('_’‘'.indexOf(string[char]) > -1) {
-            char++;
+          if ('_’‘'.indexOf(string[_char]) > -1) {
+            _char++;
           }
 
-          string = string.slice(0, char);
+          string = string.slice(0, _char);
 
           if (string.split('_').length % 2 === 0) {
             string += '_';
@@ -3307,9 +3306,9 @@
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
     if (date instanceof moment) {
-      var sunset$$1 = sunset(date, latitude, longitude);
+      var sunset$1 = sunset(date, latitude, longitude);
 
-      if (date.isAfter(sunset$$1)) {
+      if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
@@ -3393,13 +3392,13 @@
    */
 
 
-  var badiDateOptions$1 = function badiDateOptions$$1(options$$1) {
-    if (typeof options$$1.defaultLanguage === 'string' || typeof options$$1.underlineFormat === 'string') {
-      badiDateOptions(options$$1);
+  var badiDateOptions$1 = function badiDateOptions$1(options) {
+    if (typeof options.defaultLanguage === 'string' || typeof options.underlineFormat === 'string') {
+      badiDateOptions(options);
     }
 
-    if (typeof options$$1.useClockLocations === 'boolean') {
-      useClockLocations(options$$1.useClockLocations);
+    if (typeof options.useClockLocations === 'boolean') {
+      useClockLocations(options.useClockLocations);
     }
   };
 
@@ -3566,4 +3565,4 @@
     }
   });
 
-})));
+}));
