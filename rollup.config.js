@@ -53,6 +53,7 @@ function rollupConfig(root, mss, locales, minify, format, filename = '') {
     root = 'mssBundle.js';
   }
   const config = {
+    external: ['moment-timezone'],
     input: 'src/' + root,
     output: {
       banner: copyrightNotice,
