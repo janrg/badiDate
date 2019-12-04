@@ -115,15 +115,5 @@ export default [
   rollupConfig('localBadiDate.js', false, [], true, 'es'),
   rollupConfig('localBadiDate.js', false, [], true, 'umd'),
   rollupConfig('localBadiDate.js', false, [], false, 'es'),
-  rollupConfig('localBadiDate.js', false, [], false, 'umd'),
-  {
-    input: 'test/tests.js',
-    output: {
-      banner: copyrightNotice,
-      file: 'test/tests-compiled.js',
-      format: 'umd',
-      name: 'BadiDateTests'
-    },
-    plugins: [babel()]
-  }
+  rollupConfig('localBadiDate.js', false, [], false, 'umd')
 ];

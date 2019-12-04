@@ -1,11 +1,8 @@
 import * as MeeusSunMoon from '../node_modules/meeussunmoon/src/index.js';
-import * as momentNs from 'moment-timezone';
 import {BadiDate,
   badiDateOptions as badiDateBaseOptions} from './badiDate.js';
 import {clockLocationFromPolygons,
   useClockLocations} from './clockLocations.js';
-
-const moment = momentNs;
 
 /* eslint-disable complexity */
 

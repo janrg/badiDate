@@ -79,6 +79,13 @@
         "valid-jsdoc": ["error", {"prefer": {"arg": "param", "argument": "param", "class": "constructor", "return": "returns", "virtual": "abstract"}, "requireReturn": false}],
         "wrap-regex": "error"
     },
+    "overrides": [{
+        "env": {"mocha": true},
+        "files": "test/**",
+        "globals": {
+            "assert": true
+        }
+    }],
     "globals": {
         "moment": false
     }

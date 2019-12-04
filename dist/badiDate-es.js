@@ -4,8 +4,6 @@
  * licensed under MIT
  */
 
-import * as momentNs from 'moment-timezone';
-
 const month = {
   1: 'Bahá',
   2: 'Jalál',
@@ -253,8 +251,6 @@ const badiYears = [
   'l4da', 'l5ci', 'l4c7', 'l4d7', 'l4cf', 'l5c4', 'l4d2', 'l4cb', 'l4bj',
   'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
   'l4c9', 'l4da', 'l4ci'];
-
-const moment = momentNs;
 
 /**
  * A date in the Badí' calendar.
