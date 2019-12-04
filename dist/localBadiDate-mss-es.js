@@ -771,7 +771,6 @@ const returnPNMS = function (returnDate, date, hour, minute = 0) {
     if (date.isDST()) {
       hour += 1;
     }
-    console.log('returnDate', returnDate);
     returnDate.tz(date.tz())
       .year(date.year())
       .month(date.month())
@@ -2731,8 +2730,8 @@ class LocalBadiDate {
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
     if (date instanceof moment) {
-      const sunset = MeeusSunMoon.sunset(date, latitude, longitude);
-      if (date.isAfter(sunset)) {
+      const sunset$1 = sunset(date, latitude, longitude);
+      if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
@@ -2743,10 +2742,10 @@ class LocalBadiDate {
     if (!this.clockLocation ||
         (this.clockLocation === 'Finland' &&
          this.badiDate.badiMonth() === 19)) {
-      this.end = MeeusSunMoon.sunset(gregDate, latitude, longitude);
-      this.solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
-      this.sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
-      this.start = MeeusSunMoon.sunset(
+      this.end = sunset(gregDate, latitude, longitude);
+      this.solarNoon = solarNoon(gregDate, longitude);
+      this.sunrise = sunrise(gregDate, latitude, longitude);
+      this.start = sunset(
         gregDate.subtract(1, 'day'), latitude, longitude);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
@@ -2825,6 +2824,6 @@ const badiDateOptions$1 = function (options) {
   }
 };
 
-MeeusSunMoon.options({returnTimeForPNMS: true, roundToNearestMinute: true});
+options({returnTimeForPNMS: true, roundToNearestMinute: true});
 
 export { BadiDate, LocalBadiDate, index as MeeusSunMoon, badiDateOptions$1 as badiDateOptions };

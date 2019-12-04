@@ -1,5 +1,6 @@
 {
     "extends": "standard",
+    "parser": "babel-eslint",
     "rules": {
         "array-bracket-spacing": ["error", "never"],
         "array-callback-return": "error",

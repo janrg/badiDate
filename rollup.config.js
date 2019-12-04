@@ -72,12 +72,6 @@ function rollupConfig(root, mss, locales, minify, format, filename = '') {
       test: localeRegex(locales)
     });
   }
-  replacePatterns.push({
-    match: 'src/localBadiDate.js',
-    replace: '',
-    test: 'import * as MeeusSunMoon from ' +
-          "'../node_modules/meeussunmoon/src/index.js';"
-  });
   if (locales !== true || !mss) {
     config.plugins.push(replace({patterns: replacePatterns}));
   }

@@ -10,38 +10,50 @@
   "scripts": {
     "eslint": "eslint .",
     "rollup": "rollup -c",
-    "node-qunit": "./node_modules/node-qunit/bin/cli.js --timeout 10000 -c dist/localBadiDate-mss-locales.js -t test/tests-compiled.js -d moment:node_modules/moment/moment.js node_modules/moment-timezone/builds/moment-timezone-with-data.min.js",
-    "node-test": "npm run eslint && npm run rollup && npm run node-qunit",
+    "start": "static -p 8048",
+    "coverage": "open-cli http://localhost:8048/coverage/ && npm start",
     "mocha": "_mocha --timeout 10000 test/tests.js --delay --require esm --require test/node-env.js",
+    "browser-test": "open-cli http://localhost:8048/test/ && npm start",
     "node-test": "npm run eslint && npm run rollup && npm run mocha",
+    "test-cov": "npm run eslint && npm run rollup && rm -Rf node_modules/.cache && nyc npm run mocha",
     "test": "npm run node-test"
   },
+  "nyc": {
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "exclude": [
+      "test"
+    ]
+  },
   "dependencies": {
-    "meeussunmoon": "^2.1.1",
+    "meeussunmoon": "^2.1.2",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.4",
-    "@babel/core": "^7.7.4",
-    "@babel/node": "^7.7.4",
-    "@babel/preset-env": "^7.7.4",
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "babel-eslint": "^10.0.3",
     "chai": "^4.2.0",
-    "eslint": "6.7.2",
+    "eslint": "6.8.0",
     "eslint-config-standard": "14.1.0",
-    "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-node": "10.0.0",
+    "eslint-plugin-import": "2.19.1",
+    "eslint-plugin-node": "11.0.0",
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
     "esm": "^3.2.25",
     "mocha": "^6.2.2",
     "node-static": "0.7.11",
+    "nyc": "^15.0.0",
     "open-cli": "^5.0.0",
-    "qunit": "^2.9.3",
-    "rollup": "1.27.8",
+    "rollup": "1.27.14",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-re": "^1.0.7",
-    "rollup-plugin-terser": "^5.1.2"
+    "rollup-plugin-terser": "^5.1.3"
   },
   "engines": {
     "npm": "*"

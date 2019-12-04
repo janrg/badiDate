@@ -771,7 +771,6 @@ const returnPNMS = function (returnDate, date, hour, minute = 0) {
     if (date.isDST()) {
       hour += 1;
     }
-    console.log('returnDate', returnDate);
     returnDate.tz(date.tz())
       .year(date.year())
       .month(date.month())

@@ -694,7 +694,6 @@
         hour += 1;
       }
 
-      console.log('returnDate', returnDate);
       returnDate.tz(date.tz()).year(date.year()).month(date.month()).date(date.date()).hour(hour).minute(minute).second(0);
     }
 
@@ -2905,9 +2904,9 @@
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
     if (date instanceof moment) {
-      var sunset = MeeusSunMoon.sunset(date, latitude, longitude);
+      var sunset$1 = sunset(date, latitude, longitude);
 
-      if (date.isAfter(sunset)) {
+      if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
@@ -2917,10 +2916,10 @@
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
 
     if (!this.clockLocation || this.clockLocation === 'Finland' && this.badiDate.badiMonth() === 19) {
-      this.end = MeeusSunMoon.sunset(gregDate, latitude, longitude);
-      this.solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
-      this.sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
-      this.start = MeeusSunMoon.sunset(gregDate.subtract(1, 'day'), latitude, longitude); // add() and subtract() mutate the object, so we have to undo it
+      this.end = sunset(gregDate, latitude, longitude);
+      this.solarNoon = solarNoon(gregDate, longitude);
+      this.sunrise = sunrise(gregDate, latitude, longitude);
+      this.start = sunset(gregDate.subtract(1, 'day'), latitude, longitude); // add() and subtract() mutate the object, so we have to undo it
 
       gregDate.add(1, 'day');
     } else {
@@ -3001,7 +3000,7 @@
     }
   };
 
-  MeeusSunMoon.options({
+  options({
     returnTimeForPNMS: true,
     roundToNearestMinute: true
   });

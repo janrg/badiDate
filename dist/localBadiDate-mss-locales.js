@@ -694,7 +694,6 @@
         hour += 1;
       }
 
-      console.log('returnDate', returnDate);
       returnDate.tz(date.tz()).year(date.year()).month(date.month()).date(date.date()).hour(hour).minute(minute).second(0);
     }
 
