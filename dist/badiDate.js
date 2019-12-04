@@ -8,7 +8,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('moment-timezone')) :
   typeof define === 'function' && define.amd ? define(['exports', 'moment-timezone'], factory) :
   (global = global || self, factory(global.window = global.window || {}, global.momentNs));
-}(this, function (exports, momentNs) { 'use strict';
+}(this, (function (exports, momentNs) { 'use strict';
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -175,6 +175,7 @@
   var defaultFormat = 'd MM+ y BE';
 
   var en = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month,
     monthL: monthL,
     holyDay: holyDay,
@@ -1257,4 +1258,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));

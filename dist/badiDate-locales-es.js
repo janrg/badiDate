@@ -137,6 +137,7 @@ const digitUnicodeOffset = '0'.charCodeAt(0);
 const defaultFormat = 'd MM+ y BE';
 
 var en = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month,
   monthL: monthL,
   holyDay: holyDay,
@@ -262,6 +263,7 @@ const digitUnicodeOffset$1 = '٠'.charCodeAt(0);
 const defaultFormat$1 = '&#8207;d MM y BE&#8207;';
 
 var ar = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$1,
   monthL: monthL$1,
   holyDay: holyDay$1,
@@ -329,6 +331,7 @@ const BE$2 = 'B.E.';
 const badiCalendar$2 = 'Badí‘ Kalender';
 
 var de = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$2,
   holyDay: holyDay$2,
   weekdayL: weekdayL$2,
@@ -387,6 +390,7 @@ const BE$3 = 'E.B.';
 const badiCalendar$3 = 'Calendario Badí‘';
 
 var es = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$3,
   holyDay: holyDay$3,
   weekdayL: weekdayL$3,
@@ -524,6 +528,7 @@ const digitUnicodeOffset$2 = '۰'.charCodeAt(0);
 const defaultFormat$2 = '&#8207;d MML y BE&#8207;';
 
 var fa = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$2,
   monthL: monthL$4,
   holyDay: holyDay$4,
@@ -591,6 +596,7 @@ const BE$5 = 'E.B.';
 const badiCalendar$5 = 'Calendrier Badí‘';
 
 var fr = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$5,
   holyDay: holyDay$5,
   weekdayL: weekdayL$5,
@@ -649,6 +655,7 @@ const BE$6 = 'B.Ē.';
 const badiCalendar$6 = 'Badí‘ kalendārs';
 
 var lv = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$6,
   holyDay: holyDay$6,
   weekdayL: weekdayL$6,
@@ -707,6 +714,7 @@ const BE$7 = 'B.E.';
 const badiCalendar$7 = 'Badí‘-Kalender';
 
 var nl = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$7,
   holyDay: holyDay$7,
   weekdayL: weekdayL$7,
@@ -765,6 +773,7 @@ const BE$8 = 'E.B.';
 const badiCalendar$8 = 'Calendário Badí‘';
 
 var pt = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$8,
   holyDay: holyDay$8,
   weekdayL: weekdayL$8,
@@ -900,6 +909,7 @@ const BE$9 = 'Э.Б.';
 const badiCalendar$9 = 'Календарь Бадӣ‘';
 
 var ru = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$3,
   monthL: monthL$9,
   holyDay: holyDay$9,
@@ -965,6 +975,7 @@ const BE$a = 'B.E.';
 const badiCalendar$a = 'Badí‘kalendern';
 
 var sv = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$a,
   holyDay: holyDay$a,
   weekdayL: weekdayL$a,
@@ -1100,6 +1111,7 @@ const BE$b = 'BE';
 const badiCalendar$b = '巴迪历';
 
 var zh = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$4,
   monthL: monthL$b,
   holyDay: holyDay$b,
@@ -1120,6 +1132,7 @@ const monthL$c = {
 };
 
 var en_us = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$c
 });
 

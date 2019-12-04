@@ -89,6 +89,8 @@ const interpolateFromThree = function (y1, y2, y3, n, normalize) {
   return y;
 };
 
+const moment = momentNs;
+
 /**
  * Converts a datetime in UTC to the corresponding Julian Date (see AA p60f).
  * @param {moment} datetime Datetime to be converted.
@@ -668,6 +670,8 @@ const nutations =
    [ 0,  0,  3,  2, 2,      3,       0,     0,    0],
    [ 2, -1,  0,  2, 2,     -3,       0,     0,    0]];
 
+const moment$1 = momentNs;
+
 /**
  * Calculates the solar transit time on a date at a given longitude (see AA
  * p102f).
@@ -677,7 +681,7 @@ const nutations =
  */
 const sunTransit = function (datetime, L) {
   const timezone = datetime.tz();
-  const transit = moment.tz(
+  const transit = moment$1.tz(
     [datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
   const DeltaT$1 = DeltaT(transit);
   const T = datetimeToT(transit);
@@ -714,7 +718,7 @@ const sunTransit = function (datetime, L) {
  */
 const sunRiseSet = function (datetime, phi, L, flag, offset = 50 / 60) {
   const timezone = datetime.tz();
-  const suntime = moment.tz(
+  const suntime = moment$1.tz(
     [datetime.year(), datetime.month(), datetime.date(), 0, 0, 0], 'UTC');
   const DeltaT$1 = DeltaT(suntime);
   const T = datetimeToT(suntime);
@@ -799,7 +803,7 @@ const approxLocalHourAngle = function (phi, delta, offset) {
                 (cosd(phi) * cosd(delta));
   if (cosH0 < -1) {
     if (returnTimeForPNMS) {
-      throw moment.tz('**2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss',
+      throw moment$1.tz('**2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss',
         'Europe/London');
     } else {
       let special = 'MS';
@@ -814,7 +818,7 @@ const approxLocalHourAngle = function (phi, delta, offset) {
     }
   } else if (cosH0 > 1) {
     if (returnTimeForPNMS) {
-      throw moment.tz('--2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss',
+      throw moment$1.tz('--2000-01-01 12:00:00', 'YYYY-MM-DD HH:mm:ss',
         'Europe/London');
     } else {
       let special = 'PN';
@@ -1200,6 +1204,8 @@ const sunMeanLongitude$1 = function (T) {
   return reduceAngle(L0);
 };
 
+const moment$2 = momentNs;
+
 let roundToNearestMinute = false;
 let returnTimeForPNMS = false;
 let dateFormatKeys = {'**': '‡', '--': '†'};
@@ -1428,8 +1434,8 @@ const solarNoon = function (datetime, L) {
  * @returns {array} Array of moment objects for moons of the given phase.
  */
 const yearMoonPhases = function (year, phase, timezone) {
-  const yearBegin = moment([year]);
-  const yearEnd = moment([year + 1]);
+  const yearBegin = moment$2([year]);
+  const yearEnd = moment$2([year + 1]);
   // this will give us k for the first new moon of the year or earlier
   let k = Math.floor(approxK(yearBegin)) - 1;
   // taking 15 events will make sure we catch every event in the year
@@ -1465,6 +1471,7 @@ const yearMoonPhases = function (year, phase, timezone) {
 };
 
 var index = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   options: options,
   formatCI: formatCI,
   sunrise: sunrise,
@@ -1612,6 +1619,7 @@ const digitUnicodeOffset = '0'.charCodeAt(0);
 const defaultFormat = 'd MM+ y BE';
 
 var en = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month,
   monthL: monthL,
   holyDay: holyDay,
@@ -1737,6 +1745,7 @@ const digitUnicodeOffset$1 = '٠'.charCodeAt(0);
 const defaultFormat$1 = '&#8207;d MM y BE&#8207;';
 
 var ar = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$1,
   monthL: monthL$1,
   holyDay: holyDay$1,
@@ -1804,6 +1813,7 @@ const BE$2 = 'B.E.';
 const badiCalendar$2 = 'Badí‘ Kalender';
 
 var de = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$2,
   holyDay: holyDay$2,
   weekdayL: weekdayL$2,
@@ -1862,6 +1872,7 @@ const BE$3 = 'E.B.';
 const badiCalendar$3 = 'Calendario Badí‘';
 
 var es = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$3,
   holyDay: holyDay$3,
   weekdayL: weekdayL$3,
@@ -1999,6 +2010,7 @@ const digitUnicodeOffset$2 = '۰'.charCodeAt(0);
 const defaultFormat$2 = '&#8207;d MML y BE&#8207;';
 
 var fa = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$2,
   monthL: monthL$4,
   holyDay: holyDay$4,
@@ -2066,6 +2078,7 @@ const BE$5 = 'E.B.';
 const badiCalendar$5 = 'Calendrier Badí‘';
 
 var fr = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$5,
   holyDay: holyDay$5,
   weekdayL: weekdayL$5,
@@ -2124,6 +2137,7 @@ const BE$6 = 'B.Ē.';
 const badiCalendar$6 = 'Badí‘ kalendārs';
 
 var lv = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$6,
   holyDay: holyDay$6,
   weekdayL: weekdayL$6,
@@ -2182,6 +2196,7 @@ const BE$7 = 'B.E.';
 const badiCalendar$7 = 'Badí‘-Kalender';
 
 var nl = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$7,
   holyDay: holyDay$7,
   weekdayL: weekdayL$7,
@@ -2240,6 +2255,7 @@ const BE$8 = 'E.B.';
 const badiCalendar$8 = 'Calendário Badí‘';
 
 var pt = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$8,
   holyDay: holyDay$8,
   weekdayL: weekdayL$8,
@@ -2375,6 +2391,7 @@ const BE$9 = 'Э.Б.';
 const badiCalendar$9 = 'Календарь Бадӣ‘';
 
 var ru = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$3,
   monthL: monthL$9,
   holyDay: holyDay$9,
@@ -2440,6 +2457,7 @@ const BE$a = 'B.E.';
 const badiCalendar$a = 'Badí‘kalendern';
 
 var sv = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$a,
   holyDay: holyDay$a,
   weekdayL: weekdayL$a,
@@ -2575,6 +2593,7 @@ const BE$b = 'BE';
 const badiCalendar$b = '巴迪历';
 
 var zh = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month$4,
   monthL: monthL$b,
   holyDay: holyDay$b,
@@ -2595,6 +2614,7 @@ const monthL$c = {
 };
 
 var en_us = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   monthL: monthL$c
 });
 
@@ -2686,7 +2706,7 @@ const badiYears = [
   'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2',
   'l4c9', 'l4da', 'l4ci'];
 
-const moment$1 = momentNs;
+const moment$3 = momentNs;
 
 /**
  * A date in the Badí' calendar.
@@ -2712,10 +2732,10 @@ class BadiDate {
     this._valid = true;
 
     if (date instanceof Date) {
-      this.gregDate = moment$1.utc(
+      this.gregDate = moment$3.utc(
         [date.getFullYear(), date.getMonth(), date.getDate(), 12]);
-    } else if (date instanceof moment$1) {
-      this._gregDate = moment$1.utc([date.year(), date.month(), date.date(), 12]);
+    } else if (date instanceof moment$3) {
+      this._gregDate = moment$3.utc([date.year(), date.month(), date.date(), 12]);
     } else if (typeof date === 'string') {
       const dateArray = this._parseBadiDateString(date);
       if (dateArray) {
@@ -2725,7 +2745,7 @@ class BadiDate {
         // Attempt to handle a malformed string which moment complains about but
         // Date makes a best guess at.
         const tempDate = new Date(date);
-        this._gregDate = moment$1.utc([tempDate.getFullYear(),
+        this._gregDate = moment$3.utc([tempDate.getFullYear(),
           tempDate.getMonth(), tempDate.getDate(), 12]);
         // Check if it's before 1 BE or after 356 BE (which we can't handle)
         if (this._notInValidGregRange(this._gregDate)) {
@@ -3113,8 +3133,8 @@ class BadiDate {
    * @returns {bool} whether the provided datetime is within the valid range
    */
   _notInValidGregRange(datetime) {
-    return datetime.isBefore(moment$1.utc('1844-03-21')) ||
-        datetime.isAfter(moment$1.utc('2351-03-20'));
+    return datetime.isBefore(moment$3.utc('1844-03-21')) ||
+        datetime.isAfter(moment$3.utc('2351-03-20'));
   }
 
   /**
@@ -3126,13 +3146,13 @@ class BadiDate {
       return;
     }
     const gregYear = this._gregDate.year();
-    if (this._gregDate.isBefore(moment$1.utc('2015-03-21'))) {
+    if (this._gregDate.isBefore(moment$3.utc('2015-03-21'))) {
       // Old implementation for day before Naw-Rúz 172
       if (this._gregDate.isBefore(gregYear + '-03-21')) {
-        this._nawRuz = moment$1.utc((gregYear - 1).toString() + '-03-21');
+        this._nawRuz = moment$3.utc((gregYear - 1).toString() + '-03-21');
         this._badiYear = gregYear - 1844;
       } else {
-        this._nawRuz = moment$1.utc(gregYear.toString() + '-03-21');
+        this._nawRuz = moment$3.utc(gregYear.toString() + '-03-21');
         this._badiYear = gregYear - 1843;
       }
       this._setOldAyyamiHaLength();
@@ -3177,7 +3197,7 @@ class BadiDate {
       return;
     } else if (this._badiYear < 172) {
       // Old implementation for dates before Naw-Rúz 172
-      this._nawRuz = moment$1.utc([1843 + this._badiYear, 2, 21]);
+      this._nawRuz = moment$3.utc([1843 + this._badiYear, 2, 21]);
       this._setOldAyyamiHaLength();
       this._yearTB = [12, 5, 13, 9];
     } else {
@@ -3273,9 +3293,9 @@ class BadiDate {
     }
     // Finally we set the Gregorian date for this Badí' date
     const dayOfGregYear = this._nawRuz.diff(
-      moment$1.utc([this._badiYear + 1843]), 'days') +
+      moment$3.utc([this._badiYear + 1843]), 'days') +
       this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
-    this._gregDate = moment$1.utc([this._badiYear + 1843]);
+    this._gregDate = moment$3.utc([this._badiYear + 1843]);
     // Bubbles up to next year if necessary
     this._gregDate.dayOfYear(dayOfGregYear);
     this._gregDate.hour(12);
@@ -3285,7 +3305,7 @@ class BadiDate {
    * Set the length of Ayyám-i-Há for dates before the new implementation.
    */
   _setOldAyyamiHaLength() {
-    if (moment$1([this._nawRuz.year() + 1]).isLeapYear()) {
+    if (moment$3([this._nawRuz.year() + 1]).isLeapYear()) {
       this._ayyamiHaLength = 5;
     } else {
       this._ayyamiHaLength = 4;
@@ -3300,11 +3320,11 @@ class BadiDate {
   _setBadiYearInfo(fromGregDate) {
     let yearData = this._extractBadiYearInfo();
     if (fromGregDate === true &&
-        this._gregDate.isBefore(moment$1.utc(yearData.NR))) {
+        this._gregDate.isBefore(moment$3.utc(yearData.NR))) {
       this._badiYear -= 1;
       yearData = this._extractBadiYearInfo();
     }
-    this._nawRuz = moment$1.utc(yearData.NR);
+    this._nawRuz = moment$3.utc(yearData.NR);
     this._ayyamiHaLength = yearData.aHL;
     this._yearTB = yearData.TB;
   }
@@ -3360,12 +3380,12 @@ class BadiDate {
    * Set the member variables to invalid values.
    */
   _setInvalid() {
-    this._gregDate = moment$1.utc('0000-00-00');
+    this._gregDate = moment$3.utc('0000-00-00');
     this._badiYear = -1;
     this._badiMonth = -1;
     this._badiDay = -1;
     this._ayyamiHaLength = -1;
-    this._nawRuz = moment$1.utc('0000-00-00');
+    this._nawRuz = moment$3.utc('0000-00-00');
     this._valid = false;
   }
 
@@ -3668,7 +3688,7 @@ const clockLocationFromPolygons = function (latitude, longitude) {
   return false;
 };
 
-const moment$2 = momentNs;
+const moment$4 = momentNs;
 
 /* eslint-disable complexity */
 
@@ -3691,14 +3711,14 @@ class LocalBadiDate {
     // If a moment object is being passed, we use date and time, not just the
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
-    if (date instanceof moment$2) {
+    if (date instanceof moment$4) {
       const sunset$1 = sunset(date, latitude, longitude);
       if (date.isAfter(sunset$1)) {
         date.add(1, 'day');
       }
     }
     this.badiDate = new BadiDate(date);
-    const gregDate = moment$2.tz(
+    const gregDate = moment$4.tz(
       this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
     if (!this.clockLocation ||
@@ -3714,13 +3734,13 @@ class LocalBadiDate {
     } else {
       // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
       // then made depending on the region.
-      this.end = moment$2.tz(
+      this.end = moment$4.tz(
         gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
-      this.solarNoon = moment$2.tz(
+      this.solarNoon = moment$4.tz(
         gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
-      this.sunrise = moment$2.tz(
+      this.sunrise = moment$4.tz(
         gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
-      this.start = moment$2.tz(gregDate.subtract(
+      this.start = moment$4.tz(gregDate.subtract(
         1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId);
       // add() and subtract() mutate the object, so we have to undo it
       gregDate.add(1, 'day');
@@ -3749,7 +3769,7 @@ class LocalBadiDate {
         break;
       case 5:
         // Declaration of the Báb: 2 hours 11 minutes after sunset
-        this.holyDayCommemoration = moment$2.tz(this.start, timezoneId);
+        this.holyDayCommemoration = moment$4.tz(this.start, timezoneId);
         this.holyDayCommemoration.add(131, 'minutes');
         break;
       case 6:

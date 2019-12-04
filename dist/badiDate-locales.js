@@ -8,7 +8,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('moment-timezone')) :
   typeof define === 'function' && define.amd ? define(['exports', 'moment-timezone'], factory) :
   (global = global || self, factory(global.window = global.window || {}, global.momentNs));
-}(this, function (exports, momentNs) { 'use strict';
+}(this, (function (exports, momentNs) { 'use strict';
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -175,6 +175,7 @@
   var defaultFormat = 'd MM+ y BE';
 
   var en = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month,
     monthL: monthL,
     holyDay: holyDay,
@@ -292,6 +293,7 @@
   var defaultFormat$1 = '&#8207;d MM y BE&#8207;';
 
   var ar = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$1,
     monthL: monthL$1,
     holyDay: holyDay$1,
@@ -356,6 +358,7 @@
   var badiCalendar$2 = 'Badí‘ Kalender';
 
   var de = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$2,
     holyDay: holyDay$2,
     weekdayL: weekdayL$2,
@@ -411,6 +414,7 @@
   var badiCalendar$3 = 'Calendario Badí‘';
 
   var es = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$3,
     holyDay: holyDay$3,
     weekdayL: weekdayL$3,
@@ -540,6 +544,7 @@
   var defaultFormat$2 = '&#8207;d MML y BE&#8207;';
 
   var fa = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$2,
     monthL: monthL$4,
     holyDay: holyDay$4,
@@ -604,6 +609,7 @@
   var badiCalendar$5 = 'Calendrier Badí‘';
 
   var fr = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$5,
     holyDay: holyDay$5,
     weekdayL: weekdayL$5,
@@ -659,6 +665,7 @@
   var badiCalendar$6 = 'Badí‘ kalendārs';
 
   var lv = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$6,
     holyDay: holyDay$6,
     weekdayL: weekdayL$6,
@@ -714,6 +721,7 @@
   var badiCalendar$7 = 'Badí‘-Kalender';
 
   var nl = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$7,
     holyDay: holyDay$7,
     weekdayL: weekdayL$7,
@@ -769,6 +777,7 @@
   var badiCalendar$8 = 'Calendário Badí‘';
 
   var pt = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$8,
     holyDay: holyDay$8,
     weekdayL: weekdayL$8,
@@ -896,6 +905,7 @@
   var badiCalendar$9 = 'Календарь Бадӣ‘';
 
   var ru = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$3,
     monthL: monthL$9,
     holyDay: holyDay$9,
@@ -958,6 +968,7 @@
   var badiCalendar$a = 'Badí‘kalendern';
 
   var sv = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$a,
     holyDay: holyDay$a,
     weekdayL: weekdayL$a,
@@ -1085,6 +1096,7 @@
   var badiCalendar$b = '巴迪历';
 
   var zh = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$4,
     monthL: monthL$b,
     holyDay: holyDay$b,
@@ -1105,6 +1117,7 @@
   };
 
   var en_us = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$c
   });
 
@@ -2186,4 +2199,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));

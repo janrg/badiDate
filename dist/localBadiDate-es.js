@@ -137,6 +137,7 @@ const digitUnicodeOffset = '0'.charCodeAt(0);
 const defaultFormat = 'd MM+ y BE';
 
 var en = /*#__PURE__*/Object.freeze({
+  __proto__: null,
   month: month,
   monthL: monthL,
   holyDay: holyDay,
