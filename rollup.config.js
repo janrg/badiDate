@@ -53,6 +53,7 @@ function rollupConfig(root, mss, locales, minify, format, filename = '') {
     root = 'mssBundle.js';
   }
   const config = {
+    external: ['moment-timezone'],
     input: 'src/' + root,
     output: {
       banner: copyrightNotice,
@@ -71,12 +72,6 @@ function rollupConfig(root, mss, locales, minify, format, filename = '') {
       test: localeRegex(locales)
     });
   }
-  replacePatterns.push({
-    match: 'src/localBadiDate.js',
-    replace: '',
-    test: 'import * as MeeusSunMoon from ' +
-          "'../node_modules/meeussunmoon/src/index.js';"
-  });
   if (locales !== true || !mss) {
     config.plugins.push(replace({patterns: replacePatterns}));
   }
@@ -114,15 +109,5 @@ export default [
   rollupConfig('localBadiDate.js', false, [], true, 'es'),
   rollupConfig('localBadiDate.js', false, [], true, 'umd'),
   rollupConfig('localBadiDate.js', false, [], false, 'es'),
-  rollupConfig('localBadiDate.js', false, [], false, 'umd'),
-  {
-    input: 'test/tests.js',
-    output: {
-      banner: copyrightNotice,
-      file: 'test/tests-compiled.js',
-      format: 'umd',
-      name: 'BadiDateTests'
-    },
-    plugins: [babel()]
-  }
+  rollupConfig('localBadiDate.js', false, [], false, 'umd')
 ];

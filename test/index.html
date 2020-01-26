@@ -2,15 +2,26 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>badiDate QUnit Test</title>
-  <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.21.0.css">
-</head>
-<body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture"></div>
-  <script src="http://code.jquery.com/qunit/qunit-1.21.0.js"></script>
+  <title>badiDate Tests</title>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../node_modules/chai/chai.js"></script>
   <script src="../node_modules/moment/min/moment.min.js"></script>
   <script src="../node_modules/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
-  <script src="tests-compiled.js"></script>
+  <script>
+  /* globals mocha */
+  window.assert = chai.assert;
+  mocha.setup('bdd');
+  </script>
+  <script type="module" src="tests.js"></script>
+  <script type="module">
+  /* globals mocha */
+  mocha.run();
+  </script>
+</head>
+<body>
+  <div id="mocha"></div>
 </body>
 </html>

@@ -1,12 +1,9 @@
-/* eslint-env qunit */
 import {ayyamiHaLengths, clockMap, UHJListDates} from './testData.js';
 import {badiDateOptions, LocalBadiDate} from '../src/localBadiDate.js';
 import {BadiDate} from '../src/badiDate.js';
 import {clockLocationFromPolygons} from '../src/clockLocations.js';
 
-QUnit.config.hidepassed = true;
-
-QUnit.test('Compare with UHJ List 172-221', function (assert) {
+it('Compare with UHJ List 172-221', function () {
   for (let i = 0; i < 50; i++) {
     const nawRuz = new BadiDate([i + 172, 1]);
     const birthOfTheBab = new BadiDate([i + 172, 8]);
@@ -33,7 +30,7 @@ QUnit.test('Compare with UHJ List 172-221', function (assert) {
   }
 });
 
-QUnit.test('Random badiDate Conversions', function (assert) {
+it('Random badiDate Conversions', function () {
   for (let i = 0; i < 1000; i++) {
     const dayOfMonth = Math.floor((Math.random() * 28) + 1);
     const month = Math.floor((Math.random() * 12) + 1);
@@ -55,7 +52,7 @@ QUnit.test('Random badiDate Conversions', function (assert) {
   }
 });
 
-QUnit.test('Getters', function (assert) {
+it('Getters', function () {
   for (let badiYear = 1; badiYear < 508; badiYear++) {
     const badiMonth = Math.floor((Math.random() * 19) + 1);
     const badiDay = Math.floor((Math.random() * 19) + 1);
@@ -98,7 +95,7 @@ QUnit.test('Getters', function (assert) {
   }
 });
 
-QUnit.test('Badí\' Weekdays', function (assert) {
+it('Badí\' Weekdays', function () {
   for (let badiDay = 1; badiDay < 8; badiDay++) {
     const badiDate1 = new BadiDate([172, 1, badiDay]);
     // In this range of dates, weekday numbers happen to correspond to day
@@ -108,7 +105,7 @@ QUnit.test('Badí\' Weekdays', function (assert) {
   }
 });
 
-QUnit.test('Invalid Dates', function (assert) {
+it('Invalid Dates', function () {
   const badiDate1 = new BadiDate([172, 20, 6]);
   const badiDate2 = new BadiDate([508, 1, 1]);
   const badiDate3 = new BadiDate(moment.utc('1844-01-01'));
@@ -131,7 +128,7 @@ QUnit.test('Invalid Dates', function (assert) {
     'Formatting an Invalid Date: Not a valid date/' + badiDate4.format());
 });
 
-QUnit.test('Local Badí Date', function (assert) {
+it('Local Badí Date', function () {
   const localBadiDate1 = new LocalBadiDate([172, 1, 1], 32.943, 35.092,
     'Asia/Jerusalem');
   const localBadiDate2 = new LocalBadiDate(moment.tz('2015-03-20T18:00:00',
@@ -221,7 +218,7 @@ QUnit.test('Local Badí Date', function (assert) {
   badiDateOptions({useClockLocations: true});
 });
 
-QUnit.test('Localization Fallback', function (assert) {
+it('Localization Fallback', function () {
   const badiDate1 = new BadiDate([172, 1, 2]);
   assert.strictEqual(badiDate1.format('MML'), 'Splendour',
     'English as default');
@@ -242,7 +239,7 @@ QUnit.test('Localization Fallback', function (assert) {
     'Default back to English');
 });
 
-QUnit.test('Clock Locations', function (assert) {
+it('Clock Locations', function () {
   const valueMapping = [false, 'USA', 'Canada', 'Iceland', 'Norway', 'Sweden',
     'Finland'];
   for (let i = 0; i < 40; i++) {
@@ -255,7 +252,7 @@ QUnit.test('Clock Locations', function (assert) {
   }
 });
 
-QUnit.test('Format Cropping', function (assert) {
+it('Format Cropping', function () {
   const expectedResults = {
     4: '‘Aẓa',
     10: '‘Izz',

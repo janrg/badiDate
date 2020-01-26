@@ -5,10 +5,10 @@
  */
 
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('moment-timezone')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'moment-timezone'], factory) :
-  (global = global || self, factory(global.window = global.window || {}, global.momentNs));
-}(this, function (exports, momentNs) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (global = global || self, factory(global.window = global.window || {}));
+}(this, (function (exports) { 'use strict';
 
   /**
    * Converts angles in degrees to radians.
@@ -1440,6 +1440,7 @@
   };
 
   var index = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     options: options,
     formatCI: formatCI,
     sunrise: sunrise,
@@ -1503,6 +1504,10 @@
   }
 
   function _iterableToArrayLimit(arr, i) {
+    if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) {
+      return;
+    }
+
     var _arr = [];
     var _n = true;
     var _d = false;
@@ -1659,6 +1664,7 @@
   var defaultFormat = 'd MM+ y BE';
 
   var en = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month,
     monthL: monthL,
     holyDay: holyDay,
@@ -1776,6 +1782,7 @@
   var defaultFormat$1 = '&#8207;d MM y BE&#8207;';
 
   var ar = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$1,
     monthL: monthL$1,
     holyDay: holyDay$1,
@@ -1840,6 +1847,7 @@
   var badiCalendar$2 = 'Badí‘ Kalender';
 
   var de = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$2,
     holyDay: holyDay$2,
     weekdayL: weekdayL$2,
@@ -1895,6 +1903,7 @@
   var badiCalendar$3 = 'Calendario Badí‘';
 
   var es = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$3,
     holyDay: holyDay$3,
     weekdayL: weekdayL$3,
@@ -2024,6 +2033,7 @@
   var defaultFormat$2 = '&#8207;d MML y BE&#8207;';
 
   var fa = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$2,
     monthL: monthL$4,
     holyDay: holyDay$4,
@@ -2088,6 +2098,7 @@
   var badiCalendar$5 = 'Calendrier Badí‘';
 
   var fr = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$5,
     holyDay: holyDay$5,
     weekdayL: weekdayL$5,
@@ -2143,6 +2154,7 @@
   var badiCalendar$6 = 'Badí‘ kalendārs';
 
   var lv = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$6,
     holyDay: holyDay$6,
     weekdayL: weekdayL$6,
@@ -2198,6 +2210,7 @@
   var badiCalendar$7 = 'Badí‘-Kalender';
 
   var nl = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$7,
     holyDay: holyDay$7,
     weekdayL: weekdayL$7,
@@ -2253,6 +2266,7 @@
   var badiCalendar$8 = 'Calendário Badí‘';
 
   var pt = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$8,
     holyDay: holyDay$8,
     weekdayL: weekdayL$8,
@@ -2380,6 +2394,7 @@
   var badiCalendar$9 = 'Календарь Бадӣ‘';
 
   var ru = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$3,
     monthL: monthL$9,
     holyDay: holyDay$9,
@@ -2442,6 +2457,7 @@
   var badiCalendar$a = 'Badí‘kalendern';
 
   var sv = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$a,
     holyDay: holyDay$a,
     weekdayL: weekdayL$a,
@@ -2569,6 +2585,7 @@
   var badiCalendar$b = '巴迪历';
 
   var zh = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     month: month$4,
     monthL: monthL$b,
     holyDay: holyDay$b,
@@ -2589,6 +2606,7 @@
   };
 
   var en_us = /*#__PURE__*/Object.freeze({
+    __proto__: null,
     monthL: monthL$c
   });
 
@@ -2639,7 +2657,6 @@
 
   var badiYears = ['l4da', 'k4ci', 'k5c7', 'l4d6', 'l4ce', 'k4c4', 'k5d4', 'l4cb', 'l4c1', 'k4cj', 'k5c8', 'l4d7', 'l4cf', 'k4c5', 'k4d5', 'k5ce', 'l4c2', 'k4d2', 'k4ca', 'k5da', 'l4ch', 'k4c6', 'k4d6', 'k5cf', 'l4c4', 'k4d4', 'k4cc', 'k5c1', 'l4cj', 'k4c8', 'k4d8', 'k5cg', 'l4c5', 'k4d5', 'k4ce', 'k5c3', 'l4d2', 'k4ca', 'k4d9', 'k5ci', 'l4c6', 'k4d6', 'k4cf', 'k4c4', 'k5d4', 'k4cb', 'k4bj', 'k4cj', 'k5c9', 'k4d8', 'k4cg', 'k4c6', 'k5d6', 'k4cd', 'k4c2', 'k4d2', 'k5ca', 'k4d9', 'k4ci', 'k4c7', 'k5d7', 'k4cf', 'k4c4', 'k4d4', 'k5cc', 'k4bj', 'k4cj', 'k4c9', 'k5d9', 'k4cg', 'k4c6', 'k4d5', 'k5cd', 'k4c2', 'k4d1', 'k4ca', 'k4da', 'j5cj', 'k4c7', 'k4d7', 'k4cf', 'j5c4', 'k4d3', 'k4cb', 'k4c1', 'k5d1', 'l4c9', 'l4d9', 'l4ch', 'k5c6', 'l4d5', 'l4cd', 'l4c2', 'k5d2', 'l4ca', 'l4da', 'l4cj', 'k5c8', 'l4d7', 'l4cf', 'l4c4', 'k5d4', 'l4cb', 'l4c1', 'l4d1', 'k5c9', 'l4d8', 'l4cg', 'l4c5', 'k4d5', 'k5ce', 'l4c2', 'l4d2', 'k4cb', 'k5db', 'l4ci', 'l4c7', 'k4d7', 'k5cf', 'l4c4', 'l4d4', 'k4cc', 'k5c2', 'l4d1', 'l4c9', 'k4d9', 'k5ch', 'l4c5', 'l4d5', 'k4ce', 'k5c3', 'l4d2', 'l4cb', 'k4da', 'k5ci', 'l4c6', 'l4d6', 'k4cf', 'k5c5', 'l4d4', 'l4cc', 'k4c1', 'k4d1', 'k5c9', 'l4d8', 'k4cg', 'k4c6', 'k5d6', 'l4ce', 'k4c3', 'k4d3', 'k5cb', 'l4da', 'k4ci', 'k4c7', 'k5d7', 'l4cf', 'k4c5', 'k4d5', 'k5cd', 'l4c1', 'k4cj', 'k4c9', 'k5d9', 'l4cg', 'k4c6', 'k4d6', 'k5ce', 'l4c3', 'k4d2', 'k4ca', 'k5bj', 'l4ci', 'k4c7', 'k4d7', 'k4cg', 'k5c5', 'k4d4', 'k4cc', 'k4c1', 'k5d1', 'k4c9', 'k4d9', 'k4ch', 'k5c7', 'l4d6', 'l4ce', 'l4c3', 'l5d3', 'l4ca', 'l4da', 'l4cj', 'l5c8', 'l4d7', 'l4cg', 'l4c5', 'l5d4', 'l4cb', 'l4c1', 'l4d1', 'l5ca', 'l4d9', 'l4ch', 'l4c6', 'l5d6', 'l4cd', 'l4c2', 'l4d2', 'l4cb', 'k5c1', 'l4cj', 'l4c8', 'l4d8', 'k5cg', 'l4c4', 'l4d4', 'l4cc', 'k5c2', 'l4d1', 'l4ca', 'l4da', 'k5ci', 'l4c6', 'l4d5', 'l4ce', 'k5c3', 'l4d2', 'l4cb', 'l4db', 'k5cj', 'l4c8', 'l4d7', 'l4cf', 'k5c5', 'l4d4', 'l4cc', 'l4c2', 'k5d2', 'l4c9', 'l4d9', 'l4ch', 'k4c6', 'k5d6', 'l4ce', 'l4c3', 'k4d3', 'k5cc', 'l4db', 'l4cj', 'k4c8', 'k5d8', 'l4cf', 'l4c4', 'k4d5', 'k5cd', 'l4c2', 'l4d2', 'k4ca', 'k5d9', 'l4cg', 'l4c6', 'k4d6', 'k5cf', 'l4c3', 'l4d3', 'k4cb', 'k5bj', 'l4ci', 'l4c7', 'k4d7', 'k5cg', 'l4c5', 'l4d5', 'k4cd', 'k4c2', 'k5d2', 'l4c9', 'k4d9', 'k4ch', 'k5c7', 'l4d6', 'k4cf', 'k4c4', 'k5d4', 'l4cb', 'l4bj', 'l4cj', 'l5c8', 'm4d7', 'l4cg', 'l4c5', 'l5d5', 'm4cc', 'l4c1', 'l4d1', 'l5ca', 'm4d9', 'l4ch', 'l4c7', 'l5d7', 'm4ce', 'l4c3', 'l4d3', 'l5cb', 'm4bi', 'l4ci', 'l4c8', 'l4d8', 'l5ch', 'l4c5', 'l4d5', 'l4cd', 'l5c2', 'l4d1', 'l4c9', 'l4da', 'l5ci', 'l4c7', 'l4d7', 'l4cf', 'l5c4', 'l4d2', 'l4cb', 'l4bj', 'l5d1', 'l4c8', 'l4d8', 'l4cg', 'l5c5', 'l4d4', 'l4cc', 'l4c2', 'l5d2', 'l4c9', 'l4da', 'l4ci'];
 
-  var moment$1 = momentNs;
   /**
    * A date in the Badí' calendar.
    */
@@ -2670,9 +2687,9 @@
       this._valid = true;
 
       if (date instanceof Date) {
-        this.gregDate = moment$1.utc([date.getFullYear(), date.getMonth(), date.getDate(), 12]);
-      } else if (date instanceof moment$1) {
-        this._gregDate = moment$1.utc([date.year(), date.month(), date.date(), 12]);
+        this.gregDate = moment.utc([date.getFullYear(), date.getMonth(), date.getDate(), 12]);
+      } else if (date instanceof moment) {
+        this._gregDate = moment.utc([date.year(), date.month(), date.date(), 12]);
       } else if (typeof date === 'string') {
         var dateArray = this._parseBadiDateString(date);
 
@@ -2683,7 +2700,7 @@
           // Attempt to handle a malformed string which moment complains about but
           // Date makes a best guess at.
           var tempDate = new Date(date);
-          this._gregDate = moment$1.utc([tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate(), 12]); // Check if it's before 1 BE or after 356 BE (which we can't handle)
+          this._gregDate = moment.utc([tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate(), 12]); // Check if it's before 1 BE or after 356 BE (which we can't handle)
 
           if (this._notInValidGregRange(this._gregDate)) {
             this._setInvalid();
@@ -3141,7 +3158,7 @@
     }, {
       key: "_notInValidGregRange",
       value: function _notInValidGregRange(datetime) {
-        return datetime.isBefore(moment$1.utc('1844-03-21')) || datetime.isAfter(moment$1.utc('2351-03-20'));
+        return datetime.isBefore(moment.utc('1844-03-21')) || datetime.isAfter(moment.utc('2351-03-20'));
       }
       /**
        * Generate date from input corresponding to a Gregorian date.
@@ -3158,13 +3175,13 @@
 
         var gregYear = this._gregDate.year();
 
-        if (this._gregDate.isBefore(moment$1.utc('2015-03-21'))) {
+        if (this._gregDate.isBefore(moment.utc('2015-03-21'))) {
           // Old implementation for day before Naw-Rúz 172
           if (this._gregDate.isBefore(gregYear + '-03-21')) {
-            this._nawRuz = moment$1.utc((gregYear - 1).toString() + '-03-21');
+            this._nawRuz = moment.utc((gregYear - 1).toString() + '-03-21');
             this._badiYear = gregYear - 1844;
           } else {
-            this._nawRuz = moment$1.utc(gregYear.toString() + '-03-21');
+            this._nawRuz = moment.utc(gregYear.toString() + '-03-21');
             this._badiYear = gregYear - 1843;
           }
 
@@ -3220,7 +3237,7 @@
           return;
         } else if (this._badiYear < 172) {
           // Old implementation for dates before Naw-Rúz 172
-          this._nawRuz = moment$1.utc([1843 + this._badiYear, 2, 21]);
+          this._nawRuz = moment.utc([1843 + this._badiYear, 2, 21]);
 
           this._setOldAyyamiHaLength();
 
@@ -3337,9 +3354,9 @@
         } // Finally we set the Gregorian date for this Badí' date
 
 
-        var dayOfGregYear = this._nawRuz.diff(moment$1.utc([this._badiYear + 1843]), 'days') + this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
+        var dayOfGregYear = this._nawRuz.diff(moment.utc([this._badiYear + 1843]), 'days') + this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
 
-        this._gregDate = moment$1.utc([this._badiYear + 1843]); // Bubbles up to next year if necessary
+        this._gregDate = moment.utc([this._badiYear + 1843]); // Bubbles up to next year if necessary
 
         this._gregDate.dayOfYear(dayOfGregYear);
 
@@ -3352,7 +3369,7 @@
     }, {
       key: "_setOldAyyamiHaLength",
       value: function _setOldAyyamiHaLength() {
-        if (moment$1([this._nawRuz.year() + 1]).isLeapYear()) {
+        if (moment([this._nawRuz.year() + 1]).isLeapYear()) {
           this._ayyamiHaLength = 5;
         } else {
           this._ayyamiHaLength = 4;
@@ -3369,12 +3386,12 @@
       value: function _setBadiYearInfo(fromGregDate) {
         var yearData = this._extractBadiYearInfo();
 
-        if (fromGregDate === true && this._gregDate.isBefore(moment$1.utc(yearData.NR))) {
+        if (fromGregDate === true && this._gregDate.isBefore(moment.utc(yearData.NR))) {
           this._badiYear -= 1;
           yearData = this._extractBadiYearInfo();
         }
 
-        this._nawRuz = moment$1.utc(yearData.NR);
+        this._nawRuz = moment.utc(yearData.NR);
         this._ayyamiHaLength = yearData.aHL;
         this._yearTB = yearData.TB;
       }
@@ -3438,12 +3455,12 @@
     }, {
       key: "_setInvalid",
       value: function _setInvalid() {
-        this._gregDate = moment$1.utc('0000-00-00');
+        this._gregDate = moment.utc('0000-00-00');
         this._badiYear = -1;
         this._badiMonth = -1;
         this._badiDay = -1;
         this._ayyamiHaLength = -1;
-        this._nawRuz = moment$1.utc('0000-00-00');
+        this._nawRuz = moment.utc('0000-00-00');
         this._valid = false;
       }
       /**
@@ -3803,7 +3820,6 @@
     return false;
   };
 
-  var moment$2 = momentNs;
   /* eslint-disable complexity */
 
   /**
@@ -3828,7 +3844,7 @@
     // If a moment object is being passed, we use date and time, not just the
     // date. For a JS Date object, we can't assume it's in the correct timezone,
     // so in that case we use the date information only.
-    if (date instanceof moment$2) {
+    if (date instanceof moment) {
       var sunset$1 = sunset(date, latitude, longitude);
 
       if (date.isAfter(sunset$1)) {
@@ -3837,7 +3853,7 @@
     }
 
     this.badiDate = new BadiDate(date);
-    var gregDate = moment$2.tz(this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
+    var gregDate = moment.tz(this.badiDate.gregorianDate().format('YYYY-MM-DDTHH:mm:ss'), timezoneId);
     this.clockLocation = clockLocationFromPolygons(latitude, longitude);
 
     if (!this.clockLocation || this.clockLocation === 'Finland' && this.badiDate.badiMonth() === 19) {
@@ -3850,10 +3866,10 @@
     } else {
       // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
       // then made depending on the region.
-      this.end = moment$2.tz(gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
-      this.solarNoon = moment$2.tz(gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
-      this.sunrise = moment$2.tz(gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
-      this.start = moment$2.tz(gregDate.subtract(1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId); // add() and subtract() mutate the object, so we have to undo it
+      this.end = moment.tz(gregDate.format('YYYY-MM-DDT') + '18:00:00', timezoneId);
+      this.solarNoon = moment.tz(gregDate.format('YYYY-MM-DDT') + '12:00:00', timezoneId);
+      this.sunrise = moment.tz(gregDate.format('YYYY-MM-DDT') + '06:00:00', timezoneId);
+      this.start = moment.tz(gregDate.subtract(1, 'day').format('YYYY-MM-DDT') + '18:00:00', timezoneId); // add() and subtract() mutate the object, so we have to undo it
 
       gregDate.add(1, 'day');
 
@@ -3885,7 +3901,7 @@
 
       case 5:
         // Declaration of the Báb: 2 hours 11 minutes after sunset
-        this.holyDayCommemoration = moment$2.tz(this.start, timezoneId);
+        this.holyDayCommemoration = moment.tz(this.start, timezoneId);
         this.holyDayCommemoration.add(131, 'minutes');
         break;
 
@@ -3937,4 +3953,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
