@@ -1,5 +1,5 @@
 /**
- * @license BadiDate v2.0.0
+ * @license BadiDate v2.1.2
  * (c) 2018 Jan Greis
  * licensed under MIT
  */

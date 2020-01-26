@@ -4,7 +4,7 @@ import replace from 'rollup-plugin-re';
 import {terser} from 'rollup-plugin-terser';
 
 const copyrightNotice = `/**
- * @license BadiDate v2.0.0\n * (c) 2018 Jan Greis
+ * @license BadiDate v2.1.2\n * (c) 2018 Jan Greis
  * licensed under MIT
  */
 `;
