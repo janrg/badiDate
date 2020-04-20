@@ -1,6 +1,6 @@
 import {ayyamiHaLengths, clockMap, UHJListDates} from './testData.js';
-import {badiDateOptions, LocalBadiDate} from '../src/localBadiDate.js';
-import {BadiDate} from '../src/badiDate.js';
+import * as luxon from 'luxon';
+import {BadiDate, badiDateOptions, LocalBadiDate} from '../src/localBadiDate.js';
 import {clockLocationFromPolygons} from '../src/clockLocations.js';
 
 it('Compare with UHJ List 172-221', function () {
@@ -8,90 +8,49 @@ it('Compare with UHJ List 172-221', function () {
     const nawRuz = new BadiDate([i + 172, 1]);
     const birthOfTheBab = new BadiDate([i + 172, 8]);
     const birthOfBahaullah = new BadiDate([i + 172, 9]);
-    assert.strictEqual(nawRuz.gregorianDate().format('YYYY-MM-DD'),
-      UHJListDates[i][0], 'Naw-Rúz ' + (i + 172) + ': ' +
-      nawRuz.gregorianDate().date() + '/' + UHJListDates[i][0].slice(8) +
-      ' March');
-    assert.strictEqual(nawRuz.ayyamiHaLength(), UHJListDates[i][1],
-      'Length of Ayyám-i-Há ' + (i + 172) + ': ' + nawRuz.ayyamiHaLength() +
-      '/' + UHJListDates[i][1]);
-    assert.strictEqual(birthOfTheBab.badiMonth(), UHJListDates[i][2][0],
-      'Birth of the Báb ' + (i + 172) + ', Month: ' +
-      birthOfTheBab.badiMonth() + '/' + UHJListDates[i][2][0]);
-    assert.strictEqual(birthOfTheBab.badiDay(), UHJListDates[i][2][1],
-      'Birth of the Báb ' + (i + 172) + ', Day: ' + birthOfTheBab.badiDay() +
-      '/' + UHJListDates[i][2][1]);
-    assert.strictEqual(birthOfBahaullah.badiMonth(), UHJListDates[i][2][2],
-      'Birth of Bahá\'u\'lláh ' + (i + 172) + ', Month: ' +
-      birthOfBahaullah.badiMonth() + '/' + UHJListDates[i][2][2]);
-    assert.strictEqual(birthOfBahaullah.badiDay(), UHJListDates[i][2][3],
-      'Birth of Bahá\'u\'lláh ' + (i + 172) + ', Day: ' +
-      birthOfBahaullah.badiDay() + '/' + UHJListDates[i][2][3]);
+    expect(nawRuz.gregorianDate().toFormat('yyyy-MM-dd')).toEqual(UHJListDates[i][0]);
+    expect(birthOfTheBab.badiMonth()).toEqual(UHJListDates[i][2][0]);
+    expect(birthOfTheBab.badiDay()).toEqual(UHJListDates[i][2][1]);
+    expect(birthOfBahaullah.badiMonth()).toEqual(UHJListDates[i][2][2]);
+    expect(birthOfBahaullah.badiDay()).toEqual(UHJListDates[i][2][3]);
   }
 });
 
 it('Random badiDate Conversions', function () {
   for (let i = 0; i < 1000; i++) {
-    const dayOfMonth = Math.floor((Math.random() * 28) + 1);
-    const month = Math.floor((Math.random() * 12) + 1);
+    const dayOfYear = Math.floor((Math.random() * 365) + 1);
     const year = Math.floor((Math.random() * 506) + 1845);
-    const initDate = moment.utc(year + '-' + ('0' + month).slice(-2) + '-' +
-      ('0' + dayOfMonth).slice(-2));
+    const initDate = luxon.DateTime.fromObject({ year, ordinal: dayOfYear, zone: 'UTC' });
     const badiDate1 = new BadiDate(initDate);
-    const badiDate2 = new BadiDate([badiDate1.badiYear(), badiDate1.badiMonth(),
-      badiDate1.badiDay()]);
+    const badiDate2 = new BadiDate([badiDate1.badiYear(), badiDate1.badiMonth(), badiDate1.badiDay()]);
     const badiDate3 = new BadiDate(badiDate2.gregorianDate());
-    const badiDate4 = new BadiDate(String(badiDate3.badiYear()) + '-' +
-      String(badiDate3.badiMonth()) + '-' + String(badiDate3.badiDay()));
-    assert.strictEqual(initDate.format('YYYY-MM-DD'),
-      badiDate4.gregorianDate().format('YYYY-MM-DD'),
-      'Multiple Date Conversions: ' + initDate.format('YYYY-MM-DD') +
-      '/' + badiDate4.gregorianDate().format('YYYY-MM-DD'));
-    assert.strictEqual(badiDate4.isValid(), true,
-      'Test that isValid() returns true: ' + true + '/' + badiDate4.isValid());
+    expect(initDate.toISO()).toEqual(badiDate3.gregorianDate().toISO());
+    expect(badiDate3.isValid()).toBeTruthy();
   }
 });
+
 
 it('Getters', function () {
   for (let badiYear = 1; badiYear < 508; badiYear++) {
     const badiMonth = Math.floor((Math.random() * 19) + 1);
     const badiDay = Math.floor((Math.random() * 19) + 1);
     const badiDate1 = new BadiDate([badiYear, badiMonth, badiDay]);
-    assert.strictEqual(badiDate1.badiDay(), badiDay, 'Badí\' Day (getter): ' +
-      badiDay + '/' + badiDate1.badiDay());
-    assert.strictEqual(parseInt(badiDate1.format('d'), 10), badiDay,
-      'Badí\' Day (format): ' + badiDay + '/' +
-      parseInt(badiDate1.format('d'), 10));
-    assert.strictEqual(badiDate1.badiMonth(), badiMonth,
-      'Badí\' Month (getter): ' + badiMonth + '/' + badiDate1.badiMonth());
-    assert.strictEqual(parseInt(badiDate1.format('m'), 10), badiMonth,
-      'Badí\' Month (format): ' + badiMonth + '/' +
-      parseInt(badiDate1.format('m'), 10));
-    assert.strictEqual(badiDate1.badiYear(), badiYear,
-      'Badí\' Year (getter): ' + badiYear + '/' + badiDate1.badiYear());
-    assert.strictEqual(parseInt(badiDate1.format('y'), 10), badiYear,
-      'Badí\' Year (format): ' + badiYear + '/' +
-      parseInt(badiDate1.format('y'), 10));
+    expect(badiDate1.badiDay()).toEqual(badiDay);
+    expect(parseInt(badiDate1.format('d'), 10)).toEqual(badiDay);
+    expect(badiDate1.badiMonth()).toEqual(badiMonth);
+    expect(parseInt(badiDate1.format('m'), 10)).toEqual(badiMonth);
+    expect(badiDate1.badiYear()).toEqual(badiYear);
+    expect(parseInt(badiDate1.format('y'), 10)).toEqual(badiYear);
     const yearInVahid = ((badiYear - 1) % 19) + 1;
-    assert.strictEqual(badiDate1.yearInVahid(), yearInVahid,
-      'Year in Váḥid (getter): ' + yearInVahid + '/' + badiDate1.yearInVahid());
-    assert.strictEqual(parseInt(badiDate1.format('yv'), 10), yearInVahid,
-      'Year in Váḥid (format): ' + yearInVahid + '/' +
-      parseInt(badiDate1.format('yv'), 10));
+    expect(badiDate1.yearInVahid()).toEqual(yearInVahid);
+    expect(parseInt(badiDate1.format('yv'), 10)).toEqual(yearInVahid);
     const vahid = (Math.floor((badiYear - 1) / 19) % 19) + 1;
-    assert.strictEqual(badiDate1.vahid(), vahid,
-      'Váḥid in Kull-i-Shay\' (getter): ' + vahid + '/' + badiDate1.vahid());
-    assert.strictEqual(parseInt(badiDate1.format('v'), 10), vahid,
-      'Váḥid in Kull-i-Shay\' (format): ' + vahid + '/' +
-      badiDate1.format('v'));
+    expect(badiDate1.vahid()).toEqual(vahid);
+    expect(parseInt(badiDate1.format('v'), 10)).toEqual(vahid);
     const kullIShay = (badiYear < 362) ? 1 : 2;
-    assert.strictEqual(badiDate1.kullIShay(), kullIShay,
-      'Kull-i-Shay\' (getter): ' + kullIShay + '/' + badiDate1.kullIShay());
-    assert.strictEqual(parseInt(badiDate1.format('k'), 10), kullIShay,
-      'Kull-i-Shay\' (format): ' + kullIShay + '/' + badiDate1.format('k'));
-    assert.strictEqual(badiDate1.ayyamiHaLength(), ayyamiHaLengths[badiYear],
-      'Length of Ayyám-i-Há (getter): ' + ayyamiHaLengths[badiYear] + '/' +
-      badiDate1.ayyamiHaLength());
+    expect(badiDate1.kullIShay()).toEqual(kullIShay);
+    expect(parseInt(badiDate1.format('k'), 10)).toEqual(kullIShay);
+    expect(badiDate1.ayyamiHaLength()).toEqual(ayyamiHaLengths[badiYear]);
   }
 });
 
@@ -100,53 +59,38 @@ it('Badí\' Weekdays', function () {
     const badiDate1 = new BadiDate([172, 1, badiDay]);
     // In this range of dates, weekday numbers happen to correspond to day
     // numbers
-    assert.strictEqual(badiDate1.badiWeekday(), badiDay,
-      'Badí\' Weekday (getter): ' + badiDay + '/' + badiDate1.badiWeekday());
+    expect(badiDate1.badiWeekday()).toEqual(badiDay);
   }
 });
 
 it('Invalid Dates', function () {
   const badiDate1 = new BadiDate([172, 20, 6]);
   const badiDate2 = new BadiDate([508, 1, 1]);
-  const badiDate3 = new BadiDate(moment.utc('1844-01-01'));
-  const badiDate4 = new BadiDate(moment.utc('2400-01-01'));
-  assert.strictEqual(badiDate1.isValid(), false,
-    'Test that isValid() Returns false: ' + false + '/' + badiDate1.isValid());
-  assert.strictEqual(badiDate1.format(), 'Not a valid date',
-    'Formatting an Invalid Date: Not a valid date/' + badiDate1.format());
-  assert.strictEqual(badiDate2.isValid(), false,
-    'Test that isValid() Returns false: ' + false + '/' + badiDate2.isValid());
-  assert.strictEqual(badiDate2.format(), 'Not a valid date',
-    'Formatting an Invalid Date: Not a valid date/' + badiDate2.format());
-  assert.strictEqual(badiDate3.isValid(), false,
-    'Test that isValid() Returns false: ' + false + '/' + badiDate3.isValid());
-  assert.strictEqual(badiDate3.format(), 'Not a valid date',
-    'Formatting an Invalid Date: Not a valid date/' + badiDate3.format());
-  assert.strictEqual(badiDate4.isValid(), false,
-    'Test that isValid() Returns false: ' + false + '/' + badiDate4.isValid());
-  assert.strictEqual(badiDate4.format(), 'Not a valid date',
-    'Formatting an Invalid Date: Not a valid date/' + badiDate4.format());
+  const badiDate3 = new BadiDate(luxon.DateTime.fromISO('1844-01-01', { zone: 'UTC' }));
+  const badiDate4 = new BadiDate(luxon.DateTime.fromISO('2400-01-01', { zone: 'UTC' }));
+  expect(badiDate1.isValid()).toBeFalsy();
+  expect(badiDate1.format()).toEqual('Not a valid Badí‘ date');
+  expect(badiDate2.isValid()).toBeFalsy();
+  expect(badiDate2.format()).toEqual('Not a valid Badí‘ date');
+  expect(badiDate3.isValid()).toBeFalsy();
+  expect(badiDate3.format()).toEqual('Not a valid Badí‘ date');
+  expect(badiDate4.isValid()).toBeFalsy();
+  expect(badiDate4.format()).toEqual('Not a valid Badí‘ date');
 });
 
 it('Local Badí Date', function () {
   const localBadiDate1 = new LocalBadiDate([172, 1, 1], 32.943, 35.092,
     'Asia/Jerusalem');
-  const localBadiDate2 = new LocalBadiDate(moment.tz('2015-03-20T18:00:00',
-    'Asia/Jerusalem'), 32.943, 35.092, 'Asia/Jerusalem');
-  assert.ok(
-    localBadiDate1.start.format() === localBadiDate2.start.format() &&
-    localBadiDate1.start.format() === '2015-03-20T17:51:00+02:00',
-    'Correct start datetime');
-  assert.ok(localBadiDate1.sunrise.format() ===
-    localBadiDate2.sunrise.format() && localBadiDate1.sunrise.format() ===
-    '2015-03-21T05:43:00+02:00', 'Correct sunrise datetime');
-  assert.ok(localBadiDate1.solarNoon.format() ===
-    localBadiDate2.solarNoon.format() && localBadiDate1.solarNoon.format() ===
-    '2015-03-21T11:47:00+02:00', 'Correct solar noon datetime');
-  assert.ok(
-    localBadiDate1.end.format() === localBadiDate2.end.format() &&
-    localBadiDate1.end.format() === '2015-03-21T17:52:00+02:00',
-    'Correct end datetime');
+  const localBadiDate2 = new LocalBadiDate(luxon.DateTime.fromISO('2015-03-20T18:00:00',
+    { zone: 'Asia/Jerusalem' }), 32.943, 35.092, 'Asia/Jerusalem');
+  expect(localBadiDate1.start.toISO()).toEqual(localBadiDate2.start.toISO());
+  expect(localBadiDate1.start.toISO()).toEqual('2015-03-20T17:51:00.000+02:00');
+  expect(localBadiDate1.sunrise.toISO()).toEqual(localBadiDate2.sunrise.toISO());
+  expect(localBadiDate1.sunrise.toISO()).toEqual('2015-03-21T05:43:00.000+02:00');
+  expect(localBadiDate1.solarNoon.toISO()).toEqual(localBadiDate2.solarNoon.toISO());
+  expect(localBadiDate1.solarNoon.toISO()).toEqual('2015-03-21T11:47:00.000+02:00');
+  expect(localBadiDate1.end.toISO()).toEqual(localBadiDate2.end.toISO());
+  expect(localBadiDate1.end.toISO()).toEqual('2015-03-21T17:52:00.000+02:00');
   /**
    * Concatenate the string HH:mm:ss output from start, sunrise, solar Noon and
    * end times of the LocalBadiDate object.
@@ -154,10 +98,10 @@ it('Local Badí Date', function () {
    * @returns {string} concatenated string
    */
   const timesString = function (localBadiDate) {
-    return (localBadiDate.start.format('HH:mm:ss') + '|' +
-            localBadiDate.sunrise.format('HH:mm:ss') + '|' +
-            localBadiDate.solarNoon.format('HH:mm:ss') + '|' +
-            localBadiDate.end.format('HH:mm:ss'));
+    return (localBadiDate.start.toFormat('HH:mm:ss') + '|' +
+            localBadiDate.sunrise.toFormat('HH:mm:ss') + '|' +
+            localBadiDate.solarNoon.toFormat('HH:mm:ss') + '|' +
+            localBadiDate.end.toFormat('HH:mm:ss'));
   };
   const dateAlaska = new LocalBadiDate([172, 1, 1], 65.0, -150.0,
     'America/Anchorage');
@@ -173,27 +117,17 @@ it('Local Badí Date', function () {
     'Europe/Helsinki');
   const dateFinland2 = new LocalBadiDate([172, 19, 19], 65.0, 28.0,
     'Europe/Helsinki');
-  assert.strictEqual(timesString(dateAlaska),
-    '19:00:00|07:00:00|13:00:00|19:00:00', 'Clock time Alaska');
-  assert.strictEqual(timesString(dateCanada),
-    '18:00:00|06:30:00|12:00:00|18:00:00', 'Clock time Canada');
-  assert.strictEqual(timesString(dateIceland),
-    '18:00:00|06:00:00|13:00:00|18:00:00', 'Clock time Iceland');
-  assert.strictEqual(timesString(dateNorway),
-    '18:00:00|06:00:00|12:00:00|18:00:00', 'Clock time Norway');
-  assert.strictEqual(timesString(dateSweden),
-    '18:00:00|06:00:00|12:00:00|18:00:00', 'Clock time Sweden');
-  assert.strictEqual(timesString(dateFinland),
-    '18:00:00|06:00:00|12:00:00|18:00:00', 'Clock time Finland');
-  assert.notStrictEqual(timesString(dateFinland2),
-    '18:00:00|06:00:00|12:00:00|18:00:00',
-    'Not clock time Finland during the Fast');
+  expect(timesString(dateAlaska)).toEqual('19:00:00|07:00:00|13:00:00|19:00:00');
+  expect(timesString(dateCanada)).toEqual('18:00:00|06:30:00|12:00:00|18:00:00');
+  expect(timesString(dateIceland)).toEqual('18:00:00|06:00:00|13:00:00|18:00:00');
+  expect(timesString(dateNorway)).toEqual('18:00:00|06:00:00|12:00:00|18:00:00');
+  expect(timesString(dateSweden)).toEqual('18:00:00|06:00:00|12:00:00|18:00:00');
+  expect(timesString(dateFinland)).toEqual('18:00:00|06:00:00|12:00:00|18:00:00');
+  expect(timesString(dateFinland2)).toEqual('18:19:00|06:11:00|12:16:00|18:22:00');
   badiDateOptions({useClockLocations: false});
   const dateAlaska2 = new LocalBadiDate([172, 1, 1], 65.0, -150.0,
     'America/Anchorage');
-  assert.notStrictEqual(timesString(dateAlaska2),
-    '19:00:00|07:00:00|13:00:00|19:00:00',
-    'Clock time Alaska - clock location turned off');
+  expect(timesString(dateAlaska2)).toEqual('20:16:00|07:57:00|14:07:00|20:19:00');
   const holyDay2 = new LocalBadiDate([172, 2], 32.943, 35.092,
     'Asia/Jerusalem');
   const holyDay5 = new LocalBadiDate([172, 5], 32.943, 35.092,
@@ -204,39 +138,28 @@ it('Local Badí Date', function () {
     'Asia/Jerusalem');
   const holyDay11 = new LocalBadiDate([172, 11], 32.943, 35.092,
     'Asia/Jerusalem');
-  assert.strictEqual(holyDay2.holyDayCommemoration.format('HH:mm:ss'),
-    '16:00:00');
-  assert.strictEqual(holyDay5.holyDayCommemoration.format('HH:mm:ss'),
-    '21:48:00');
-  assert.strictEqual(holyDay6.holyDayCommemoration.format('HH:mm:ss'),
-    '04:00:00');
-  assert.strictEqual(holyDay7.holyDayCommemoration.format('HH:mm:ss'),
-    '12:45:00');
-  assert.strictEqual(holyDay11.holyDayCommemoration.format('HH:mm:ss'),
-    '01:00:00');
-  // Reset for other tests
+  expect(holyDay2.holyDayCommemoration.toFormat('HH:mm:ss')).toEqual('16:00:00');
+  expect(holyDay5.holyDayCommemoration.toFormat('HH:mm:ss')).toEqual('21:48:00');
+  expect(holyDay6.holyDayCommemoration.toFormat('HH:mm:ss')).toEqual('04:00:00');
+  expect(holyDay7.holyDayCommemoration.toFormat('HH:mm:ss')).toEqual('12:45:00');
+  expect(holyDay11.holyDayCommemoration.toFormat('HH:mm:ss')).toEqual('01:00:00');
   badiDateOptions({useClockLocations: true});
 });
 
 it('Localization Fallback', function () {
   const badiDate1 = new BadiDate([172, 1, 2]);
-  assert.strictEqual(badiDate1.format('MML'), 'Splendour',
-    'English as default');
-  assert.strictEqual(badiDate1.format('MML', 'en-us'), 'Splendor',
-    'en-us override');
-  assert.strictEqual(badiDate1.format('DDL', 'en-us'), 'Glory',
-    'en-us fallback');
-  assert.strictEqual(badiDate1.format('MML', 'invalidlang'), 'Splendour',
-    'Fallback for invalid language override');
+  expect(badiDate1.format('MML')).toEqual('Splendour');
+  expect(badiDate1.format('MML', 'en-us')).toEqual('Splendor');
+  expect(badiDate1.format('MML', 'invalidlang')).toEqual('Splendour');
+
   badiDateOptions({defaultLanguage: 'ar'});
-  assert.strictEqual(badiDate1.format('MML'), 'البهاء',
-    'Set default to Arabic');
+  expect(badiDate1.format('MML')).toEqual('البهاء');
+
   badiDateOptions({defaultLanguage: 'invalidlang'});
-  assert.strictEqual(badiDate1.format('MML'), 'البهاء',
-    'Changing default to invalid language shouldn\'t do anything');
+  expect(badiDate1.format('MML')).toEqual('البهاء');
+
   badiDateOptions({defaultLanguage: 'en'});
-  assert.strictEqual(badiDate1.format('MML'), 'Splendour',
-    'Default back to English');
+  expect(badiDate1.format('MML')).toEqual('Splendour');
 });
 
 it('Clock Locations', function () {
@@ -246,8 +169,7 @@ it('Clock Locations', function () {
     const lat = 90 - i;
     for (let j = 0; j < 360; j++) {
       const lng = -180 + j;
-      assert.strictEqual(clockLocationFromPolygons(lat, lng),
-        valueMapping[clockMap[i][j]]);
+      expect(clockLocationFromPolygons(lat, lng)).toEqual(valueMapping[clockMap[i][j]]);
     }
   }
 });
@@ -263,6 +185,6 @@ it('Format Cropping', function () {
   };
   for (const [month, string] of Object.entries(expectedResults)) {
     const badiDate1 = new BadiDate([172, month, 1]);
-    assert.strictEqual(badiDate1.format('M'), string);
+    expect(badiDate1.format('M')).toEqual(string);
   }
 });

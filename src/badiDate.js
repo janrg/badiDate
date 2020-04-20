@@ -1,3 +1,4 @@
+import * as luxon from 'luxon';
 import {badiLocale, setDefaultLanguage, setUnderlineFormat,
   underlineFormat} from './badiLocale.js';
 import {badiYears} from './badiYears.js';
@@ -18,7 +19,7 @@ class BadiDate {
     this._gregDate = 0;
     this._badiYear = 0;
     this._badiMonth = 0;
-    this._badiDate = 0;
+    this._badiDay = 0;
     this._nawRuz = 0;
     this._ayyamiHaLength = 0;
     this._yearTB = [];
@@ -26,27 +27,12 @@ class BadiDate {
     this._valid = true;
 
     if (date instanceof Date) {
-      this.gregDate = moment.utc(
-        [date.getFullYear(), date.getMonth(), date.getDate(), 12]);
-    } else if (date instanceof moment) {
-      this._gregDate = moment.utc([date.year(), date.month(), date.date(), 12]);
-    } else if (typeof date === 'string') {
-      const dateArray = this._parseBadiDateString(date);
-      if (dateArray) {
-        this._setFromBadiDate(dateArray);
-      // Looks like the input was a Gregorian datestring
-      } else {
-        // Attempt to handle a malformed string which moment complains about but
-        // Date makes a best guess at.
-        const tempDate = new Date(date);
-        this._gregDate = moment.utc([tempDate.getFullYear(),
-          tempDate.getMonth(), tempDate.getDate(), 12]);
-        // Check if it's before 1 BE or after 356 BE (which we can't handle)
-        if (this._notInValidGregRange(this._gregDate)) {
-          this._setInvalid();
-        }
-      }
-    } else if (date.constructor === Array) {
+      this._gregDate = luxon.DateTime.fromObject({ year: date.getFullYear(), month: date.getMonth(), day: date.getDate(), zone: 'UTC' });
+    } else if (date._isAMomentObject != null) {
+      this._gregDate = luxon.DateTime.fromObject({ year: date.year(), month: date.month(), day: date.date(), zone: 'UTC' });
+    } else if (date instanceof luxon.DateTime) {
+      this._gregDate = luxon.DateTime.fromObject({ year: date.year, month: date.month, day: date.day, zone: 'UTC' });
+    } else if (Array.isArray(date)) {
       if (date.length !== 3 && date.length !== 2) {
         this._setInvalid();
       } else {
@@ -96,17 +82,16 @@ class BadiDate {
    */
   format(formatString, language) { /* eslint-disable-line complexity */
     if (!this.isValid()) {
-      return 'Not a valid date';
+      return 'Not a valid Badí‘ date';
     }
     const formatTokens = [
       ['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv', 'KiS'],
       ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE',
         'BC', 'Va'],
       ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
-    if (language === undefined ||
-        typeof badiLocale[language] === 'undefined') {
+    if (language === undefined || badiLocale[language] === undefined) {
       // eslint-disable-next-line dot-notation
-      if (typeof badiLocale['default'] === 'undefined') {
+      if (badiLocale.default === undefined) {
         language = 'en';
       } else {
         language = 'default';
@@ -384,51 +369,14 @@ class BadiDate {
   }
 
   /**
-   * Check whether a string supplied to the constructor describes a valid Badí'
-   * date, either as year-month-day or year-holyDay and if yes, return an array
-   * of date components.
-   * @param {string} dateString Badí' date in string format
-   * @returns {(array|false)} array consisting of the Badí' date components
-   *                          (either [year, month, day] or
-   *                          [year, holyDayNumber]) or false
-   */
-  _parseBadiDateString(dateString) { // eslint-disable-line complexity
-    const dateComponents = dateString.split('-');
-    // Are all components numerical
-    for (let i = 0; i < dateComponents.length; i++) {
-      if (!((/^\d+$/).test(dateComponents[i]))) {
-        return false;
-      }
-      dateComponents[i] = parseInt(dateComponents[i], 10);
-    }
-    // If only two numbers are supplied, the second designates a Holy Day and
-    // must be between 1 and 11
-    if (dateComponents.length !== 3) {
-      if (dateComponents.length === 2 && dateComponents[1] > 0 &&
-          dateComponents[1] < 12) {
-        return dateComponents;
-      }
-      return false;
-    }
-    // Are the month and day numbers in sensible ranges?
-    // We call Ayyám-i-Há month 20
-    if (dateComponents[1] > 20 || dateComponents[1] < 1) {
-      return false;
-    }
-    if (dateComponents[2] > 19 || dateComponents[2] < 1) {
-      return false;
-    }
-    return dateComponents;
-  }
-
-  /**
    * Check whether a moment object is within the valid range of dates.
    * @param {moment} datetime date to be checked
    * @returns {bool} whether the provided datetime is within the valid range
    */
   _notInValidGregRange(datetime) {
-    return datetime.isBefore(moment.utc('1844-03-21')) ||
-        datetime.isAfter(moment.utc('2351-03-20'));
+    const lowerBound = luxon.DateTime.fromObject({ year: 1844, month: 3, day: 21, zone: 'UTC' });
+    const upperBound = luxon.DateTime.fromObject({ year: 2351, month: 3, day: 20, zone: 'UTC' })
+    return datetime < lowerBound || datetime > upperBound;
   }
 
   /**
@@ -439,14 +387,15 @@ class BadiDate {
       this._setInvalid();
       return;
     }
-    const gregYear = this._gregDate.year();
-    if (this._gregDate.isBefore(moment.utc('2015-03-21'))) {
-      // Old implementation for day before Naw-Rúz 172
-      if (this._gregDate.isBefore(gregYear + '-03-21')) {
-        this._nawRuz = moment.utc((gregYear - 1).toString() + '-03-21');
+    const gregYear = this._gregDate.year;
+    const oldImplementationCutoff = luxon.DateTime.fromObject({ year: 2015, month: 3, day: 21, zone: 'UTC' });
+    if (this._gregDate < oldImplementationCutoff) {
+      const { month, day } = this._gregDate;
+      if (month < 3 || (month === 3 && day < 21)) {
+        this._nawRuz = luxon.DateTime.fromObject({ year: gregYear - 1, month: 3, day: 21, zone: 'UTC' });
         this._badiYear = gregYear - 1844;
       } else {
-        this._nawRuz = moment.utc(gregYear.toString() + '-03-21');
+        this._nawRuz = luxon.DateTime.fromObject({ year: gregYear, month: 3, day: 21, zone: 'UTC'});
         this._badiYear = gregYear - 1843;
       }
       this._setOldAyyamiHaLength();
@@ -484,14 +433,14 @@ class BadiDate {
    *                          [year, month, day] or [year, holyDayNumber]
    */
   _setFromBadiDate(dateArray) { // eslint-disable-line complexity
-    this._badiYear = parseInt(dateArray[0], 10);
+    this._badiYear = dateArray[0];
     // Are we in the valid range?
     if (this._badiYear < 1 || this._badiYear > 507) {
       this._setInvalid();
       return;
     } else if (this._badiYear < 172) {
       // Old implementation for dates before Naw-Rúz 172
-      this._nawRuz = moment.utc([1843 + this._badiYear, 2, 21]);
+      this._nawRuz = luxon.DateTime.fromObject({ year: 1843 + this._badiYear, month: 3, day: 21, zone: 'UTC' });
       this._setOldAyyamiHaLength();
       this._yearTB = [12, 5, 13, 9];
     } else {
@@ -501,8 +450,8 @@ class BadiDate {
     // If all three components exist, we have a year, month, and day
     // eslint-disable-next-line no-negated-condition
     if (typeof dateArray[2] !== 'undefined') {
-      this._badiMonth = parseInt(dateArray[1], 10);
-      this._badiDay = parseInt(dateArray[2], 10);
+      this._badiMonth = dateArray[1];
+      this._badiDay = dateArray[2];
       if (this._badiMonth === 20 && this._badiDay > this._ayyamiHaLength) {
         // If only off by one day, we'll bubble up so that 5th Ayyám-i-Há in a
         // year with only 4 days of Ayyám-i-Há can be salvaged
@@ -515,7 +464,7 @@ class BadiDate {
       }
     // Otherwise input designated a Holy Day
     } else {
-      const holyDayNum = parseInt(dateArray[1], 10);
+      const holyDayNum = dateArray[1];
       switch (holyDayNum) {
         case 1:
           // Naw-Rúz
@@ -586,20 +535,14 @@ class BadiDate {
       }
     }
     // Finally we set the Gregorian date for this Badí' date
-    const dayOfGregYear = this._nawRuz.diff(
-      moment.utc([this._badiYear + 1843]), 'days') +
-      this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]);
-    this._gregDate = moment.utc([this._badiYear + 1843]);
-    // Bubbles up to next year if necessary
-    this._gregDate.dayOfYear(dayOfGregYear);
-    this._gregDate.hour(12);
+    this._gregDate = this._nawRuz.plus(luxon.Duration.fromObject({ days: this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]) - 1 }));
   }
 
   /**
    * Set the length of Ayyám-i-Há for dates before the new implementation.
    */
   _setOldAyyamiHaLength() {
-    if (moment([this._nawRuz.year() + 1]).isLeapYear()) {
+    if (luxon.DateTime.fromObject({ year: this._nawRuz.year + 1 }).isInLeapYear) {
       this._ayyamiHaLength = 5;
     } else {
       this._ayyamiHaLength = 4;
@@ -613,12 +556,11 @@ class BadiDate {
    */
   _setBadiYearInfo(fromGregDate) {
     let yearData = this._extractBadiYearInfo();
-    if (fromGregDate === true &&
-        this._gregDate.isBefore(moment.utc(yearData.NR))) {
+    if (fromGregDate === true && this._gregDate < yearData.NR) {
       this._badiYear -= 1;
       yearData = this._extractBadiYearInfo();
     }
-    this._nawRuz = moment.utc(yearData.NR);
+    this._nawRuz = yearData.NR;
     this._ayyamiHaLength = yearData.aHL;
     this._yearTB = yearData.TB;
   }
@@ -634,14 +576,14 @@ class BadiDate {
     // Check whether data needs to be unpacked or exists in the verbose version
     if (badiYears[0] === 'l4da') {
       const components = badiYears[this._badiYear - 172].split('');
-      yearData.NR = String(this._badiYear - 172 + 2015) + '-03-' +
-                    String(parseInt(components[0], 36));
+      yearData.NR = luxon.DateTime.fromObject({ year: this._badiYear - 172 + 2015, month: 3, day: parseInt(components[0], 36), zone: 'UTC' });
       yearData.aHL = parseInt(components[1], 36);
       const TB1 = [parseInt(components[2], 36), parseInt(components[3], 36)];
       const TB2 = TB1[1] < 19 ? [TB1[0], TB1[1] + 1] : [TB1[0] + 1, 1];
       yearData.TB = [TB1[0], TB1[1], TB2[0], TB2[1]];
     } else {
       yearData = badiYears[this._badiYear];
+      yearData.NR = luxon.DateTime.fromISO(yearData.NR, { zone: 'UTC' });
     }
     return yearData;
   }
@@ -655,7 +597,7 @@ class BadiDate {
    */
   _dayOfYear(date) {
     let numDays = 0;
-    if (date.constructor === Array) {
+    if (Array.isArray(date)) {
       // We have a Badí' date
       if (date[1] < 19) {
         numDays = 19 * (date[1] - 1) + date[2];
@@ -665,7 +607,7 @@ class BadiDate {
         numDays = 342 + this._ayyamiHaLength + date[2];
       }
     } else {
-      numDays = date.diff(this._nawRuz, 'days') + 1;
+      numDays = date.diff(this._nawRuz).as('days') + 1;
     }
     return numDays;
   }
@@ -674,12 +616,12 @@ class BadiDate {
    * Set the member variables to invalid values.
    */
   _setInvalid() {
-    this._gregDate = moment.utc('0000-00-00');
+    this._gregDate = luxon.DateTime.invalid('Not a valid Badí‘ date');
     this._badiYear = -1;
     this._badiMonth = -1;
     this._badiDay = -1;
     this._ayyamiHaLength = -1;
-    this._nawRuz = moment.utc('0000-00-00');
+    this._nawRuz = luxon.DateTime.invalid('Not a valid Badí‘ date');
     this._valid = false;
   }
 
@@ -751,10 +693,8 @@ class BadiDate {
     if (!this._holyDay) {
       return false;
     }
-    if (language === undefined ||
-        typeof badiLocale[language] === 'undefined') {
-      // eslint-disable-next-line dot-notation
-      if (typeof badiLocale['default'] === 'undefined') {
+    if (language === undefined || badiLocale[language] === undefined) {
+      if (typeof badiLocale.default === undefined) {
         language = 'en';
       } else {
         language = 'default';
@@ -802,7 +742,7 @@ class BadiDate {
    * @returns {int} number of Badí' weekday
    */
   badiWeekday() {
-    return (this._gregDate.isoWeekday() + 1) % 7 + 1;
+    return (this._gregDate.weekday + 1) % 7 + 1;
   }
 
   /**
