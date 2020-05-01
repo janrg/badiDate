@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./built",
-    "target": "es6",
-    "sourceMap": true,
+    "target": "es2017",
     "esModuleInterop": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
   },
   "include": ["./src/**/*"]
 }
