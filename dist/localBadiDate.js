@@ -421,10 +421,10 @@
             this._valid = true;
             this._invalidReason = undefined;
             try {
-                if (date instanceof Date) {
+                if (this._isDateObject(date)) {
                     this._gregorianDate = luxon.DateTime.fromObject({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate(), zone: 'UTC' });
                 }
-                else if (date instanceof luxon.DateTime) {
+                else if (luxon.DateTime.isDateTime(date)) {
                     this._gregorianDate = luxon.DateTime.fromObject({ year: date.year, month: date.month, day: date.day, zone: 'UTC' });
                 }
                 else if (this._isYearMonthDay(date) || this._isYearHolyDayNumber(date)) {
@@ -446,6 +446,9 @@
         }
         format(formatString, language) {
             return formatBadiDate(this, formatString, language);
+        }
+        _isDateObject(arg) {
+            return Object.prototype.toString.call(arg) === '[object Date]';
         }
         _isYearMonthDay(arg) {
             return typeof arg.year === 'number' && typeof arg.month === 'number' &&
@@ -839,7 +842,7 @@
             }
         }
         _setInputDateToCorrectDay(date, latitude, longitude) {
-            if (date instanceof luxon.DateTime) {
+            if (luxon.DateTime.isDateTime(date)) {
                 const sunset = MeeusSunMoon.sunset(date, latitude, longitude);
                 return (date > sunset) ? date.plus({ days: 1 }) : date;
             }

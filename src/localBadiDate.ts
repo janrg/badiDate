@@ -78,7 +78,7 @@ class LocalBadiDate {
     }
 
     _setInputDateToCorrectDay(date: InputDate, latitude, longitude): InputDate {
-        if (date instanceof luxon.DateTime) {
+        if (luxon.DateTime.isDateTime(date)) {
             const sunset = MeeusSunMoon.sunset(date, latitude, longitude);
             return (date > sunset) ? date.plus({ days: 1 }) : date;
         }
