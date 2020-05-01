@@ -105,11 +105,11 @@ class LocalBadiDate {
         return this._end;
     }
 
-    get holyDayCommemoration(): luxon.DateTime {
+    get holyDayCommemoration(): luxon.DateTime | undefined {
         return this._holyDayCommemoration;
     }
 
-    get clockLocation(): string {
+    get clockLocation(): string | undefined {
         return this._clockLocation;
     }
 }

@@ -4,6 +4,7 @@
   "description": "A library for dates in the Badí' (or Bahá'í) calendar.",
   "main": "dist/localBadiDate-mss-locales.js",
   "module": "dist/localBadiDate-msm-locales.mjs",
+  "types": "dist/badiDate.d.ts",
   "directories": {
     "test": "test"
   },
