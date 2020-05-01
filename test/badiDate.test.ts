@@ -1,20 +1,20 @@
 import { BadiDate } from '../src/badiDate';
 import { ayyamiHaLengths, UHJListDates } from './testData';
 import * as luxon from 'luxon';
-import { badiDateOptions } from '../src/localBadiDate';
-import { HolyDay, InputDate } from '../src/types';
+import { badiDateSettings } from '../src/localBadiDate';
+import { HolyDay } from '../src/types';
 
 describe('Dates for Naw-Rúz and the Twin Holy Days should agree with the UHJ List 172-221', () => {
     for (let i = 0; i < 50; i++) {
         it(`should produce the correct dates for ${172 + i} B.E.`, () => {
-            const nawRuz = new BadiDate([i + 172, 1]);
-            const birthOfTheBab = new BadiDate([i + 172, 8]);
-            const birthOfBahaullah = new BadiDate([i + 172, 9]);
+            const nawRuz = new BadiDate({ year: i + 172, holyDayNumber: 1 });
+            const birthOfTheBab = new BadiDate({ year: i + 172, holyDayNumber: 8 });
+            const birthOfBahaullah = new BadiDate({ year: i + 172, holyDayNumber: 9 });
 
             expect(nawRuz.gregorianDate.toFormat('yyyy-MM-dd')).toEqual(UHJListDates[i][0]);
-            expect([birthOfTheBab.badiMonth, birthOfTheBab.badiDay])
+            expect([birthOfTheBab.month, birthOfTheBab.day])
                 .toEqual((UHJListDates[i][2] as number[]).slice(0, 2));
-            expect([birthOfBahaullah.badiMonth, birthOfBahaullah.badiDay])
+            expect([birthOfBahaullah.month, birthOfBahaullah.day])
                 .toEqual((UHJListDates[i][2] as number[]).slice(2, 4));
         });
     }
@@ -27,7 +27,7 @@ describe('BadiDate conversions', () => {
         const initDate = luxon.DateTime.fromObject({ year, ordinal: dayOfYear, zone: 'UTC' });
         it(`should be stable when re-creating with diff. constructors: ${initDate.toFormat('yyyy-MM-dd')}`, () => {
             const badiDate1 = new BadiDate(initDate);
-            const badiDate2 = new BadiDate([badiDate1.badiYear, badiDate1.badiMonth, badiDate1.badiDay]);
+            const badiDate2 = new BadiDate({ year: badiDate1.year, month: badiDate1.month, day: badiDate1.day });
             const badiDate3 = new BadiDate(badiDate2.gregorianDate.toJSDate());
             const badiDate4 = new BadiDate(badiDate3.gregorianDate);
             expect(badiDate4.isValid).toEqual(true);
@@ -37,28 +37,28 @@ describe('BadiDate conversions', () => {
 });
 
 it('the date should bubble up if set to 5 Ayyám-i-Há for year with only 4', () => {
-    const badiDate = new BadiDate([173, 20, 5]);
+    const badiDate = new BadiDate({ year: 173, month: 20, day: 5 });
 
-    expect(badiDate.badiMonth).toEqual(19);
-    expect(badiDate.badiDay).toEqual(1);
+    expect(badiDate.month).toEqual(19);
+    expect(badiDate.day).toEqual(1);
 });
 
 describe('the date component getters', () => {
     for (let badiYear = 1; badiYear < 508; badiYear++) {
         const badiMonth = Math.floor((Math.random() * 19) + 1);
         const badiDay = Math.floor((Math.random() * 19) + 1);
-        const badiDate = new BadiDate([badiYear, badiMonth, badiDay]);
+        const badiDate = new BadiDate({ year: badiYear, month: badiMonth, day: badiDay });
 
         it(`should return the correct day for [${badiYear}, ${badiMonth}, ${badiDay}]`, () => {
-            expect(badiDate.badiDay).toEqual(badiDay);
+            expect(badiDate.day).toEqual(badiDay);
         });
 
         it(`should return the correct month for [${badiYear}, ${badiMonth}, ${badiDay}]`, () => {
-            expect(badiDate.badiMonth).toEqual(badiMonth);
+            expect(badiDate.month).toEqual(badiMonth);
         });
 
         it(`should return the correct year for [${badiYear}, ${badiMonth}, ${badiDay}]`, () => {
-            expect(badiDate.badiYear).toEqual(badiYear);
+            expect(badiDate.year).toEqual(badiYear);
         });
 
         it(`should return the correct year in Vahid for [${badiYear}, ${badiMonth}, ${badiDay}]`, () => {
@@ -78,54 +78,56 @@ describe('the date component getters', () => {
         });
 
         it(`should return the correct weekday for [${badiYear}, ${badiMonth}, ${badiDay}]`, () => {
-            expect(badiDate.badiWeekday).toEqual((badiDate.gregorianDate.weekday + 1) % 7 + 1);
+            expect(badiDate.weekday).toEqual((badiDate.gregorianDate.weekday + 1) % 7 + 1);
         });
     }
 });
 
 describe('Holy Days', () => {
     afterEach(() => {
-        badiDateOptions({ defaultLanguage: 'en' });
+        badiDateSettings({ defaultLanguage: 'en' });
     });
 
     const holyDays = [
-        { date: [172, HolyDay.NawRuz], expectedOutput: 'Naw-Rúz' },
-        { date: [172, HolyDay.FirstRidvan], expectedOutput: 'First day of Riḍván' },
-        { date: [172, HolyDay.NinthRidvan], expectedOutput: 'Ninth day of Riḍván' },
-        { date: [172, HolyDay.TwelfthRidvan], expectedOutput: 'Twelfth day of Riḍván' },
-        { date: [172, HolyDay.DeclarationOfTheBab], expectedOutput: 'Declaration of the Báb' },
-        { date: [172, HolyDay.AscensionOfBahaullah], expectedOutput: 'Ascension of Bahá’u’lláh' },
-        { date: [172, HolyDay.MartyrdomOfTheBab], expectedOutput: 'Martyrdom of the Báb' },
-        { date: [172, HolyDay.BirthOfTheBab], expectedOutput: 'Birth of the Báb' },
-        { date: [172, HolyDay.BirthOfBahaullah], expectedOutput: 'Birth of Bahá’u’lláh' },
-        { date: [172, HolyDay.DayOfTheCovenant], expectedOutput: 'Day of the Covenant' },
-        { date: [172, HolyDay.AscensionOfAbdulBaha], expectedOutput: 'Ascension of ‘Abdu’l-Bahá' },
-        { date: [172, 1, 2], expectedOutput: '' },
+        { date: { year: 172, holyDayNumber: HolyDay.NawRuz }, expectedOutput: 'Naw-Rúz' },
+        { date: { year: 172, holyDayNumber: HolyDay.FirstRidvan }, expectedOutput: 'First day of Riḍván' },
+        { date: { year: 172, holyDayNumber: HolyDay.NinthRidvan }, expectedOutput: 'Ninth day of Riḍván' },
+        { date: { year: 172, holyDayNumber: HolyDay.TwelfthRidvan }, expectedOutput: 'Twelfth day of Riḍván' },
+        { date: { year: 172, holyDayNumber: HolyDay.DeclarationOfTheBab }, expectedOutput: 'Declaration of the Báb' },
+        { date: { year: 172, holyDayNumber: HolyDay.AscensionOfBahaullah },
+            expectedOutput: 'Ascension of Bahá’u’lláh' },
+        { date: { year: 172, holyDayNumber: HolyDay.MartyrdomOfTheBab }, expectedOutput: 'Martyrdom of the Báb' },
+        { date: { year: 172, holyDayNumber: HolyDay.BirthOfTheBab }, expectedOutput: 'Birth of the Báb' },
+        { date: { year: 172, holyDayNumber: HolyDay.BirthOfBahaullah }, expectedOutput: 'Birth of Bahá’u’lláh' },
+        { date: { year: 172, holyDayNumber: HolyDay.DayOfTheCovenant }, expectedOutput: 'Day of the Covenant' },
+        { date: { year: 172, holyDayNumber: HolyDay.AscensionOfAbdulBaha },
+            expectedOutput: 'Ascension of ‘Abdu’l-Bahá' },
+        { date: { year: 172, month: 1, day: 2 }, expectedOutput: '' },
     ];
 
     holyDays.forEach(({ date, expectedOutput }) => {
         it('should output Holy Days correctly', () => {
-            const badiDate = new BadiDate(date as InputDate);
+            const badiDate = new BadiDate(date);
 
             expect(badiDate.holyDay()).toEqual(expectedOutput);
         });
     });
 
     it('should be shown in the default language', () => {
-        badiDateOptions({ defaultLanguage: 'es' });
-        const badiDate = new BadiDate([172, 10]);
+        badiDateSettings({ defaultLanguage: 'es' });
+        const badiDate = new BadiDate({ year: 172, holyDayNumber: 10 });
 
         expect(badiDate.holyDay()).toEqual('Día de la Alianza');
     });
 
     it('should be shown in the selected language', () => {
-        const badiDate = new BadiDate([172, 10]);
+        const badiDate = new BadiDate({ year: 172, holyDayNumber: 10 });
 
         expect(badiDate.holyDay('fr')).toEqual('Jour de l’Alliance');
     });
 
     it('should fall back', () => {
-        const badiDate = new BadiDate([172, 10]);
+        const badiDate = new BadiDate({ year: 172, holyDayNumber: 10 });
 
         expect(badiDate.holyDay('xyz')).toEqual('Day of the Covenant');
     });
@@ -133,13 +135,13 @@ describe('Holy Days', () => {
 
 describe('Invalid input', () => {
     const invalidInputDates = [
-        [172, 1, 1, 1],
+        { year: 172, month: 1, day: 1, holyDayNumber: 2 },
         'someString',
         luxon.DateTime.fromISO('2360-01-01', { zone: 'UTC' }),
-        [508, 10, 10],
-        [172, 20, 6],
-        [172, 10, 25],
-        [172, 12],
+        { year: 508, month: 10, day: 10 },
+        { year: 172, month: 20, day: 6 },
+        { year: 172, month: 10, day: 25 },
+        { year: 172, holyDayNumber: 12 },
     ];
 
     invalidInputDates.forEach(inputDate => {
@@ -147,9 +149,9 @@ describe('Invalid input', () => {
             const badiDate = new BadiDate(inputDate as any);
 
             expect(badiDate.isValid).toEqual(false);
-            expect(badiDate.badiYear).toBeNaN();
-            expect(badiDate.badiMonth).toBeNaN();
-            expect(badiDate.badiDay).toBeNaN();
+            expect(badiDate.year).toBeNaN();
+            expect(badiDate.month).toBeNaN();
+            expect(badiDate.day).toBeNaN();
             expect(badiDate.ayyamiHaLength).toBeNaN();
             expect(badiDate.gregorianDate.isValid).toEqual(false);
             expect(badiDate.invalidReason).toBeDefined();
@@ -160,18 +162,18 @@ describe('Invalid input', () => {
 
 describe('the string formatter', () => {
     afterAll(() => {
-        badiDateOptions({ underlineFormat: 'css' });
+        badiDateSettings({ underlineFormat: 'css' });
     });
 
     it('should use a default format if no format string is defined', () => {
-        const badiDate = new BadiDate([172, 1, 1]);
+        const badiDate = new BadiDate({ year: 172, month: 1, day: 1 });
 
         expect(badiDate.format()).toEqual('1 Bahá (Splendour) 172 B.E.');
     });
 
     it('should parse all tokens in the format string', () => {
-        badiDateOptions({ underlineFormat: 'diacritic' });
-        const badiDate = new BadiDate([50, 1, 16]);
+        badiDateSettings({ underlineFormat: 'diacritic' });
+        const badiDate = new BadiDate({ year: 50, month: 1, day: 16 });
         const formatStr = 'd dd D DD DDL DD+ m mm M MM MML MM+ y yy ww W WW WWL yv yyv YV v vv Va k kk KiS BE BC';
         const expectedResult = '16 16 S̲h̲a S̲h̲araf Honour S̲h̲araf (Honour) 1 01 Bah Bahá Splendour ' +
             'Bahá (Splendour) 50 050 ‘Id ‘Idá ‘Idál Justice 12 12 Javáb 3 03 Váḥid 1 01 Kull-i-S̲h̲ay’ B.E. ' +
@@ -181,13 +183,13 @@ describe('the string formatter', () => {
     });
 
     it('should include non-tokens as is in the output', () => {
-        const badiDate = new BadiDate([172, 1, 1]);
+        const badiDate = new BadiDate({ year: 172, month: 1, day: 1 });
 
         expect(badiDate.format('d XYZMML yy BE')).toEqual('1 XYZSplendour 172 B.E.');
     });
 
     it('should include everything in curly braces as is in the output', () => {
-        const badiDate = new BadiDate([172, 1, 1]);
+        const badiDate = new BadiDate({ year: 172, month: 1, day: 1 });
 
         expect(badiDate.format('d { MML M}M yy BE')).toEqual('1  MML MBah 172 B.E.');
     });
@@ -213,8 +215,8 @@ describe('the string formatter', () => {
 
     croppedFormatData.forEach(({ month, croppedCss }) => {
         it('should crop the output appropriately with css underlining', () => {
-            badiDateOptions({ underlineFormat: 'css' });
-            const badiDate = new BadiDate([172, month, 1]);
+            badiDateSettings({ underlineFormat: 'css' });
+            const badiDate = new BadiDate({ year: 172, month, day: 1 });
 
             expect(badiDate.format('M')).toEqual(croppedCss);
         });
@@ -222,8 +224,8 @@ describe('the string formatter', () => {
 
     croppedFormatData.forEach(({ month, croppedUTag }) => {
         it('should crop the output appropriately with u-tag underlining', () => {
-            badiDateOptions({ underlineFormat: 'u' });
-            const badiDate = new BadiDate([172, month, 1]);
+            badiDateSettings({ underlineFormat: 'u' });
+            const badiDate = new BadiDate({ year: 172, month, day: 1 });
 
             expect(badiDate.format('M')).toEqual(croppedUTag);
         });
@@ -231,43 +233,50 @@ describe('the string formatter', () => {
 
     croppedFormatData.forEach(({ month, croppedDiacritic }) => {
         it('should crop the output appropriately with diacritic underlining', () => {
-            badiDateOptions({ underlineFormat: 'diacritic' });
-            const badiDate = new BadiDate([172, month, 1]);
+            badiDateSettings({ underlineFormat: 'diacritic' });
+            const badiDate = new BadiDate({ year: 172, month, day: 1 });
 
             expect(badiDate.format('M')).toEqual(croppedDiacritic);
         });
     });
 
+    it('should omit underlining if underlineFormat is "none"', () => {
+        badiDateSettings({ underlineFormat: 'none' });
+        const badiDate = new BadiDate({ year: 172, month: 16, day: 1 });
+
+        expect(badiDate.format('MM')).toEqual('Sharaf');
+    });
+
     it('should not change the underlineFormat if new setting is invalid', () => {
-        badiDateOptions({ underlineFormat: 'diacritic' });
-        badiDateOptions({ underlineFormat: 'invalid' } as any);
-        const badiDate = new BadiDate([172, 16, 1]);
+        badiDateSettings({ underlineFormat: 'diacritic' });
+        badiDateSettings({ underlineFormat: 'invalid' } as any);
+        const badiDate = new BadiDate({ year: 172, month: 16, day: 1 });
 
         expect(badiDate.format('MM')).toEqual('S̲h̲araf');
     });
 
     it('should output an error if the formatting string has non-matching braces', () => {
-        const badiDate = new BadiDate([172, 16, 1]);
+        const badiDate = new BadiDate({ year: 172, month: 16, day: 1 });
 
         expect(badiDate.format('MM {XYZ')).toEqual('Invalid formatting string.');
     });
 
     it('should only render one item each for DD+ and MM+ if both items would be identical', () => {
-        const badiDate = new BadiDate([172, 1, 2]);
+        const badiDate = new BadiDate({ year: 172, month: 1, day: 2 });
         const expectedOutput = 'الجلال البهاء';
 
         expect(badiDate.format('DD+ MM+', 'ar')).toEqual(expectedOutput);
     });
 
     it('should render the DD+ and MM+ tokens appropriately in rtl languages', () => {
-        const badiDate = new BadiDate([172, 1, 2]);
+        const badiDate = new BadiDate({ year: 172, month: 1, day: 2 });
         const expectedOutput = '<span dir="rtl">الجلال (جلال)</span> <span dir="rtl">البهاء (بهاء)</span>';
 
         expect(badiDate.format('DD+ MM+', 'fa')).toEqual(expectedOutput);
     });
 
     it('should render digits as different unicode characters where appropriate', () => {
-        const badiDate = new BadiDate([172, 17, 5]);
+        const badiDate = new BadiDate({ year: 172, month: 17, day: 5 });
 
         expect(badiDate.format('dd mm', 'ar')).toEqual('٠٥ ١٧');
     });
@@ -275,17 +284,17 @@ describe('the string formatter', () => {
 
 describe('the language selection', () => {
     afterEach(() => {
-        badiDateOptions({ defaultLanguage: 'en' });
+        badiDateSettings({ defaultLanguage: 'en' });
     });
 
-    const badiDate = new BadiDate([172, 1, 2]);
+    const badiDate = new BadiDate({ year: 172, month: 1, day: 2 });
 
     it('should format the date in the given language if passed as parameter', () => {
         expect(badiDate.format('MML', 'es')).toEqual('Esplendor');
     });
 
     it('should format the date in the given language if set as default', () => {
-        badiDateOptions({ defaultLanguage: 'es' });
+        badiDateSettings({ defaultLanguage: 'es' });
 
         expect(badiDate.format('MML')).toEqual('Esplendor');
     });
@@ -295,8 +304,8 @@ describe('the language selection', () => {
     });
 
     it('should keep the current default language if set to an invalid language', () => {
-        badiDateOptions({ defaultLanguage: 'es' });
-        badiDateOptions({ defaultLanguage: 'invalidLanguage' });
+        badiDateSettings({ defaultLanguage: 'es' });
+        badiDateSettings({ defaultLanguage: 'invalidLanguage' });
 
         expect(badiDate.format('MML')).toEqual('Esplendor');
     });

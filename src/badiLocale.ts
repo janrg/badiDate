@@ -28,11 +28,12 @@ const setDefaultLanguage = (language: string) => {
 let underlineFormat = 'css';
 
 const setUnderlineFormat = (format: UnderlineFormat) => {
-    if (['css', 'u', 'diacritic'].indexOf(format) > -1) {
+    if (['css', 'u', 'diacritic', 'none'].includes(format)) {
         underlineFormat = format;
     } else {
         // eslint-disable-next-line no-console
-        console.log('Invalid underline format. Choose one of ["css", "u", "diacritic"]. Setting has not been changed.');
+        console.log('Invalid underline format. Choose one of ["css", "u", "diacritic", "none"]. ' +
+            'Setting has not been changed.');
     }
 };
 

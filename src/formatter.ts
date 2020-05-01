@@ -1,7 +1,7 @@
 import { badiLocale, underlineFormat } from './badiLocale';
 import { BadiDate } from './badiDate';
 
-const formatTokens = [
+const formatTokens: Array<Array<string>> = [
     ['DDL', 'DD+', 'MML', 'MM+', 'WWL', 'yyv', 'KiS'],
     ['dd', 'DD', 'mm', 'MM', 'ww', 'WW', 'yv', 'YV', 'vv', 'kk', 'yy', 'BE', 'BC', 'Va'],
     ['d', 'D', 'm', 'M', 'W', 'v', 'k', 'y']];
@@ -59,45 +59,45 @@ const getFormatItem = (badiDate: BadiDate, token: string, language: string): str
     switch (token) {
         // Single character tokens
         case 'd':
-            return digitRewrite(badiDate.badiDay, language);
+            return digitRewrite(badiDate.day, language);
         case 'D':
-            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiDay), 3);
+            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.day), 3);
         case 'm':
-            return digitRewrite(badiDate.badiMonth, language);
+            return digitRewrite(badiDate.month, language);
         case 'M':
-            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiMonth), 3);
+            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.month), 3);
         case 'W':
             return formatItemFallback(language, 'weekdayAbbr3', (badiDate.gregorianDate.weekday + 1) % 7 + 1);
         case 'y':
-            return digitRewrite(badiDate.badiYear, language);
+            return digitRewrite(badiDate.year, language);
         case 'v':
-            return digitRewrite((Math.floor((badiDate.badiYear - 1) / 19) % 19) + 1, language);
+            return digitRewrite((Math.floor((badiDate.year - 1) / 19) % 19) + 1, language);
         case 'k':
-            return digitRewrite(Math.floor((badiDate.badiYear - 1) / 361) + 1, language);
+            return digitRewrite(Math.floor((badiDate.year - 1) / 361) + 1, language);
         // Two character tokens
         case 'dd':
-            return digitRewrite((`0${String(badiDate.badiDay)}`).slice(-2), language);
+            return digitRewrite((`0${String(badiDate.day)}`).slice(-2), language);
         case 'DD':
-            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiDay));
+            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.day));
         case 'mm':
-            return digitRewrite((`0${String(badiDate.badiMonth)}`).slice(-2), language);
+            return digitRewrite((`0${String(badiDate.month)}`).slice(-2), language);
         case 'MM':
-            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiMonth));
+            return postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.month));
         case 'ww':
             return formatItemFallback(language, 'weekdayAbbr2', (badiDate.gregorianDate.weekday + 1) % 7 + 1);
         case 'WW':
             return formatItemFallback(language, 'weekday', (badiDate.gregorianDate.weekday + 1) % 7 + 1);
         case 'yy':
-            return digitRewrite((`00${String(badiDate.badiYear)}`).slice(-3), language);
+            return digitRewrite((`00${String(badiDate.year)}`).slice(-3), language);
         case 'yv':
-            return digitRewrite((badiDate.badiYear - 1) % 19 + 1, language);
+            return digitRewrite((badiDate.year - 1) % 19 + 1, language);
         case 'YV':
-            return formatItemFallback(language, 'yearInVahid', (badiDate.badiYear - 1) % 19 + 1);
+            return formatItemFallback(language, 'yearInVahid', (badiDate.year - 1) % 19 + 1);
         case 'vv':
             return digitRewrite(
-                (`0${String((Math.floor((badiDate.badiYear - 1) / 19) + 2) % 19 - 1)}`).slice(-2), language);
+                (`0${String((Math.floor((badiDate.year - 1) / 19) + 2) % 19 - 1)}`).slice(-2), language);
         case 'kk':
-            return digitRewrite((`0${String(Math.floor((badiDate.badiYear - 1) / 361) + 1)}`).slice(-2), language);
+            return digitRewrite((`0${String(Math.floor((badiDate.year - 1) / 361) + 1)}`).slice(-2), language);
         case 'Va':
             return formatItemFallback(language, 'vahid');
         case 'BE':
@@ -106,10 +106,10 @@ const getFormatItem = (badiDate: BadiDate, token: string, language: string): str
             return formatItemFallback(language, 'badiCalendar');
         // Three character tokens
         case 'DDL':
-            return formatItemFallback(language, 'monthL', badiDate.badiDay);
+            return formatItemFallback(language, 'monthL', badiDate.day);
         case 'DD+': {
-            const day = postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiDay));
-            const dayL = formatItemFallback(language, 'monthL', badiDate.badiDay);
+            const day = postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.day));
+            const dayL = formatItemFallback(language, 'monthL', badiDate.day);
             if (day === dayL) {
                 return day;
             }
@@ -119,10 +119,10 @@ const getFormatItem = (badiDate: BadiDate, token: string, language: string): str
             return `${day} (${dayL})`;
         }
         case 'MML':
-            return formatItemFallback(language, 'monthL', badiDate.badiMonth);
+            return formatItemFallback(language, 'monthL', badiDate.month);
         case 'MM+': {
-            const month = postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.badiMonth));
-            const monthL = formatItemFallback(language, 'monthL', badiDate.badiMonth);
+            const month = postProcessLocaleItem(formatItemFallback(language, 'month', badiDate.month));
+            const monthL = formatItemFallback(language, 'monthL', badiDate.month);
             if (month === monthL) {
                 return month;
             }
@@ -134,7 +134,7 @@ const getFormatItem = (badiDate: BadiDate, token: string, language: string): str
         case 'WWL':
             return formatItemFallback(language, 'weekdayL', (badiDate.gregorianDate.weekday + 1) % 7 + 1);
         case 'yyv':
-            return digitRewrite((`0${String((badiDate.badiYear - 1) % 19 + 1)}`).slice(-2), language);
+            return digitRewrite((`0${String((badiDate.year - 1) % 19 + 1)}`).slice(-2), language);
         case 'KiS':
             return postProcessLocaleItem(formatItemFallback(language, 'kulliShay'));
         // istanbul ignore next
@@ -170,15 +170,14 @@ const postProcessLocaleItem = (item: string, crop?: number): string => {
 
 const underlineString = (str: string): string => {
     switch (underlineFormat) {
-        case 'css': {
+        case 'css':
             return `<span style="text-decoration:underline">${str}</span>`;
-        }
-        case 'diacritic': {
+        case 'diacritic':
             return str.split('').map(char => `${char}\u0332`).join('');
-        }
-        case 'u': {
+        case 'u':
             return `<u>${str}</u>`;
-        }
+        case 'none':
+            return str;
         // istanbul ignore next
         default:
             throw new TypeError('Unexpected underlineFormat');

@@ -1,78 +1,77 @@
-import * as MeeusSunMoon from '../node_modules/meeussunmoon/dist/meeussunmoon-es';
+import * as MeeusSunMoon from 'meeussunmoon';
 import * as luxon from 'luxon';
-import { BadiDate, badiDateOptions as badiDateBaseOptions } from './badiDate';
+import { BadiDate, badiDateSettings as badiDateBaseOptions } from './badiDate';
 import { clockLocationFromPolygons, useClockLocations } from './clockLocations';
-import { BadiDateOptions, InputDate } from './types';
+import { BadiDateSettings, InputDate } from './types';
 
 /* eslint-disable complexity */
 
 class LocalBadiDate {
-    badiDate: BadiDate;
-    clockLocation: boolean | any;
-    end: any;
-    solarNoon: any;
-    sunrise: any;
-    start: any;
-    holyDayCommemoration: any;
+    private _badiDate: BadiDate;
+    private _start: luxon.DateTime;
+    private _sunrise: luxon.DateTime;
+    private _solarNoon: luxon.DateTime;
+    private _end: luxon.DateTime;
+    private _clockLocation: string | undefined;
+    private _holyDayCommemoration: luxon.DateTime | undefined;
 
     constructor(date: InputDate, latitude: number, longitude: number, timezoneId: string) {
         // If a moment object is being passed, we use date and time, not just the
         // date. For a JS Date object, we can't assume it's in the correct timezone,
         // so in that case we use the date information only.
-        this.badiDate = new BadiDate(this._setInputDateToCorrectDay(date, latitude, longitude));
-        const gregDate = this.badiDate.gregorianDate.setZone(timezoneId, { keepLocalTime: true });
-        this.clockLocation = clockLocationFromPolygons(latitude, longitude);
-        if (!this.clockLocation ||
-            (this.clockLocation === 'Finland' &&
-                this.badiDate.badiMonth === 19)) {
-            this.end = MeeusSunMoon.sunset(gregDate, latitude, longitude);
-            this.solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
-            this.sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
-            this.start = MeeusSunMoon.sunset(gregDate.minus({ days: 1 }), latitude, longitude);
+        this._badiDate = new BadiDate(this._setInputDateToCorrectDay(date, latitude, longitude));
+        const gregDate = this._badiDate.gregorianDate.setZone(timezoneId, { keepLocalTime: true });
+        this._clockLocation = clockLocationFromPolygons(latitude, longitude);
+        if (!this._clockLocation ||
+            (this._clockLocation === 'Finland' &&
+                this._badiDate.month === 19)) {
+            this._end = MeeusSunMoon.sunset(gregDate, latitude, longitude) as luxon.DateTime;
+            this._solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
+            this._sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude) as luxon.DateTime;
+            this._start = MeeusSunMoon.sunset(gregDate.minus({ days: 1 }), latitude, longitude) as luxon.DateTime;
         } else {
             // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
             // then made depending on the region.
-            this.start = gregDate.minus({ days: 1 }).set({ hour: 18 });
-            this.solarNoon = gregDate.set({ hour: 12 });
-            this.sunrise = gregDate.set({ hour: 6 });
-            this.end = gregDate.set({ hour: 18 });
-            if (this.clockLocation === 'Canada') {
-                this.sunrise = this.sunrise.plus({ minutes: 30 });
-            } else if (this.clockLocation === 'Iceland') {
-                this.solarNoon = this.solarNoon.plus({ hours: 1 });
-            } else if (this.clockLocation === 'Finland' ||
-                this.clockLocation === 'USA') {
-                if (this.end.isInDST) {
-                    this.sunrise = this.sunrise.plus({ hours: 1 });
-                    this.solarNoon = this.solarNoon.plus({ hours: 1 });
-                    this.end = this.end.plus({ hours: 1 });
+            this._start = gregDate.minus({ days: 1 }).set({ hour: 18 });
+            this._solarNoon = gregDate.set({ hour: 12 });
+            this._sunrise = gregDate.set({ hour: 6 });
+            this._end = gregDate.set({ hour: 18 });
+            if (this._clockLocation === 'Canada') {
+                this._sunrise = this._sunrise.plus({ minutes: 30 });
+            } else if (this._clockLocation === 'Iceland') {
+                this._solarNoon = this._solarNoon.plus({ hours: 1 });
+            } else if (this._clockLocation === 'Finland' ||
+                this._clockLocation === 'USA') {
+                if (this._end.isInDST) {
+                    this._sunrise = this._sunrise.plus({ hours: 1 });
+                    this._solarNoon = this._solarNoon.plus({ hours: 1 });
+                    this._end = this._end.plus({ hours: 1 });
                 }
-                if (this.start.isInDST) {
-                    this.start = this.start.plus({ hours: 1 });
+                if (this._start.isInDST) {
+                    this._start = this._start.plus({ hours: 1 });
                 }
             }
         }
-        this.holyDayCommemoration = false;
-        switch (this.badiDate.holyDayNumber) {
+        switch (this._badiDate.holyDayNumber) {
             case 2:
                 // First Day of Ridvan: 15:00 local standard time
-                this.holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 16 : 15 });
+                this._holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 16 : 15 });
                 break;
             case 5:
                 // Declaration of the Báb: 2 hours 11 minutes after sunset
-                this.holyDayCommemoration = this.start.plus({ minutes: 131 });
+                this._holyDayCommemoration = this._start.plus({ minutes: 131 });
                 break;
             case 6:
                 // Ascension of Bahá'u'lláh: 03:00 local standard time
-                this.holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 4 : 3 });
+                this._holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 4 : 3 });
                 break;
             case 7:
                 // Martyrdom of the Báb: solar noon
-                this.holyDayCommemoration = this.solarNoon;
+                this._holyDayCommemoration = this._solarNoon;
                 break;
             case 11:
                 // Ascension of 'Abdu'l-Bahá: 01:00 local standard time
-                this.holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 2 : 1 });
+                this._holyDayCommemoration = gregDate.set({ hour: gregDate.isInDST ? 2 : 1 });
                 break;
             // skip default
         }
@@ -85,18 +84,46 @@ class LocalBadiDate {
         }
         return date;
     }
+
+    get badiDate(): BadiDate {
+        return this._badiDate;
+    }
+
+    get start(): luxon.DateTime {
+        return this._start;
+    }
+
+    get sunrise(): luxon.DateTime {
+        return this._sunrise;
+    }
+
+    get solarNoon(): luxon.DateTime {
+        return this._solarNoon;
+    }
+
+    get end(): luxon.DateTime {
+        return this._end;
+    }
+
+    get holyDayCommemoration(): luxon.DateTime {
+        return this._holyDayCommemoration;
+    }
+
+    get clockLocation(): string {
+        return this._clockLocation;
+    }
 }
 
-const badiDateOptions = (options: BadiDateOptions) => {
-    if (typeof options.defaultLanguage === 'string' ||
-        typeof options.underlineFormat === 'string') {
-        badiDateBaseOptions(options);
+const badiDateSettings = (settings: BadiDateSettings) => {
+    if (typeof settings.defaultLanguage === 'string' ||
+        typeof settings.underlineFormat === 'string') {
+        badiDateBaseOptions(settings);
     }
-    if (typeof options.useClockLocations === 'boolean') {
-        useClockLocations(options.useClockLocations);
+    if (typeof settings.useClockLocations === 'boolean') {
+        useClockLocations(settings.useClockLocations);
     }
 };
 
-MeeusSunMoon.options({ returnTimeForPNMS: true, roundToNearestMinute: true });
+MeeusSunMoon.settings({ returnTimeForNoEventCase: true, roundToNearestMinute: true });
 
-export { BadiDate, LocalBadiDate, badiDateOptions };
+export { BadiDate, LocalBadiDate, badiDateSettings };

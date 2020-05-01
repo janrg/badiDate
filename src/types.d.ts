@@ -6,15 +6,26 @@ export interface BadiYearInfo {
     twinBirthdays: [number, number, number, number];
 }
 
-export interface BadiDateOptions {
+export interface BadiDateSettings {
     defaultLanguage?: string;
     underlineFormat?: UnderlineFormat;
     useClockLocations?: boolean;
 }
 
-export type UnderlineFormat = 'css' | 'u' | 'diacritic';
+export interface YearMonthDay {
+    year: number;
+    month: number;
+    day: number;
+}
 
-export type InputDate = luxon.DateTime | Date | [number, number, number] | [number, number];
+export interface YearHolyDayNumber {
+    year: number;
+    holyDayNumber: number;
+}
+
+export type UnderlineFormat = 'css' | 'u' | 'diacritic' | 'none';
+
+export type InputDate = luxon.DateTime | Date | YearMonthDay | YearHolyDayNumber;
 
 export const enum HolyDay {
     NawRuz = 1,

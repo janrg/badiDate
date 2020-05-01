@@ -35,16 +35,16 @@ const pointInPolygon = (coords: Array<number>, polygon: Array<[number, number]>)
 
 // The name of a country being returned doesn't just mean that the coordinates are within that country, but that they
 // are within the region of that country where a fixed time rule applies.
-const clockLocationFromPolygons = (latitude: number, longitude: number): string | false => {
+const clockLocationFromPolygons = (latitude: number, longitude: number): string | undefined => {
     if (!usingClockLocations) {
-        return false;
+        return undefined;
     }
     // First exclude as large an area as possible from having to check polygons
     if (latitude < 51.0) {
-        return false;
+        return undefined;
     }
     if (latitude < 57.0 && longitude > -129.0 && longitude < 172.0) {
-        return false;
+        return undefined;
     }
     // Make a list of plausible areas based on longitude, then only check those
     const countries = [];
@@ -90,7 +90,7 @@ const clockLocationFromPolygons = (latitude: number, longitude: number): string 
             }
         }
     }
-    return false;
+    return undefined;
 };
 
 export { clockLocationFromPolygons, useClockLocations };

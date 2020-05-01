@@ -1,14 +1,14 @@
 import * as luxon from 'luxon';
 import { badiLocale, setDefaultLanguage, setUnderlineFormat } from './badiLocale';
 import { formatBadiDate, formatItemFallback } from './formatter';
-import { BadiDateOptions, BadiYearInfo, HolyDay, InputDate } from './types';
+import { BadiDateSettings, BadiYearInfo, HolyDay, InputDate, YearHolyDayNumber, YearMonthDay } from './types';
 import { badiYears } from './badiYears';
 
 class BadiDate {
     private _gregorianDate: luxon.DateTime;
-    private _badiYear: number;
-    private _badiMonth: number;
-    private _badiDay: number;
+    private _year: number;
+    private _month: number;
+    private _day: number;
     private _nawRuz: luxon.DateTime;
     private _ayyamiHaLength: number;
     private _yearTwinBirthdays: Array<number>;
@@ -24,15 +24,12 @@ class BadiDate {
             } else if (date instanceof luxon.DateTime) {
                 this._gregorianDate = luxon.DateTime.fromObject(
                     { year: date.year, month: date.month, day: date.day, zone: 'UTC' });
-            } else if (Array.isArray(date)) {
-                if (date.length !== 3 && date.length !== 2) {
-                    throw 'Unexpected length of input array';
-                }
+            } else if (this._isYearMonthDay(date) || this._isYearHolyDayNumber(date)) {
                 this._setFromBadiDate(date);
             } else {
                 throw 'Unrecognized input format';
             }
-            if (this._badiYear === undefined) {
+            if (this._year === undefined) {
                 // We haven't set the Badí' date yet
                 this._setFromGregorianDate();
             }
@@ -40,10 +37,21 @@ class BadiDate {
         } catch (err) {
             this._setInvalid(err);
         }
+        Object.freeze(this);
     }
 
     format(formatString?: string, language?: string): string {
         return formatBadiDate(this, formatString, language);
+    }
+
+    _isYearMonthDay(arg: any): arg is YearMonthDay {
+        return typeof arg.year === 'number' && typeof arg.month === 'number' &&
+            typeof arg.day === 'number' && arg.holyDayNumber === undefined;
+    }
+
+    _isYearHolyDayNumber(arg: any): arg is YearHolyDayNumber {
+        return typeof arg.year === 'number' && arg.month === undefined &&
+            arg.day === undefined && typeof arg.holyDayNumber === 'number';
     }
 
     _notInValidGregorianDateRange(datetime: luxon.DateTime): boolean {
@@ -62,15 +70,15 @@ class BadiDate {
             const { month, day } = this._gregorianDate;
             if (month < 3 || (month === 3 && day < 21)) {
                 this._nawRuz = luxon.DateTime.fromObject({ year: gregorianYear - 1, month: 3, day: 21, zone: 'UTC' });
-                this._badiYear = gregorianYear - 1844;
+                this._year = gregorianYear - 1844;
             } else {
                 this._nawRuz = luxon.DateTime.fromObject({ year: gregorianYear, month: 3, day: 21, zone: 'UTC' });
-                this._badiYear = gregorianYear - 1843;
+                this._year = gregorianYear - 1843;
             }
             this._setOldAyyamiHaLength();
             this._yearTwinBirthdays = [12, 5, 13, 9];
         } else {
-            this._badiYear = gregorianYear - 1843;
+            this._year = gregorianYear - 1843;
             this._setBadiYearInfo(true);
         }
         this._setBadiMonthAndDay();
@@ -82,55 +90,53 @@ class BadiDate {
     _setBadiMonthAndDay() {
         const dayOfBadiYear = this._dayOfYear(this._gregorianDate);
         if (dayOfBadiYear < 343) {
-            this._badiMonth = Math.floor((dayOfBadiYear - 1) / 19 + 1);
-            this._badiDay = (dayOfBadiYear - 1) % 19 + 1;
+            this._month = Math.floor((dayOfBadiYear - 1) / 19 + 1);
+            this._day = (dayOfBadiYear - 1) % 19 + 1;
         } else if (dayOfBadiYear < 343 + this._ayyamiHaLength) {
-            this._badiMonth = 20;
-            this._badiDay = dayOfBadiYear - 342;
+            this._month = 20;
+            this._day = dayOfBadiYear - 342;
         } else {
-            this._badiMonth = 19;
-            this._badiDay = dayOfBadiYear - (342 + this._ayyamiHaLength);
+            this._month = 19;
+            this._day = dayOfBadiYear - (342 + this._ayyamiHaLength);
         }
     }
 
-    _setFromBadiDate(dateArray: [number, number, number] | [number, number]) { // eslint-disable-line complexity
-        this._badiYear = dateArray[0];
-        if (this._badiYear < 1 || this._badiYear > 507) {
+    _setFromBadiDate(date: YearMonthDay | YearHolyDayNumber) { // eslint-disable-line complexity
+        this._year = date.year;
+        if (this._year < 1 || this._year > 507) {
             throw 'Input date outside of valid range (1 - 507 B.E.)';
-        } else if (this._badiYear < 172) {
-            this._nawRuz = luxon.DateTime.fromObject({ year: 1843 + this._badiYear, month: 3, day: 21, zone: 'UTC' });
+        } else if (this._year < 172) {
+            this._nawRuz = luxon.DateTime.fromObject({ year: 1843 + this._year, month: 3, day: 21, zone: 'UTC' });
             this._setOldAyyamiHaLength();
             this._yearTwinBirthdays = [12, 5, 13, 9];
         } else {
             this._setBadiYearInfo();
         }
-        // If all three components exist, we have a year, month, and day
-        if (dateArray.length === 3) {
-            this._badiMonth = dateArray[1];
-            this._badiDay = dateArray[2];
-            if (this._badiMonth === 20 && this._badiDay > this._ayyamiHaLength) {
+        if (this._isYearMonthDay(date)) {
+            this._month = date.month;
+            this._day = date.day;
+            if (this._month === 20 && this._day > this._ayyamiHaLength) {
                 // If only off by one day, we'll bubble up so that 5th Ayyám-i-Há in a year with only 4 days of
                 // Ayyám-i-Há can be salvaged
-                if (this._badiDay - this._ayyamiHaLength === 1) {
-                    this._badiMonth = 19;
-                    this._badiDay = 1;
+                if (this._day - this._ayyamiHaLength === 1) {
+                    this._month = 19;
+                    this._day = 1;
                 } else {
                     throw 'Input numbers do not designate a valid date';
                 }
             }
-            if (this._badiMonth < 1 || this._badiMonth > 20 || this._badiDay < 1 || this.badiDay > 19) {
+            if (this._month < 1 || this._month > 20 || this._day < 1 || this.day > 19) {
                 throw 'Input numbers do not designate a valid date';
             }
-        // Otherwise input designated a Holy Day
         } else {
-            if (dateArray[1] < 1 || dateArray[1] > 11) {
+            if (date.holyDayNumber < 1 || date.holyDayNumber > 11) {
                 throw 'Input numbers do not designate a valid Holy Day';
             }
-            this._holyDay = dateArray[1];
-            [this._badiMonth, this._badiDay] = this._holyDayMapping()[this._holyDay];
+            this._holyDay = date.holyDayNumber;
+            [this._month, this._day] = this._holyDayMapping()[this._holyDay];
         }
         this._gregorianDate = this._nawRuz.plus(luxon.Duration.fromObject(
-            { days: this._dayOfYear([this._badiYear, this._badiMonth, this._badiDay]) - 1 }));
+            { days: this._dayOfYear([this._year, this._month, this._day]) - 1 }));
     }
 
     _setOldAyyamiHaLength() {
@@ -144,7 +150,7 @@ class BadiDate {
     _setBadiYearInfo(fromGregorianDate: boolean = false) {
         let yearData = this._extractBadiYearInfo();
         if (fromGregorianDate && this._gregorianDate < yearData.nawRuz) {
-            this._badiYear -= 1;
+            this._year -= 1;
             yearData = this._extractBadiYearInfo();
         }
         this._nawRuz = yearData.nawRuz;
@@ -157,15 +163,15 @@ class BadiDate {
         // Check whether data needs to be unpacked or exists in the verbose version
         // istanbul ignore else
         if (badiYears[0] === 'l4da') {
-            const components = badiYears[this._badiYear - 172].split('');
+            const components = badiYears[this._year - 172].split('');
             nawRuz = luxon.DateTime.fromObject(
-                { year: this._badiYear - 172 + 2015, month: 3, day: parseInt(components[0], 36), zone: 'UTC' });
+                { year: this._year - 172 + 2015, month: 3, day: parseInt(components[0], 36), zone: 'UTC' });
             ayyamiHaLength = parseInt(components[1], 36);
             const TB1 = [parseInt(components[2], 36), parseInt(components[3], 36)];
             const TB2 = TB1[1] < 19 ? [TB1[0], TB1[1] + 1] : [TB1[0] + 1, 1];
             twinBirthdays = [TB1[0], TB1[1], TB2[0], TB2[1]];
         } else {
-            ({ nawRuz, ayyamiHaLength, twinBirthdays } = badiYears[this._badiYear] as any);
+            ({ nawRuz, ayyamiHaLength, twinBirthdays } = badiYears[this._year] as any);
             nawRuz = luxon.DateTime.fromISO(nawRuz, { zone: 'UTC' });
         }
         return { nawRuz, ayyamiHaLength, twinBirthdays };
@@ -188,9 +194,9 @@ class BadiDate {
 
     _setInvalid(invalidReason: string) {
         this._gregorianDate = luxon.DateTime.invalid('Not a valid Badí‘ date');
-        this._badiYear = NaN;
-        this._badiMonth = NaN;
-        this._badiDay = NaN;
+        this._year = NaN;
+        this._month = NaN;
+        this._day = NaN;
         this._ayyamiHaLength = NaN;
         this._nawRuz = luxon.DateTime.invalid('Not a valid Badí‘ date');
         this._valid = false;
@@ -200,7 +206,7 @@ class BadiDate {
     _setHolyDay() {
         const mapping = this._holyDayMapping();
         this._holyDay = parseInt(Object.keys(mapping)
-            .find(key => mapping[key][0] === this._badiMonth && mapping[key][1] === this._badiDay), 10);
+            .find(key => mapping[key][0] === this._month && mapping[key][1] === this._day), 10);
     }
 
     _holyDayMapping(): object {
@@ -209,9 +215,9 @@ class BadiDate {
             [HolyDay.FirstRidvan]: [2, 13],
             [HolyDay.NinthRidvan]: [3, 2],
             [HolyDay.TwelfthRidvan]: [3, 5],
-            [HolyDay.DeclarationOfTheBab]: [4, this._badiYear < 172 ? 7 : 8],
+            [HolyDay.DeclarationOfTheBab]: [4, this._year < 172 ? 7 : 8],
             [HolyDay.AscensionOfBahaullah]: [4, 13],
-            [HolyDay.MartyrdomOfTheBab]: [6, this._badiYear < 172 ? 16 : 17],
+            [HolyDay.MartyrdomOfTheBab]: [6, this._year < 172 ? 16 : 17],
             [HolyDay.BirthOfTheBab]: [this._yearTwinBirthdays[0], this._yearTwinBirthdays[1]],
             [HolyDay.BirthOfBahaullah]: [this._yearTwinBirthdays[2], this._yearTwinBirthdays[3]],
             [HolyDay.DayOfTheCovenant]: [14, 4],
@@ -237,33 +243,33 @@ class BadiDate {
         return this._invalidReason;
     }
 
-    get badiDay(): number {
-        return this._badiDay;
+    get day(): number {
+        return this._day;
     }
 
-    get badiMonth(): number {
-        return this._badiMonth;
+    get month(): number {
+        return this._month;
     }
 
-    get badiYear(): number {
-        return this._badiYear;
+    get year(): number {
+        return this._year;
     }
 
     // number of the Badí' weekday between 1 (Jalál ~> Saturday) and 7 (Istiqlál ~> Friday).
-    get badiWeekday(): number {
+    get weekday(): number {
         return (this._gregorianDate.weekday + 1) % 7 + 1;
     }
 
     get yearInVahid(): number {
-        return (this._badiYear - 1) % 19 + 1;
+        return (this._year - 1) % 19 + 1;
     }
 
     get vahid(): number {
-        return (Math.floor((this._badiYear - 1) / 19) % 19) + 1;
+        return (Math.floor((this._year - 1) / 19) % 19) + 1;
     }
 
     get kullIShay(): number {
-        return Math.floor((this._badiYear - 1) / 361) + 1;
+        return Math.floor((this._year - 1) / 361) + 1;
     }
 
     // Gregorian date on whose sunset the Badí' date ends.
@@ -280,13 +286,13 @@ class BadiDate {
     }
 }
 
-const badiDateOptions = (options: BadiDateOptions) => {
-    if (options.defaultLanguage) {
-        setDefaultLanguage(options.defaultLanguage);
+const badiDateSettings = (settings: BadiDateSettings) => {
+    if (settings.defaultLanguage) {
+        setDefaultLanguage(settings.defaultLanguage);
     }
-    if (options.underlineFormat) {
-        setUnderlineFormat(options.underlineFormat);
+    if (settings.underlineFormat) {
+        setUnderlineFormat(settings.underlineFormat);
     }
 };
 
-export { BadiDate, badiDateOptions };
+export { BadiDate, badiDateSettings };
