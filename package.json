@@ -3,15 +3,15 @@
   "version": "3.0.0",
   "description": "A library for dates in the Badí' (or Bahá'í) calendar.",
   "main": "dist/localBadiDate-mss-locales.js",
-  "module": "dist/localBadiDate-msm-locales-es.js",
+  "module": "dist/localBadiDate-msm-locales.mjs",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "lint": "eslint --ext .js --ext .ts .",
-    "rollup": "fancy-rollup",
+    "rollup": "fancy-rollup && node ./dist-rename.js",
     "test": "jest",
-    "build": "npm run lint && npm run test && npm run rollup -c",
+    "build": "npm run lint && npm run test && npm run rollup",
     "generateYearData": "ts-node-dev --transpileOnly res/generateYearData.ts",
     "calculateUncertainties": "ts-node-dev --transpileOnly res/uncertainties.ts"
   },

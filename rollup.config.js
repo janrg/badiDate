@@ -21,7 +21,7 @@ const localeRegex = languageCodes => {
 const rollupConfig = (root, msm, locales, minify, format, filename) => {
     if (filename === undefined) {
         filename = `dist/${root.slice(0, -3)}${msm ? '-msm' : ''}${locales === true ? '-locales' : ''}${
-            format === 'es' ? '-es' : ''}${minify ? '.min' : ''}.js`;
+            minify ? '.min' : ''}.${format === 'es' ? 'm.' : ''}js`;
     }
     const config = {
         external: ['luxon'],

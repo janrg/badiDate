@@ -5,10 +5,780 @@
  */
 
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('meeussunmoon'), require('luxon')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'meeussunmoon', 'luxon'], factory) :
-    (global = global || self, factory(global.window = global.window || {}, global.MeeusSunMoon, global.luxon));
-}(this, (function (exports, MeeusSunMoon, luxon) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('luxon')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'luxon'], factory) :
+    (global = global || self, factory(global.window = global.window || {}, global.luxon));
+}(this, (function (exports, luxon) { 'use strict';
+
+    /**
+     * @license MeeusSunMoon v3.0.0
+     * (c) 2018 Jan Greis
+     * licensed under MIT
+     */
+
+    /**
+     * Converts angles in degrees to radians.
+     * @param {number} deg Angle in degrees.
+     * @returns {number} Angle in radians.
+     */
+    const deg2rad = (deg) => deg * 0.017453292519943295;
+    /**
+     * Converts angles in radians to degrees.
+     * @param {number} rad Angle in radians.
+     * @returns {number} Angle in degrees.
+     */
+    const rad2deg = (rad) => rad * 57.29577951308232;
+    /**
+     * Calculates the sine of an angle given in degrees.
+     * @param {number} deg Angle in degrees.
+     * @returns {number} Sine of the angle.
+     */
+    const sind = (deg) => Math.sin(deg2rad(deg));
+    /**
+     * Calculates the cosine of an angle given in degrees.
+     * @param {number} deg Angle in degrees.
+     * @returns {number} Cosine of the angle.
+     */
+    const cosd = (deg) => Math.cos(deg2rad(deg));
+    /**
+     * Reduces an angle to the interval 0-360°.
+     * @param {number} angle Angle in degrees.
+     * @returns {number} Reduced angle in degrees.
+     */
+    const reduceAngle = (angle) => angle - (360 * Math.floor(angle / 360));
+    /**
+     * Evaluates a polynomial in the form A + Bx + Cx^2...
+     * @param {number} variable Value of x in the polynomial.
+     * @param {array} coeffs Array of coefficients [A, B, C...].
+     * @returns {number} Sum of the polynomial.
+     */
+    const polynomial = (variable, coeffs) => {
+        let varPower = 1;
+        let sum = 0.0;
+        const numCoeffs = coeffs.length;
+        for (let i = 0; i < numCoeffs; i++) {
+            sum += varPower * coeffs[i];
+            varPower *= variable;
+        }
+        return sum;
+    };
+    /**
+     * Interpolates a value from 3 known values (see AA p24 Eq3.3).
+     * @param {number} y1 Start value of the interval.
+     * @param {number} y2 Middle value of the interval.
+     * @param {number} y3 End value of the interval.
+     * @param {number} n Location (-0.5 >= n >= 0.5) of result in the interval.
+     * @param {boolean} normalize Whether the final result should be normalized.
+     * @returns {number} Interpolated result.
+     */
+    const interpolateFromThree = (y1, y2, y3, n, normalize = false) => {
+        let a = y2 - y1;
+        let b = y3 - y2;
+        if (typeof normalize !== 'undefined' && normalize) {
+            if (a < 0) {
+                a += 360;
+            }
+            if (b < 0) {
+                b += 360;
+            }
+        }
+        const c = b - a;
+        return y2 + (n / 2) * (a + b + n * c);
+    };
+
+    /**
+     * Converts a datetime in UTC to the corresponding Julian Date (see AA p60f).
+     * @param {DateTime} datetime Datetime to be converted.
+     * @returns {number} Julian date (fractional number of days since 1 January
+     *     4713BC according to the proleptic Julian calendar.
+     */
+    const datetimeToJD = (datetime) => {
+        let Y = datetime.year;
+        let M = datetime.month;
+        const D = datetime.day + (datetime.hour + (datetime.minute + datetime.second / 60) / 60) / 24;
+        if (M < 3) {
+            Y -= 1;
+            M += 12;
+        }
+        const A = Math.floor(Y / 100);
+        // Need a different B if we are before introduction of the Gregorian Calendar
+        const gregorianCutoff = luxon.DateTime.fromISO('1582-10-15T12:00:00Z', { zone: 'UTC' });
+        let B = 0;
+        if (datetime > gregorianCutoff) {
+            B = 2 - A + Math.floor(A / 4);
+        }
+        return Math.floor(365.25 * (Y + 4716)) + Math.floor(30.6001 * (M + 1)) + D + B - 1524.5;
+    };
+    /**
+     * Converts a Julian date to the number of Julian centuries since
+     * 2000-01-01T12:00:00Z (see AA p87 Eq12.1).
+     * @param {number} JD Julian date.
+     * @returns {number} T.
+     */
+    const JDToT = (JD) => (JD - 2451545) / 36525;
+    /**
+     * Converts a datetime in UTC to the number of Julian centuries since
+     * 2000-01-01T12:00:00Z.
+     * @param {DateTime} datetime Datetime to be converted.
+     * @returns {number} T.
+     */
+    const datetimeToT = (datetime) => JDToT(datetimeToJD(datetime));
+    /* eslint-disable complexity */
+    /**
+     * Calculates the value of ΔT=TT−UT (see
+     * http://eclipse.gsfc.nasa.gov/SEcat5/deltatpoly.html).
+     * @param {DateTime} datetime Datetime for which ΔT should be calculated.
+     * @returns {number} ΔT.
+     */
+    const DeltaT = (datetime) => {
+        let y = datetime.year;
+        y += (datetime.month - 0.5) / 12;
+        let u;
+        let t;
+        switch (true) {
+            case y < -1999 || y > 3000:
+                throw 'DeltaT can only be calculated between 1999 BCE and 3000 CE';
+            case y < -500:
+                u = (y - 1820) / 100;
+                return -20 + 32 * Math.pow(u, 2);
+            case y < 500:
+                u = y / 100;
+                return polynomial(u, [10583.6, -1014.41, 33.78311, -5.952053, -0.1798452, 0.022174192, 0.0090316521]);
+            case y < 1600:
+                u = (y - 1000) / 100;
+                return polynomial(u, [1574.2, -556.01, 71.23472, 0.319781, -0.8503463, -0.005050998, 0.0083572073]);
+            case y < 1700:
+                t = y - 1600;
+                return polynomial(t, [120, -0.9808, -0.01532, 1 / 7129]);
+            case y < 1800:
+                t = y - 1700;
+                return polynomial(t, [8.83, 0.1603, -0.0059285, 0.00013336, -1 / 1174000]);
+            case y < 1860:
+                t = y - 1800;
+                return polynomial(t, [13.72, -0.332447, 0.0068612, 0.0041116, -0.00037436, 0.0000121272, -0.0000001699, 0.000000000875]);
+            case y < 1900:
+                t = y - 1860;
+                return polynomial(t, [7.62, 0.5737, -0.251754, 0.01680668, -0.0004473624, 1 / 233174]);
+            case y < 1920:
+                t = y - 1900;
+                return polynomial(t, [-2.79, 1.494119, -0.0598939, 0.0061966, -0.000197]);
+            case y < 1941:
+                t = y - 1920;
+                return polynomial(t, [21.20, 0.84493, -0.076100, 0.0020936]);
+            case y < 1961:
+                t = y - 1950;
+                return polynomial(t, [29.07, 0.407, -1 / 233, 1 / 2547]);
+            case y < 1986:
+                t = y - 1975;
+                return polynomial(t, [45.45, 1.067, -1 / 260, -1 / 718]);
+            case y < 2005:
+                t = y - 2000;
+                return polynomial(t, [63.86, 0.3345, -0.060374, 0.0017275, 0.000651814, 0.00002373599]);
+            case y < 2050:
+                t = y - 2000;
+                return polynomial(t, [62.92, 0.32217, 0.005589]);
+            case y < 2150:
+                return -20 + 32 * Math.pow(((y - 1820) / 100), 2) - 0.5628 * (2150 - y);
+            default:
+                u = (y - 1820) / 100;
+                return -20 + 32 * Math.pow(u, 2);
+        }
+    };
+
+    let roundToNearestMinute = false;
+    let returnTimeForNoEventCase = false;
+    let dateFormatKeys = {
+        SUN_HIGH: '‡',
+        SUN_LOW: '†',
+    };
+    const settings = (settings) => {
+        if (typeof settings.roundToNearestMinute === 'boolean') {
+            roundToNearestMinute = settings.roundToNearestMinute;
+        }
+        if (typeof settings.returnTimeForNoEventCase === 'boolean') {
+            returnTimeForNoEventCase = settings.returnTimeForNoEventCase;
+        }
+        if (typeof settings.dateFormatKeys === 'object') {
+            dateFormatKeys = settings.dateFormatKeys;
+        }
+    };
+
+    /** See AA p144 */
+    const sunMeanAnomaly = [357.52772, 35999.050340, -0.0001603, -1 / 300000];
+    /** See AA p163 Eq 25.2 */
+    const sunMeanLongitude = [280.46646, 36000.76983, 0.0003032];
+    /** See AA p147 Eq22.3 */
+    const meanObliquityOfEcliptic = [84381.448 / 3600, -4680.93 / 3600, -1.55 / 3600, 1999.25 / 3600, -51.38 / 3600, -249.67 / 3600, -39.05 / 3600,
+        7.12 / 3600, 27.87 / 3600, 5.79 / 3600, 2.45 / 3600];
+    /** See AA p144 */
+    const moonArgumentOfLatitude = [93.27191, 483202.017538, -0.0036825, 1 / 327270];
+    /** See AA p144 */
+    const moonAscendingNodeLongitude = [125.04452, -1934.136261, 0.0020708, 1 / 450000];
+    /** See AA p144 */
+    const moonMeanAnomaly = [134.96298, 477198.867398, 0.0086972, 1 / 56250];
+    /** See AA p144 */
+    const moonMeanElongation = [297.85036, 445267.111480, -0.0019142, 1 / 189474];
+    /* eslint-disable no-multi-spaces, array-bracket-spacing */
+    /**
+     * Nutations in longitude and obliquity
+     * See AA p145f
+     */
+    const nutations = [
+        [0, 0, 0, 0, 1, -171996, -174.2, 92025, 8.9],
+        [-2, 0, 0, 2, 2, -13187, -1.6, 5736, -3.1],
+        [0, 0, 0, 2, 2, -2274, -0.2, 977, -0.5],
+        [0, 0, 0, 0, 2, 2062, 0.2, -895, 0.5],
+        [0, 1, 0, 0, 0, 1426, -3.4, 54, -0.1],
+        [0, 0, 1, 0, 0, 712, 0.1, -7, 0],
+        [-2, 1, 0, 2, 2, -517, 1.2, 224, -0.6],
+        [0, 0, 0, 2, 1, -386, -0.4, 200, 0],
+        [0, 0, 1, 2, 2, -301, 0, 129, -0.1],
+        [-2, -1, 0, 2, 2, 217, -0.5, -95, 0.3],
+        [-2, 0, 1, 0, 0, -158, 0, 0, 0],
+        [-2, 0, 0, 2, 1, 129, 0.1, -70, 0],
+        [0, 0, -1, 2, 2, 123, 0, -53, 0],
+        [2, 0, 0, 0, 0, 63, 0, 0, 0],
+        [0, 0, 1, 0, 1, 63, 0.1, -33, 0],
+        [2, 0, -1, 2, 2, -59, 0, 26, 0],
+        [0, 0, -1, 0, 1, -58, -0.1, 32, 0],
+        [0, 0, 1, 2, 1, -51, 0, 27, 0],
+        [-2, 0, 2, 0, 0, 48, 0, 0, 0],
+        [0, 0, -2, 2, 1, 46, 0, -24, 0],
+        [2, 0, 0, 2, 2, -38, 0, 16, 0],
+        [0, 0, 2, 2, 2, -31, 0, 13, 0],
+        [0, 0, 2, 0, 0, 29, 0, 0, 0],
+        [-2, 0, 1, 2, 2, 29, 0, -12, 0],
+        [0, 0, 0, 2, 0, 26, 0, 0, 0],
+        [-2, 0, 0, 2, 0, -22, 0, 0, 0],
+        [0, 0, -1, 2, 1, 21, 0, -10, 0],
+        [0, 2, 0, 0, 0, 17, -0.1, 0, 0],
+        [2, 0, -1, 0, 1, 16, 0, -8, 0],
+        [-2, 2, 0, 2, 2, -16, 0.1, 7, 0],
+        [0, 1, 0, 0, 1, -15, 0, 9, 0],
+        [-2, 0, 1, 0, 1, -13, 0, 7, 0],
+        [0, -1, 0, 0, 1, -12, 0, 6, 0],
+        [0, 0, 2, -2, 0, 11, 0, 0, 0],
+        [2, 0, -1, 2, 1, -10, 0, 5, 0],
+        [2, 0, 1, 2, 2, -8, 0, 3, 0],
+        [0, 1, 0, 2, 2, 7, 0, -3, 0],
+        [-2, 1, 1, 0, 0, -7, 0, 0, 0],
+        [0, -1, 0, 2, 2, -7, 0, 3, 0],
+        [2, 0, 0, 2, 1, -7, 0, 3, 0],
+        [2, 0, 1, 0, 0, 6, 0, 0, 0],
+        [-2, 0, 2, 2, 2, 6, 0, -3, 0],
+        [-2, 0, 1, 2, 1, 6, 0, -3, 0],
+        [2, 0, -2, 0, 1, -6, 0, 3, 0],
+        [2, 0, 0, 0, 1, -6, 0, 3, 0],
+        [0, -1, 1, 0, 0, 5, 0, 0, 0],
+        [-2, -1, 0, 2, 1, -5, 0, 3, 0],
+        [-2, 0, 0, 0, 1, -5, 0, 3, 0],
+        [0, 0, 2, 2, 1, -5, 0, 3, 0],
+        [-2, 0, 2, 0, 1, 4, 0, 0, 0],
+        [-2, 1, 0, 2, 1, 4, 0, 0, 0],
+        [0, 0, 1, -2, 0, 4, 0, 0, 0],
+        [-1, 0, 1, 0, 0, -4, 0, 0, 0],
+        [-2, 1, 0, 0, 0, -4, 0, 0, 0],
+        [1, 0, 0, 0, 0, -4, 0, 0, 0],
+        [0, 0, 1, 2, 0, 3, 0, 0, 0],
+        [0, 0, -2, 2, 2, -3, 0, 0, 0],
+        [-1, -1, 1, 0, 0, -3, 0, 0, 0],
+        [0, 1, 1, 0, 0, -3, 0, 0, 0],
+        [0, -1, 1, 2, 2, -3, 0, 0, 0],
+        [2, -1, -1, 2, 2, -3, 0, 0, 0],
+        [0, 0, 3, 2, 2, 3, 0, 0, 0],
+        [2, -1, 0, 2, 2, -3, 0, 0, 0],
+    ];
+
+    /**
+     * Calculates the solar transit time on a date at a given longitude (see AA
+     * p102f).
+     * @param {DateTime} datetime Date for which transit is calculated.
+     * @param {number} L Longitude.
+     * @returns {DateTime} Solar transit time.
+     */
+    const sunTransit = (datetime, L) => {
+        const timezone = datetime.zone;
+        let transit = datetime.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+            .setZone('UTC', { keepLocalTime: true });
+        const deltaT = DeltaT(transit);
+        const T = datetimeToT(transit);
+        const Theta0 = apparentSiderealTimeGreenwich(T);
+        // Want 0h TD for this, not UT
+        const TD = T - (deltaT / (3600 * 24 * 36525));
+        const alpha = sunApparentRightAscension(TD);
+        // Sign flip for longitude from AA as we take East as positive
+        let m = (alpha - L - Theta0) / 360;
+        m = normalizeM(m, datetime.offset);
+        const DeltaM = sunTransitCorrection(T, Theta0, deltaT, L, m);
+        m += DeltaM;
+        transit = transit.plus({ seconds: Math.floor(m * 3600 * 24 + 0.5) });
+        if (roundToNearestMinute) {
+            transit = transit.plus({ seconds: 30 }).set({ second: 0 });
+        }
+        return transit.setZone(timezone);
+    };
+    /**
+     * Calculates the sunrise or sunset time on a date at a given latitude and
+     * longitude (see AA p102f).
+     * @param {DateTime} datetime Date for which sunrise or sunset is calculated.
+     * @param {number} phi Latitude.
+     * @param {number} L Longitude.
+     * @param {string} flag 'RISE' or 'SET' depending on which event should be
+     *     calculated.
+     * @param {number} offset number of degrees below the horizon for the desired
+     *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+     *     astronomical dawn/dusk.
+     * @returns {DateTime} Sunrise or sunset time.
+     */
+    // eslint-disable-next-line complexity,require-jsdoc
+    const sunRiseSet = (datetime, phi, L, flag, offset = 50 / 60) => {
+        const timezone = datetime.zone;
+        let suntime = datetime.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
+            .setZone('UTC', { keepLocalTime: true });
+        const deltaT = DeltaT(suntime);
+        const T = datetimeToT(suntime);
+        const Theta0 = apparentSiderealTimeGreenwich(T);
+        // Want 0h TD for this, not UT
+        const TD = T - (deltaT / (3600 * 24 * 36525));
+        const alpha = sunApparentRightAscension(TD);
+        const delta = sunApparentDeclination(TD);
+        const H0 = approxLocalHourAngle(phi, delta, offset);
+        // Sign flip for longitude from AA as we take East as positive
+        let m0 = (alpha - L - Theta0) / 360;
+        m0 = normalizeM(m0, datetime.offset);
+        let m;
+        if (flag === 'RISE') {
+            m = m0 - H0 / 360;
+        }
+        else {
+            m = m0 + H0 / 360;
+        }
+        let counter = 0;
+        let DeltaM = 1;
+        // Repeat if correction is larger than ~9s
+        while ((Math.abs(DeltaM) > 0.0001) && (counter < 3)) {
+            DeltaM = sunRiseSetCorrection(T, Theta0, deltaT, phi, L, m, offset);
+            m += DeltaM;
+            counter++;
+        }
+        if (m > 0) {
+            suntime = suntime.plus({ seconds: Math.floor(m * 3600 * 24 + 0.5) });
+        }
+        else {
+            suntime = suntime.minus({ seconds: Math.floor(m * 3600 * 24 + 0.5) });
+        }
+        if (roundToNearestMinute) {
+            suntime = suntime.plus({ seconds: 30 }).set({ second: 0 });
+        }
+        return suntime.setZone(timezone);
+    };
+    /**
+     * Returns a fixed time as given by the hour parameter, an hour later during DST) if the
+     * specified event does not occur on the date and returnTimeForNoEventCase is true. If
+     * false, return whether the reason for no event is the sun being too high ('SUN_HIGH')
+     * or too low ('SUN_LOW').
+     * @param {DateTime} date The original date from which the event was calculated.
+     * @param {string|undefined} errorCode The error code in case no event was found
+     * @param {number} hour Hour to which the returned datetime should be set.
+     * @param {number} minute Minute to which the returned datetime should be set.
+     * @returns {(DateTime|string)} Time given by parameter 'hour' (+ correction for
+     *     DST if applicable) or a string indicating why there was no event ('SUN_HIGH'
+     *     or 'SUN_LOW')
+     */
+    const handleNoEventCase = (date, errorCode, hour, minute = 0) => {
+        if (returnTimeForNoEventCase) {
+            const returnDate = date.set({ hour, minute, second: 0 }).plus({ minutes: date.isInDST ? 60 : 0 });
+            returnDate.errorCode = errorCode;
+            return returnDate;
+        }
+        return errorCode;
+    };
+    /**
+     * Calculates the approximate local hour angle of the sun at sunrise or sunset.
+     * @param {number} phi Latitude (see AA p102 Eq15.1).
+     * @param {number} delta Apparent declination of the sun.
+     * @param {number} offset number of degrees below the horizon for the desired
+     *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+     *     astronomical dawn/dusk.
+     * @returns {number} Approximate local hour angle.
+     */
+    const approxLocalHourAngle = (phi, delta, offset) => {
+        const cosH0 = (sind(-offset) -
+            sind(phi) * sind(delta)) /
+            (cosd(phi) * cosd(delta));
+        if (cosH0 < -1) {
+            throw noEventCodes.SUN_HIGH;
+        }
+        else if (cosH0 > 1) {
+            throw noEventCodes.SUN_LOW;
+        }
+        return rad2deg(Math.acos(cosH0));
+    };
+    /**
+     * Normalizes a fractional time of day to be on the correct date.
+     * @param {number} m Fractional time of day
+     * @param {number} utcOffset Offset in minutes from UTC.
+     * @returns {number} m Normalized m.
+     */
+    const normalizeM = (m, utcOffset) => {
+        const localM = m + utcOffset / 1440;
+        if (localM < 0) {
+            return m + 1;
+        }
+        else if (localM > 1) {
+            return m - 1;
+        }
+        return m;
+    };
+    /**
+     * Calculates the correction for the solar transit time (see AA p103).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @param {number} Theta0 Apparent sidereal time at Greenwich.
+     * @param {number} deltaT ΔT = TT − UT.
+     * @param {number} L Longitude.
+     * @param {number} m Fractional time of day of the event.
+     * @returns {number} Currection for the solar transit time.
+     */
+    const sunTransitCorrection = (T, Theta0, deltaT, L, m) => {
+        const theta0 = Theta0 + 360.985647 * m;
+        const n = m + deltaT / 864000;
+        const alpha = interpolatedRa(T, n);
+        const H = localHourAngle(theta0, L, alpha);
+        return -H / 360;
+    };
+    /**
+     * Calculates the correction for the sunrise/sunset time (see AA p103).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @param {number} Theta0 Apparent sidereal time at Greenwich.
+     * @param {number} deltaT ΔT = TT − UT.
+     * @param {number} phi Latitude.
+     * @param {number} L Longitude.
+     * @param {number} m Fractional time of day of the event.
+     * @param {number} offset number of degrees below the horizon for the desired
+     *     event (50/60 for sunrise/set, 6 for civil, 12 for nautical, 18 for
+     *     astronomical dawn/dusk.
+     * @returns {number} Correction for the sunrise/sunset time.
+     */
+    const sunRiseSetCorrection = (T, Theta0, deltaT, phi, L, m, offset) => {
+        const theta0 = Theta0 + 360.985647 * m;
+        const n = m + deltaT / 864000;
+        const alpha = interpolatedRa(T, n);
+        const delta = interpolatedDec(T, n);
+        const H = localHourAngle(theta0, L, alpha);
+        const h = altitude(phi, delta, H);
+        return (h + offset) / (360 * cosd(delta) * cosd(phi) * sind(H));
+    };
+    /**
+     * Calculates the local hour angle of the sun (see AA p103).
+     * @param {number} theta0 Sidereal time at Greenwich in degrees.
+     * @param {number} L Longitude.
+     * @param {number} alpha Apparent right ascension of the sun.
+     * @returns {number} Local hour angle of the sun.
+     */
+    const localHourAngle = (theta0, L, alpha) => {
+        // Sign flip for longitude
+        let H = reduceAngle(theta0 + L - alpha);
+        if (H > 180) {
+            H -= 360;
+        }
+        return H;
+    };
+    /**
+     * Calculates the altitude of the sun above the horizon (see AA P93 Eq13.6).
+     * @param {number} phi Latitude.
+     * @param {number} delta Apparent declination of the sun.
+     * @param {number} H Local hour angle of the sun.
+     * @returns {number} Altitude of the sun above the horizon.
+     */
+    const altitude = (phi, delta, H) => rad2deg(Math.asin(sind(phi) * sind(delta) + cosd(phi) * cosd(delta) * cosd(H)));
+    /**
+     * Interpolates the sun's right ascension (see AA p103).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @param {number} n Fractional time of day of the event corrected by ΔT.
+     * @returns {number} Interpolated right ascension.
+     */
+    const interpolatedRa = (T, n) => {
+        const alpha1 = sunApparentRightAscension(T - (1 / 36525));
+        const alpha2 = sunApparentRightAscension(T);
+        const alpha3 = sunApparentRightAscension(T + (1 / 36525));
+        const alpha = interpolateFromThree(alpha1, alpha2, alpha3, n, true);
+        return reduceAngle(alpha);
+    };
+    /**
+     * Interpolates the sun's declination (see AA p103).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @param {number} n Fractional time of day of the event corrected by ΔT.
+     * @returns {number} Interpolated declination.
+     */
+    const interpolatedDec = (T, n) => {
+        const delta1 = sunApparentDeclination(T - (1 / 36525));
+        const delta2 = sunApparentDeclination(T);
+        const delta3 = sunApparentDeclination(T + (1 / 36525));
+        const delta = interpolateFromThree(delta1, delta2, delta3, n);
+        return reduceAngle(delta);
+    };
+    /**
+     * Calculates the apparent right ascension of the sun (see AA p165 Eq25.6).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Apparent right ascension of the sun.
+     */
+    const sunApparentRightAscension = (T) => {
+        const Omega = moonAscendingNodeLongitude$1(T);
+        const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
+        const lambda = sunApparentLongitude(T);
+        const alpha = rad2deg(Math.atan2(cosd(epsilon) * sind(lambda), cosd(lambda)));
+        return reduceAngle(alpha);
+    };
+    /**
+     * Calculates the apparent declination of the sun (see AA p165 Eq25.7).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Apparent declination of the sun.
+     */
+    const sunApparentDeclination = (T) => {
+        const Omega = moonAscendingNodeLongitude$1(T);
+        const epsilon = trueObliquityOfEcliptic(T) + 0.00256 * cosd(Omega);
+        const lambda = sunApparentLongitude(T);
+        return rad2deg(Math.asin(sind(epsilon) * sind(lambda)));
+    };
+    /**
+     * Calculates the apparent sidereal time at Greenwich (see AA p88).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Apparent sidereal time at Greenwich
+     */
+    const apparentSiderealTimeGreenwich = (T) => {
+        const theta0 = meanSiderealTimeGreenwich(T);
+        const epsilon = trueObliquityOfEcliptic(T);
+        const DeltaPsi = nutationInLongitude(T);
+        const theta = theta0 + DeltaPsi * cosd(epsilon);
+        return reduceAngle(theta);
+    };
+    /**
+     * Calculates the mean sidereal time at Greenwich (see AA p88 Eq12.4).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean sidereal time at Greenwich
+     */
+    const meanSiderealTimeGreenwich = (T) => {
+        const JD2000 = T * 36525;
+        return 280.46061837 + 360.98564736629 * JD2000 + 0.000387933 * Math.pow(T, 2) - Math.pow(T, 3) / 38710000;
+    };
+    /**
+     * Calculates the true obliquity of the ecliptic (see AA p147).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} True obliquity of the ecliptic.
+     */
+    const trueObliquityOfEcliptic = (T) => {
+        const epsilon0 = meanObliquityOfEcliptic$1(T);
+        const DeltaEpsilon = nutationInObliquity(T);
+        return epsilon0 + DeltaEpsilon;
+    };
+    /**
+     * Calculates the mean obliquity of the ecliptic (see AA p147 Eq 22.3).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean obliquity of the ecliptic.
+     */
+    const meanObliquityOfEcliptic$1 = (T) => {
+        const U = T / 100;
+        return polynomial(U, meanObliquityOfEcliptic);
+    };
+    /**
+     * Calculates the apparent longitude of the sun (see AA p164).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Apparent longitude of the sun.
+     */
+    const sunApparentLongitude = (T) => {
+        const Sol = sunTrueLongitude(T);
+        const Omega = moonAscendingNodeLongitude$1(T);
+        return Sol - 0.00569 - 0.00478 * sind(Omega);
+    };
+    /**
+     * Calculates the true longitude of the sun (see AA p164).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} True longitude of the sun.
+     */
+    const sunTrueLongitude = (T) => {
+        const L0 = sunMeanLongitude$1(T);
+        const C = sunEquationOfCenter(T);
+        return L0 + C;
+    };
+    /**
+     * Calculates the equation of center of the sun (see AA p164).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Equation of center of the sun.
+     */
+    const sunEquationOfCenter = (T) => {
+        const M = sunMeanAnomaly$1(T);
+        return (1.914602 - 0.004817 * T - 0.000014 * Math.pow(T, 2)) * sind(M) +
+            (0.019993 - 0.000101 * T) * sind(2 * M) + 0.000290 * sind(3 * M);
+    };
+    /**
+     * Calculates the nutation in longitude of the sun (see AA p144ff).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Nutation in longitude of the sun.
+     */
+    const nutationInLongitude = (T) => {
+        const D = moonMeanElongation$1(T);
+        const M = sunMeanAnomaly$1(T);
+        const MPrime = moonMeanAnomaly$1(T);
+        const F = moonArgumentOfLatitude$1(T);
+        const Omega = moonAscendingNodeLongitude$1(T);
+        let DeltaPsi = 0;
+        let sineArg;
+        for (let i = 0; i < 63; i++) {
+            sineArg = nutations[i][0] * D + nutations[i][1] * M + nutations[i][2] * MPrime +
+                nutations[i][3] * F + nutations[i][4] * Omega;
+            DeltaPsi += (nutations[i][5] + nutations[i][6] * T) * sind(sineArg);
+        }
+        return DeltaPsi / 36000000;
+    };
+    /**
+     * Calculates the nutation in obliquity of the sun (see AA p144ff).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Nutation in obliquity of the sun.
+     */
+    const nutationInObliquity = (T) => {
+        const D = moonMeanElongation$1(T);
+        const M = sunMeanAnomaly$1(T);
+        const MPrime = moonMeanAnomaly$1(T);
+        const F = moonArgumentOfLatitude$1(T);
+        const Omega = moonAscendingNodeLongitude$1(T);
+        let DeltaEpsilon = 0;
+        let cosArg;
+        for (let i = 0; i < 63; i++) {
+            cosArg = nutations[i][0] * D + nutations[i][1] * M + nutations[i][2] * MPrime +
+                nutations[i][3] * F + nutations[i][4] * Omega;
+            DeltaEpsilon += (nutations[i][7] + nutations[i][8] * T) * cosd(cosArg);
+        }
+        return DeltaEpsilon / 36000000;
+    };
+    /**
+     * Calculates the argument of latitude of the moon (see AA p144).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Argument of latitude of the moon.
+     */
+    const moonArgumentOfLatitude$1 = (T) => {
+        const F = polynomial(T, moonArgumentOfLatitude);
+        return reduceAngle(F);
+    };
+    /**
+     * Calculates the longitude of the ascending node of the Moon's mean orbit on
+     * the ecliptic, measured from the mean equinox of the datea (see AA p144).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Longitude of the asc. node of the moon's mean orbit.
+     */
+    const moonAscendingNodeLongitude$1 = (T) => {
+        const Omega = polynomial(T, moonAscendingNodeLongitude);
+        return reduceAngle(Omega);
+    };
+    /**
+     * Calculates the mean anomaly of the moon (see AA p144).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean anomaly of the moon.
+     */
+    const moonMeanAnomaly$1 = (T) => {
+        const MPrime = polynomial(T, moonMeanAnomaly);
+        return reduceAngle(MPrime);
+    };
+    /**
+     * Calculates the mean elongation of the moon from the sun (see AA p144).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean elongation of the moon from the sun.
+     */
+    const moonMeanElongation$1 = (T) => {
+        const D = polynomial(T, moonMeanElongation);
+        return reduceAngle(D);
+    };
+    /**
+     * Calculates the mean anomaly of the sun (see AA p144).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean anomaly of the sun.
+     */
+    const sunMeanAnomaly$1 = (T) => {
+        const M = polynomial(T, sunMeanAnomaly);
+        return reduceAngle(M);
+    };
+    /**
+     * Calculates the mean longitude of the sun referred to the mean equinox of the
+     * date (see AA p163).
+     * @param {number} T Fractional number of Julian centuries since
+     *     2000-01-01T12:00:00Z.
+     * @returns {number} Mean longitude of the sun referred to the mean equinox of
+     *     the date.
+     */
+    const sunMeanLongitude$1 = (T) => {
+        const L0 = polynomial(T, sunMeanLongitude);
+        return reduceAngle(L0);
+    };
+    const noEventCodes = {
+        SUN_HIGH: 'SUN_HIGH',
+        SUN_LOW: 'SUN_LOW',
+    };
+    /**
+     * Calculates sunrise on the provided date.
+     * @param {DateTime} datetime Datetime for which sunrise is calculated. Should
+     *     always contain a timezone or be in UTC, lone UTC offsets might lead to
+     *     unexpected behaviour.
+     * @param {number} latitude Latitude of target location.
+     * @param {number} longitude longitude of target location.
+     * @returns {(DateTime|string)} Time of sunrise or a string indicating that no
+     *     event could be calculated as the sun was too high ('SUN_HIGH') or too low
+     *     ('SUN_LOW') during the entire day (unless returnTimeForNoEventCase is true).
+     */
+    const sunrise = (datetime, latitude, longitude) => {
+        try {
+            return sunRiseSet(datetime, latitude, longitude, 'RISE');
+        }
+        catch (err) {
+            return handleNoEventCase(datetime, err, 6);
+        }
+    };
+    /**
+     * Calculates sunset on the provided date.
+     * @param {DateTime} datetime Datetime for which sunset is calculated. Should
+     *     always contain a timezone or be in UTC, lone UTC offsets might lead to
+     *     unexpected behaviour.
+     * @param {number} latitude Latitude of target location.
+     * @param {number} longitude longitude of target location.
+     * @returns {(DateTime|string)} Time of sunset or a string indicating that no
+     *     event could be calculated as the sun was too high ('SUN_HIGH') or too low
+     *     ('SUN_LOW') during the entire day (unless returnTimeForNoEventCase is true).
+     */
+    const sunset = (datetime, latitude, longitude) => {
+        try {
+            return sunRiseSet(datetime, latitude, longitude, 'SET');
+        }
+        catch (err) {
+            return handleNoEventCase(datetime, err, 18);
+        }
+    };
+    /**
+     * Calculates solar noon on the provided date.
+     * @param {DateTime} datetime Datetime for which solar noon is calculated. Should
+     *     always contain a timezone or be in UTC, lone UTC offsets might lead to
+     *     unexpected behaviour.
+     * @param {number} longitude longitude of target location.
+     * @returns {DateTime} Time of solar noon at the given longitude.
+     */
+    const solarNoon = (datetime, longitude) => sunTransit(datetime, longitude);
 
     const month = {
         1: 'Bahá',
@@ -150,937 +920,8 @@
         defaultFormat: defaultFormat
     });
 
-    const month$1 = {
-        1: 'البهاء',
-        2: 'الجلال',
-        3: 'الجمال',
-        4: 'العظمة',
-        5: 'النور',
-        6: 'الرحمة',
-        7: 'الكلمات',
-        8: 'الكمال',
-        9: 'الأسماء',
-        10: 'العزّة',
-        11: 'المشية',
-        12: 'العلم',
-        13: 'القدرة',
-        14: 'القول',
-        15: 'المسائل',
-        16: 'الشرف',
-        17: 'السلطان',
-        18: 'الملك',
-        19: 'العلاء',
-        20: 'ايام الهاء',
-    };
-    const monthL$1 = month$1;
-    const holyDay$1 = {
-        1: 'عيد النَّيروز',
-        2: 'اليوم الأول من عيد الرِّضوان',
-        3: 'اليوم التاسع من عيد الرِّضوان',
-        4: 'اليوم الثاني عشر من عيد الرِّضوان',
-        5: 'يوم إعلان دعوة حضرة الباب',
-        6: 'يوم صعود حضرة بهاء الله',
-        7: 'يوم استشهاد حضرة الباب',
-        8: 'يوم ولادة حضرة الباب',
-        9: 'يوم ولادة حضرة بهاء الله',
-        10: 'يوم الميثاق',
-        11: 'يوم صعود حضرة عبد البهاء',
-    };
-    const weekday$1 = {
-        1: 'الجلال',
-        2: 'الجمال',
-        3: 'الكمال',
-        4: 'الفضّال',
-        5: 'العدّال',
-        6: 'الأستجلال',
-        7: 'الاستقلال',
-    };
-    const weekdayAbbr3$1 = {
-        1: 'جلا',
-        2: 'جما',
-        3: 'كما',
-        4: 'فضّا',
-        5: 'عدّا',
-        6: 'اسج',
-        7: 'اسق',
-    };
-    const weekdayAbbr2$1 = {
-        1: 'جل',
-        2: 'جم',
-        3: 'كم',
-        4: 'فض',
-        5: 'عد',
-        6: 'اج',
-        7: 'اق',
-    };
-    const weekdayL$1 = {
-        1: 'الجلال',
-        2: 'الجمال',
-        3: 'الكمال',
-        4: 'الفضّال',
-        5: 'العدّال',
-        6: 'الأستجلال',
-        7: 'أستقلال',
-    };
-    const yearInVahid$1 = {
-        1: 'ألف',
-        2: 'باء',
-        3: 'أب',
-        4: 'دﺍﻝ',
-        5: 'باب',
-        6: 'وﺍو',
-        7: 'أبد',
-        8: 'جاد',
-        9: 'بهاء',
-        10: 'حب',
-        11: 'بهاج',
-        12: 'جواب',
-        13: 'احد',
-        14: 'وﻫﺎب',
-        15: 'وداد',
-        16: 'بدیع',
-        17: 'بهي',
-        18: 'ابهى',
-        19: 'واحد',
-    };
-    const vahid$1 = 'واحد';
-    const kulliShay$1 = 'كل شيء';
-    const BE$1 = 'بديع';
-    const badiCalendar$1 = 'تقويم بديع';
-    const unicodeCharForZero$1 = '٠';
-    const defaultFormat$1 = '&#8207;d MM y BE&#8207;';
-
-    var ar = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        month: month$1,
-        monthL: monthL$1,
-        holyDay: holyDay$1,
-        weekday: weekday$1,
-        weekdayAbbr3: weekdayAbbr3$1,
-        weekdayAbbr2: weekdayAbbr2$1,
-        weekdayL: weekdayL$1,
-        yearInVahid: yearInVahid$1,
-        vahid: vahid$1,
-        kulliShay: kulliShay$1,
-        BE: BE$1,
-        badiCalendar: badiCalendar$1,
-        unicodeCharForZero: unicodeCharForZero$1,
-        defaultFormat: defaultFormat$1
-    });
-
-    const monthL$2 = {
-        1: 'Herrlichkeit',
-        2: 'Ruhm',
-        3: 'Schönheit',
-        4: 'Größe',
-        5: 'Licht',
-        6: 'Barmherzigkeit',
-        7: 'Worte',
-        8: 'Vollkommenheit',
-        9: 'Namen',
-        10: 'Macht',
-        11: 'Wille',
-        12: 'Wissen',
-        13: 'Kraft',
-        14: 'Sprache',
-        15: 'Fragen',
-        16: 'Ehre',
-        17: 'Souveränität',
-        18: 'Herrschaft',
-        19: 'Erhabenheit',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$2 = {
-        1: 'Naw-Rúz',
-        2: 'Erster Riḍván-Tag',
-        3: 'Neunter Riḍván-Tag',
-        4: 'Zwölfter Riḍván-Tag',
-        5: 'Erklärung des Báb',
-        6: 'Hinscheiden Bahá’u’lláhs',
-        7: 'Märtyrertod des Báb',
-        8: 'Geburt des Báb',
-        9: 'Geburt Bahá’u’lláhs',
-        10: 'Tag des Bundes',
-        11: 'Hinscheiden ‘Abdu’l-Bahás',
-    };
-    const weekdayL$2 = {
-        1: 'Ruhm',
-        2: 'Schönheit',
-        3: 'Vollkommenheit',
-        4: 'Gnade',
-        5: 'Gerechtigkeit',
-        6: 'Majestät',
-        7: 'Unabhängigkeit',
-    };
-    const BE$2 = 'B.E.';
-    const badiCalendar$2 = 'Badí‘ Kalender';
-
-    var de = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$2,
-        holyDay: holyDay$2,
-        weekdayL: weekdayL$2,
-        BE: BE$2,
-        badiCalendar: badiCalendar$2
-    });
-
-    const monthL$3 = {
-        1: 'Esplendor',
-        2: 'Gloria',
-        3: 'Belleza',
-        4: 'Grandeza',
-        5: 'Luz',
-        6: 'Misericordia',
-        7: 'Palabras',
-        8: 'Perfección',
-        9: 'Nombres',
-        10: 'Fuerza',
-        11: 'Voluntad',
-        12: 'Conocimiento',
-        13: 'Poder',
-        14: 'Discurso',
-        15: 'Preguntas',
-        16: 'Honor',
-        17: 'Soberanía',
-        18: 'Dominio',
-        19: 'Sublimidad',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$3 = {
-        1: 'Naw-Rúz',
-        2: 'Primer día de Riḍván',
-        3: 'Noveno día de Riḍván',
-        4: 'Duodécimo día de Riḍván',
-        5: 'Declaración del Báb',
-        6: 'Ascensión de Bahá’u’lláh',
-        7: 'Martirio del Báb',
-        8: 'Nacimiento del Báb',
-        9: 'Nacimiento de Bahá’u’lláh',
-        10: 'Día de la Alianza',
-        11: 'Fallecimiento de ‘Abdu’l-Bahá',
-    };
-    const weekdayL$3 = {
-        1: 'Gloria',
-        2: 'Belleza',
-        3: 'Perfección',
-        4: 'Gracia',
-        5: 'Justicia',
-        6: 'Majestuosidad',
-        7: 'Independencia',
-    };
-    const BE$3 = 'E.B.';
-    const badiCalendar$3 = 'Calendario Badí‘';
-
-    var es = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$3,
-        holyDay: holyDay$3,
-        weekdayL: weekdayL$3,
-        BE: BE$3,
-        badiCalendar: badiCalendar$3
-    });
-
-    const month$2 = {
-        1: 'البهاء',
-        2: 'الجلال',
-        3: 'الجمال',
-        4: 'العظمة',
-        5: 'النور',
-        6: 'الرحمة',
-        7: 'الكلمات',
-        8: 'الكمال',
-        9: 'الأسماء',
-        10: 'العزّة',
-        11: 'المشية',
-        12: 'العلم',
-        13: 'القدرة',
-        14: 'القول',
-        15: 'المسائل',
-        16: 'الشرف',
-        17: 'السلطان',
-        18: 'الملك',
-        19: 'العلاء',
-        20: 'ايام الهاء',
-    };
-    const monthL$4 = {
-        1: 'بهاء',
-        2: 'جلال',
-        3: 'جمال',
-        4: 'عظمت',
-        5: 'نور',
-        6: 'رحمت',
-        7: 'كلمات',
-        8: 'كمال',
-        9: 'أسماء',
-        10: 'عزّت',
-        11: 'مشيت',
-        12: 'علم',
-        13: 'قدرت',
-        14: 'قول',
-        15: 'مسائل',
-        16: 'شرف',
-        17: 'سلطان',
-        18: 'ملك',
-        19: 'علاء',
-        20: 'ايام ها',
-    };
-    const holyDay$4 = {
-        1: 'عید نوروز',
-        2: 'روز اوّل عید رضوان',
-        3: 'روز نهم عید رضوان',
-        4: 'روز دوازدهم عید رضوان',
-        5: 'بعثت حضرت باب',
-        6: 'صعود حضرت بهاالله',
-        7: 'شهادت حضرت اعلی',
-        8: 'تولّد حضرت اعلی',
-        9: 'تولّد حضرت بهالله',
-        10: 'روز عهد و میثاق',
-        11: 'صعود حضرت عبدالبها',
-    };
-    const weekday$2 = {
-        1: 'یوم الجلال',
-        2: 'یوم الجمال',
-        3: 'یوم الكمال',
-        4: 'یوم الفضّال',
-        5: 'یوم العدّال',
-        6: 'یوم الأستجلال',
-        7: 'یوم الاستقلال',
-    };
-    const weekdayAbbr3$2 = {
-        1: 'جلا',
-        2: 'جما',
-        3: 'كما',
-        4: 'فضّا',
-        5: 'عدّا',
-        6: 'اسج',
-        7: 'اسق',
-    };
-    const weekdayAbbr2$2 = {
-        1: 'جل',
-        2: 'جم',
-        3: 'كم',
-        4: 'فض',
-        5: 'عد',
-        6: 'اج',
-        7: 'اق',
-    };
-    const weekdayL$4 = {
-        1: 'جلال',
-        2: 'جمال',
-        3: 'كمال',
-        4: 'فضّال',
-        5: 'عدّال',
-        6: 'استجلال',
-        7: 'استقلال',
-    };
-    const yearInVahid$2 = {
-        1: 'ألف',
-        2: 'باء',
-        3: 'أب',
-        4: 'دﺍﻝ',
-        5: 'باب',
-        6: 'وﺍو',
-        7: 'أبد',
-        8: 'جاد',
-        9: 'بهاء',
-        10: 'حب',
-        11: 'بهاج',
-        12: 'جواب',
-        13: 'احد',
-        14: 'وﻫﺎب',
-        15: 'وداد',
-        16: 'بدیع',
-        17: 'بهي',
-        18: 'ابهى',
-        19: 'واحد',
-    };
-    const vahid$2 = 'واحد';
-    const kulliShay$2 = 'كل شيء';
-    const BE$4 = 'بديع';
-    const badiCalendar$4 = 'تقويم بديع';
-    const unicodeCharForZero$2 = '۰';
-    const defaultFormat$2 = '&#8207;d MML y BE&#8207;';
-
-    var fa = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        month: month$2,
-        monthL: monthL$4,
-        holyDay: holyDay$4,
-        weekday: weekday$2,
-        weekdayAbbr3: weekdayAbbr3$2,
-        weekdayAbbr2: weekdayAbbr2$2,
-        weekdayL: weekdayL$4,
-        yearInVahid: yearInVahid$2,
-        vahid: vahid$2,
-        kulliShay: kulliShay$2,
-        BE: BE$4,
-        badiCalendar: badiCalendar$4,
-        unicodeCharForZero: unicodeCharForZero$2,
-        defaultFormat: defaultFormat$2
-    });
-
-    const monthL$5 = {
-        1: 'Splendeur',
-        2: 'Gloire',
-        3: 'Beauté',
-        4: 'Grandeur',
-        5: 'Lumière',
-        6: 'Miséricorde',
-        7: 'Paroles',
-        8: 'Perfection',
-        9: 'Noms',
-        10: 'Puissance',
-        11: 'Volonté',
-        12: 'Connaissance',
-        13: 'Pouvoir',
-        14: 'Discours',
-        15: 'Questions',
-        16: 'Honneur',
-        17: 'Souveraineté',
-        18: 'Empire',
-        19: 'Élévation',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$5 = {
-        1: 'Naw-Rúz',
-        2: 'Premier jour de Riḍván',
-        3: 'Neuvième jour de Riḍván',
-        4: 'Douzième jour de Riḍván',
-        5: 'Déclaration du Báb',
-        6: 'Ascension de Bahá’u’lláh',
-        7: 'Martyre du Báb',
-        8: 'Naissance du Báb',
-        9: 'Naissance de Bahá’u’lláh',
-        10: 'Jour de l’Alliance',
-        11: 'Ascension de ‘Abdu’l-Bahá',
-    };
-    const weekdayL$5 = {
-        1: 'Gloire',
-        2: 'Beauté',
-        3: 'Perfection',
-        4: 'Grâce',
-        5: 'Justice',
-        6: 'Majesté',
-        7: 'Indépendance',
-    };
-    const BE$5 = 'E.B.';
-    const badiCalendar$5 = 'Calendrier Badí‘';
-
-    var fr = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$5,
-        holyDay: holyDay$5,
-        weekdayL: weekdayL$5,
-        BE: BE$5,
-        badiCalendar: badiCalendar$5
-    });
-
-    const monthL$6 = {
-        1: 'Spožums',
-        2: 'Slava',
-        3: 'Skaistums',
-        4: 'Dižums',
-        5: 'Gaisma',
-        6: 'Žēlastība',
-        7: 'Vārdi',
-        8: 'Pilnība',
-        9: 'Nosaukumi',
-        10: 'Varenība',
-        11: 'Griba',
-        12: 'Zināšanas',
-        13: 'Vara',
-        14: 'Runa',
-        15: 'Jautājumi',
-        16: 'Gods',
-        17: 'Suverenitāte',
-        18: 'Valdīšana',
-        19: 'Cēlums',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$6 = {
-        1: 'Naw-Rúz',
-        2: 'Riḍván pirmā diena',
-        3: 'Riḍván devītā diena',
-        4: 'Riḍván divpadsmitā diena',
-        5: 'Bába paziņojums',
-        6: 'Bahá’u’lláh Debessbraukšana',
-        7: 'Bába mocekļa nāve',
-        8: 'Bába dzimšanas diena',
-        9: 'Bahá’u’lláh dzimšanas diena',
-        10: 'Derības diena',
-        11: '‘Abdu’l-Bahá Debessbraukšana',
-    };
-    const weekdayL$6 = {
-        1: 'Slava',
-        2: 'Skaistums',
-        3: 'Pilnība',
-        4: 'Žēlastība',
-        5: 'Taisnīgums',
-        6: 'Majestātiskums',
-        7: 'Neatkarība',
-    };
-    const BE$6 = 'B.Ē.';
-    const badiCalendar$6 = 'Badí‘ kalendārs';
-
-    var lv = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$6,
-        holyDay: holyDay$6,
-        weekdayL: weekdayL$6,
-        BE: BE$6,
-        badiCalendar: badiCalendar$6
-    });
-
-    const monthL$7 = {
-        1: 'Pracht',
-        2: 'Heerlijkheid',
-        3: 'Schoonheid',
-        4: 'Grootheid',
-        5: 'Licht',
-        6: 'Barmhartigheid',
-        7: 'Woorden',
-        8: 'Volmaaktheid',
-        9: 'Namen',
-        10: 'Macht',
-        11: 'Wil',
-        12: 'Kennis',
-        13: 'Kracht',
-        14: 'Spraak',
-        15: 'Vragen',
-        16: 'Eer',
-        17: 'Soevereiniteit',
-        18: 'Heerschappij',
-        19: 'Verhevenheid',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$7 = {
-        1: 'Naw-Rúz',
-        2: 'Eerste dag van Riḍván',
-        3: 'Negende dag van Riḍván',
-        4: 'Twaalfde dag van Riḍván',
-        5: 'Verkondiging van de Báb',
-        6: 'Heengaan van Bahá’u’lláh',
-        7: 'Marteldood van de Báb',
-        8: 'Geboortedag van de Báb',
-        9: 'Geboortedag van Bahá’u’lláh',
-        10: 'Dag van het Verbond',
-        11: 'Heengaan van ‘Abdu’l-Bahá',
-    };
-    const weekdayL$7 = {
-        1: 'Heerlijkheid',
-        2: 'Schoonheid',
-        3: 'Volmaaktheid',
-        4: 'Genade',
-        5: 'Gerechtigheid',
-        6: 'Majesteit',
-        7: 'Onafhankelijkheid',
-    };
-    const BE$7 = 'B.E.';
-    const badiCalendar$7 = 'Badí‘-Kalender';
-
-    var nl = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$7,
-        holyDay: holyDay$7,
-        weekdayL: weekdayL$7,
-        BE: BE$7,
-        badiCalendar: badiCalendar$7
-    });
-
-    const monthL$8 = {
-        1: 'Esplendor',
-        2: 'Glória',
-        3: 'Beleza',
-        4: 'Grandeza',
-        5: 'Luz',
-        6: 'Miséricórdia',
-        7: 'Palavras',
-        8: 'Perfeição',
-        9: 'Nomes',
-        10: 'Potência',
-        11: 'Vontade',
-        12: 'Conhecimento',
-        13: 'Poder',
-        14: 'Discurso',
-        15: 'Perguntas',
-        16: 'Honra',
-        17: 'Soberania',
-        18: 'Domínio',
-        19: 'Sublimidade',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$8 = {
-        1: 'Naw-Rúz',
-        2: '1º dia do Riḍván',
-        3: '9º dia do Riḍván',
-        4: '12º dia do Riḍván',
-        5: 'Declaração do Báb',
-        6: 'Ascensão de Bahá’u’lláh',
-        7: 'Martírio do Báb',
-        8: 'Aniversário do Báb',
-        9: 'Aniversário de Bahá’u’lláh',
-        10: 'Dia do Convênio',
-        11: 'Ascensão de ‘Abdu’l-Bahá',
-    };
-    const weekdayL$8 = {
-        1: 'Glória',
-        2: 'Beleza',
-        3: 'Perfeição',
-        4: 'Graça',
-        5: 'Justiça',
-        6: 'Majestade',
-        7: 'Independência',
-    };
-    const BE$8 = 'E.B.';
-    const badiCalendar$8 = 'Calendário Badí‘';
-
-    var pt = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$8,
-        holyDay: holyDay$8,
-        weekdayL: weekdayL$8,
-        BE: BE$8,
-        badiCalendar: badiCalendar$8
-    });
-
-    const month$3 = {
-        1: 'Бахā',
-        2: 'Джалāл',
-        3: 'Джамāл',
-        4: '‘Аз̣амат',
-        5: 'Нӯр',
-        6: 'Рах̣мат',
-        7: 'Калимāт',
-        8: 'Камāл',
-        9: 'Асмā’',
-        10: '‘Иззат',
-        11: 'Машӣййат',
-        12: '‘Илм',
-        13: 'К̣удрат',
-        14: 'К̣аул',
-        15: 'Масā’ил',
-        16: 'Шараф',
-        17: 'Султ̣ан',
-        18: 'Мулк',
-        19: '‘Алā’',
-        20: 'Аййāм-и Хā',
-    };
-    const monthL$9 = {
-        1: 'Великолепие',
-        2: 'Слава',
-        3: 'Красота',
-        4: 'Величие',
-        5: 'Свет',
-        6: 'Милость',
-        7: 'Слова',
-        8: 'Совершенство',
-        9: 'Имена',
-        10: 'Мощь',
-        11: 'Воля',
-        12: 'Знание',
-        13: 'Могущество',
-        14: 'Речь',
-        15: 'Вопросы',
-        16: 'Честь',
-        17: 'Владычество',
-        18: 'Господство',
-        19: 'Возвышенность',
-        20: 'Аййāм-и Хā',
-    };
-    const holyDay$9 = {
-        1: 'Нау-Рӯз',
-        2: '1-й день Рид̣вāна',
-        3: '9-й день Рид̣вāна',
-        4: '12-й день Рид̣вāна',
-        5: 'Возвещение Баба',
-        6: 'Вознесение Бахауллы',
-        7: 'Мученическая Баба',
-        8: 'рождения Баба',
-        9: 'рождения Бахауллы',
-        10: 'День Завета',
-        11: 'Вознесение Абдул-Баха',
-    };
-    const weekday$3 = {
-        1: 'Джалāл',
-        2: 'Джамāл',
-        3: 'Камāл',
-        4: 'Фид̣āл',
-        5: '‘Идāл',
-        6: 'Истиджлāл',
-        7: 'Истик̣лāл',
-    };
-    const weekdayAbbr3$3 = {
-        1: 'Джл',
-        2: 'Джм',
-        3: 'Кам',
-        4: 'Фид̣',
-        5: '‘Идā',
-        6: 'Исд',
-        7: 'Иск̣',
-    };
-    const weekdayAbbr2$3 = {
-        1: 'Дл',
-        2: 'Дм',
-        3: 'Ка',
-        4: 'Фи',
-        5: '‘Ид',
-        6: 'Ид',
-        7: 'Ик̣',
-    };
-    const weekdayL$9 = {
-        1: 'Слава',
-        2: 'Красота',
-        3: 'Совершенство',
-        4: 'Благодать',
-        5: 'Справедливость',
-        6: 'Величие',
-        7: 'Независимость',
-    };
-    const yearInVahid$3 = {
-        1: 'Алиф',
-        2: 'Бā’',
-        3: 'Аб',
-        4: 'Дāл',
-        5: 'Бāб',
-        6: 'Вāв',
-        7: 'Абад',
-        8: 'Джāд',
-        9: 'Бахā',
-        10: 'Х̣убб',
-        11: 'Баххāдж',
-        12: 'Джавāб',
-        13: 'Ах̣ад',
-        14: 'Ваххāб',
-        15: 'Видāд',
-        16: 'Бадӣ‘',
-        17: 'Бахӣ',
-        18: 'Абхā',
-        19: 'Вāх̣ид',
-    };
-    const vahid$3 = 'Вāх̣ид';
-    const kulliShay$3 = 'кулл-и шай’';
-    const BE$9 = 'Э.Б.';
-    const badiCalendar$9 = 'Календарь Бадӣ‘';
-
-    var ru = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        month: month$3,
-        monthL: monthL$9,
-        holyDay: holyDay$9,
-        weekday: weekday$3,
-        weekdayAbbr3: weekdayAbbr3$3,
-        weekdayAbbr2: weekdayAbbr2$3,
-        weekdayL: weekdayL$9,
-        yearInVahid: yearInVahid$3,
-        vahid: vahid$3,
-        kulliShay: kulliShay$3,
-        BE: BE$9,
-        badiCalendar: badiCalendar$9
-    });
-
-    const monthL$a = {
-        1: 'Praktfullhet',
-        2: 'Härlighet',
-        3: 'Skönhet',
-        4: 'Storhet',
-        5: 'Ljus',
-        6: 'Barmhärtighet',
-        7: 'Ord',
-        8: 'Fullkomlighet',
-        9: 'Namn',
-        10: 'Makt',
-        11: 'Vilja',
-        12: 'Kunskap',
-        13: 'Kraft',
-        14: 'Tal',
-        15: 'Frågor',
-        16: 'Ära',
-        17: 'Överhöghet',
-        18: 'Herravälde',
-        19: 'Upphöjdhet',
-        20: 'Ayyám-i-Há',
-    };
-    const holyDay$a = {
-        1: 'Naw-Rúz',
-        2: 'Första Riḍván',
-        3: 'Nionde Riḍván',
-        4: 'Tolfte Riḍván',
-        5: 'Bábs Deklaration',
-        6: 'Bahá’u’lláhs Bortgång',
-        7: 'Bábs Martyrskap',
-        8: 'Bábs Födelse',
-        9: 'Bahá’u’lláhs Födelse',
-        10: 'Förbundets dag',
-        11: '‘Abdu’l-Bahás Bortgång',
-    };
-    const weekdayL$a = {
-        1: 'Härlighet',
-        2: 'Skönhet',
-        3: 'Fullkomlighet',
-        4: 'Nåd',
-        5: 'Rättvisa',
-        6: 'Majestät',
-        7: 'Oberoende',
-    };
-    const BE$a = 'B.E.';
-    const badiCalendar$a = 'Badí‘kalendern';
-
-    var sv = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$a,
-        holyDay: holyDay$a,
-        weekdayL: weekdayL$a,
-        BE: BE$a,
-        badiCalendar: badiCalendar$a
-    });
-
-    const month$4 = {
-        1: '巴哈',
-        2: '贾拉勒',
-        3: '贾迈勒',
-        4: '阿泽迈特',
-        5: '努尔',
-        6: '拉赫迈特',
-        7: '凯利马特',
-        8: '卡迈勒',
-        9: '艾斯玛',
-        10: '伊扎特',
-        11: '迈希耶特',
-        12: '伊勒姆',
-        13: '古德雷特',
-        14: '高勒',
-        15: '迈萨伊勒',
-        16: '谢拉夫',
-        17: '苏丹',
-        18: '穆勒克',
-        19: '阿拉',
-        20: '阿亚米哈',
-    };
-    const monthL$b = {
-        1: '耀',
-        2: '辉',
-        3: '美',
-        4: '宏',
-        5: '光',
-        6: '仁',
-        7: '言',
-        8: '完',
-        9: '名',
-        10: '能',
-        11: '意',
-        12: '知',
-        13: '力',
-        14: '语',
-        15: '问',
-        16: '尊',
-        17: '权',
-        18: '统',
-        19: '崇',
-        20: '哈之日',
-    };
-    const holyDay$b = {
-        1: '诺鲁孜节',
-        2: '里兹万节第一日',
-        3: '里兹万节第九日',
-        4: '里兹万节第十二日',
-        5: '巴孛宣示日',
-        6: '巴哈欧拉升天日',
-        7: '巴孛殉道日',
-        8: '巴孛诞辰',
-        9: '巴哈欧拉诞辰',
-        10: '圣约日',
-        11: '阿博都-巴哈升天日',
-    };
-    const weekday$4 = {
-        1: '贾拉勒',
-        2: '贾迈勒',
-        3: '卡迈勒',
-        4: '菲达勒',
-        5: '伊达勒',
-        6: '伊斯提杰拉勒',
-        7: '伊斯提格拉勒',
-    };
-    const weekdayAbbr3$4 = {
-        1: '贾拉勒',
-        2: '贾迈勒',
-        3: '卡迈勒',
-        4: '菲达勒',
-        5: '伊达勒',
-        6: '伊斯杰',
-        7: '伊斯格',
-    };
-    const weekdayAbbr2$4 = {
-        1: '贾拉',
-        2: '贾迈',
-        3: '卡迈',
-        4: '菲达',
-        5: '伊达',
-        6: '伊杰',
-        7: '伊格',
-    };
-    const weekdayL$b = {
-        1: '辉日',
-        2: '美日',
-        3: '完日',
-        4: '恩日',
-        5: '正日',
-        6: '威日',
-        7: '独日',
-    };
-    const yearInVahid$4 = {
-        1: '艾利夫',
-        2: '巴',
-        3: '艾卜',
-        4: '达勒',
-        5: '巴卜',
-        6: '瓦乌',
-        7: '阿巴德',
-        8: '贾德',
-        9: '巴哈',
-        10: '胡卜',
-        11: '巴哈杰',
-        12: '贾瓦卜',
-        13: '阿哈德',
-        14: '瓦哈卜',
-        15: '维达德',
-        16: '巴迪',
-        17: '巴希',
-        18: '阿卜哈',
-        19: '瓦希德',
-    };
-    const vahid$4 = '瓦希德';
-    const kulliShay$4 = '库里沙伊';
-    const BE$b = 'BE';
-    const badiCalendar$b = '巴迪历';
-
-    var zh = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        month: month$4,
-        monthL: monthL$b,
-        holyDay: holyDay$b,
-        weekday: weekday$4,
-        weekdayAbbr3: weekdayAbbr3$4,
-        weekdayAbbr2: weekdayAbbr2$4,
-        weekdayL: weekdayL$b,
-        yearInVahid: yearInVahid$4,
-        vahid: vahid$4,
-        kulliShay: kulliShay$4,
-        BE: BE$b,
-        badiCalendar: badiCalendar$b
-    });
-
-    const monthL$c = {
-        1: 'Splendor',
-        16: 'Honor',
-    };
-
-    var en_us = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        monthL: monthL$c
-    });
-
     /* eslint-disable dot-notation, line-comment-position, camelcase, sort-imports */
-    const badiLocale = { en, ar, de, es, fa, fr, lv, nl, pt, ru, sv, zh, 'en-us': en_us, default: en };
+    const badiLocale = { en, default: en };
     const setDefaultLanguage = (language) => {
         if (badiLocale[language] === undefined) {
             // eslint-disable-next-line no-console
@@ -1713,10 +1554,10 @@
             if (!this._clockLocation ||
                 (this._clockLocation === 'Finland' &&
                     this._badiDate.month === 19)) {
-                this._end = MeeusSunMoon.sunset(gregDate, latitude, longitude);
-                this._solarNoon = MeeusSunMoon.solarNoon(gregDate, longitude);
-                this._sunrise = MeeusSunMoon.sunrise(gregDate, latitude, longitude);
-                this._start = MeeusSunMoon.sunset(gregDate.minus({ days: 1 }), latitude, longitude);
+                this._end = sunset(gregDate, latitude, longitude);
+                this._solarNoon = solarNoon(gregDate, longitude);
+                this._sunrise = sunrise(gregDate, latitude, longitude);
+                this._start = sunset(gregDate.minus({ days: 1 }), latitude, longitude);
             }
             else {
                 // First we set times to 18:00, 06:00, 12:00, 18:00, modifications are
@@ -1769,8 +1610,8 @@
         }
         _setInputDateToCorrectDay(date, latitude, longitude) {
             if (date instanceof luxon.DateTime) {
-                const sunset = MeeusSunMoon.sunset(date, latitude, longitude);
-                return (date > sunset) ? date.plus({ days: 1 }) : date;
+                const sunset$1 = sunset(date, latitude, longitude);
+                return (date > sunset$1) ? date.plus({ days: 1 }) : date;
             }
             return date;
         }
@@ -1805,7 +1646,7 @@
             useClockLocations(settings.useClockLocations);
         }
     };
-    MeeusSunMoon.settings({ returnTimeForNoEventCase: true, roundToNearestMinute: true });
+    settings({ returnTimeForNoEventCase: true, roundToNearestMinute: true });
 
     exports.BadiDate = BadiDate;
     exports.LocalBadiDate = LocalBadiDate;

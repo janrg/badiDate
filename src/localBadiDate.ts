@@ -1,6 +1,6 @@
 import * as MeeusSunMoon from 'meeussunmoon';
 import * as luxon from 'luxon';
-import { BadiDate, badiDateSettings as badiDateBaseOptions } from './badiDate';
+import { BadiDate, badiDateSettings as badiDateBaseSettings } from './badiDate';
 import { clockLocationFromPolygons, useClockLocations } from './clockLocations';
 import { BadiDateSettings, InputDate } from './types';
 
@@ -117,7 +117,7 @@ class LocalBadiDate {
 const badiDateSettings = (settings: BadiDateSettings) => {
     if (typeof settings.defaultLanguage === 'string' ||
         typeof settings.underlineFormat === 'string') {
-        badiDateBaseOptions(settings);
+        badiDateBaseSettings(settings);
     }
     if (typeof settings.useClockLocations === 'boolean') {
         useClockLocations(settings.useClockLocations);
