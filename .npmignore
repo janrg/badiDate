@@ -1,1 +1,6 @@
+node_modules
 coverage
+res
+test
+.idea
+*.py
