@@ -14,8 +14,14 @@ class LocalBadiDate {
     private _end: luxon.DateTime;
     private _clockLocation: string | undefined;
     private _holyDayCommemoration: luxon.DateTime | undefined;
+    private _latitude: number;
+    private _longitude: number;
+    private _timezoneId: string;
 
     constructor(date: InputDate, latitude: number, longitude: number, timezoneId: string) {
+        this._latitude = latitude;
+        this._longitude = longitude;
+        this._timezoneId = timezoneId;
         // If a moment object is being passed, we use date and time, not just the
         // date. For a JS Date object, we can't assume it's in the correct timezone,
         // so in that case we use the date information only.
@@ -111,6 +117,34 @@ class LocalBadiDate {
 
     get clockLocation(): string | undefined {
         return this._clockLocation;
+    }
+
+    get latitude(): number {
+        return this._latitude;
+    }
+
+    get longitude(): number {
+        return this._longitude;
+    }
+
+    get timezoneId(): string {
+        return this._timezoneId;
+    }
+
+    get nextMonth(): LocalBadiDate {
+        return new LocalBadiDate(this.badiDate.nextMonth, this._latitude, this._longitude, this._timezoneId);
+    }
+
+    get previousMonth(): LocalBadiDate {
+        return new LocalBadiDate(this.badiDate.previousMonth, this._latitude, this._longitude, this._timezoneId);
+    }
+
+    get nextDay(): LocalBadiDate {
+        return new LocalBadiDate(this.badiDate.nextDay, this._latitude, this._longitude, this._timezoneId);
+    }
+
+    get previousDay(): LocalBadiDate {
+        return new LocalBadiDate(this.badiDate.previousDay, this._latitude, this._longitude, this._timezoneId);
     }
 }
 

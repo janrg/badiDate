@@ -57,7 +57,7 @@ import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'badidate';
 or directly use it in the browser via
 
 ```js
-import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'node_modules/badidate/dist/localBadiDate-mss-locales-es.js';
+import {BadiDate, LocalBadiDate, badiDateOptions, MeeusSunMoon} from 'node_modules/badidate/dist/localBadiDate-mss-locales-es.ts';
 ```
 
 where MeeusSunMoon is imported in order to be able to set the modules options via `MeeusSunMoon.options()` (see
@@ -218,11 +218,11 @@ is not available, the Portuguese entry; if this is not avaible the French entry;
 ### Contributing a Locale
 
 Follow these steps if you wish to add a locale to the module:
-1. Copy the file `src/locale/en.js` to `src/locale/languagecode.js` where `languagecode` is the IETF language code of the
+1. Copy the file `src/locale/en.ts` to `src/locale/languagecode.js` where `languagecode` is the IETF language code of the
 language you wish to contribute.
 2. Replace all the strings that differ from the English version, **delete all that do not**, these will be taken care of
 by the fallback. Don't forget to also remove entries that no longer exist above from the export statement.
-3. Add the appropriate lines for your language to `src/badiLocale.js`. Note that for regional variants, the variable names
+3. Add the appropriate lines for your language to `src/badiLocale.ts`. Note that for regional variants, the variable names
 need to use an underscore instead of a hyphen.
 4. Add the appropriate entr(y/ies) to `localeRegex` in `rollup.config.js`. Note that for regional variants, entries with
 both hyphen and underscore are required.
@@ -390,14 +390,14 @@ Hälsingland, and Gästriksland)
 
 ## The Source Data
 
-The list of equinox times used can be found in `res/equinoxes.js`. The BadiDate class itself contains data for every year from 172 to
+The list of equinox times used can be found in `res/equinoxes.ts`. The BadiDate class itself contains data for every year from 172 to
 the end of the range, specifically the date of Naw-Rúz, the length of Ayyám-i-Há, and the dates of the Twin Birthdays.
 The data can be generated in two formats on `res/generateYears.html`, long and short format (Note that since this uses ES6 modules, it
 has to be done on a webserver. The short format is the one used by default in the BadiDate class. Every year is represented by a 4
 character string in base36 encoding where the first character indicates the day in March on which the end of Naw-Rúz falls, the second
 character the length of Ayyám-i-Há, and the third and fourth character the Badí' month and day respectively on which the Birth of the
 Báb falls. This data is then internally unpacked into the long format as needed, though it is also possible to replace the short format
-data in badiDate.js with the long format without any additional changes (though this appears to make the handling of the object slightly
+data in badiDate.ts with the long format without any additional changes (though this appears to make the handling of the object slightly
 slower (and of course increases the file size significantly.
 An item in the long format looks as follows:
 

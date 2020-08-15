@@ -31,22 +31,37 @@ export class BadiDate {
     isValid: boolean;
     kullIShay: number;
     month: number;
+    nextDay: BadiDate;
+    nextMonth: BadiDate;
+    previousDay: BadiDate;
+    previousMonth: BadiDate;
     vahid: number;
     weekday: number;
+    workSuspended: boolean | undefined;
     year: number;
     yearInVahid: number;
     format(formatString?: string, language?: string): string;
+    holyDay(language?: string): string;
+    equals(other: BadiDate): boolean;
+    valueOf(): number;
 }
 
-export class LocalBadiDate{
+export class LocalBadiDate {
     constructor(date: InputDate, latitude: number, longitude: number, timezoneId: string);
     badiDate: BadiDate;
     clockLocation: string | undefined;
     end: luxon.DateTime;
     holyDayCommemoration: luxon.DateTime | undefined;
+    latitude: number;
+    longitude: number;
+    nextDay: LocalBadiDate;
+    nextMonth: LocalBadiDate;
+    previousDay: LocalBadiDate;
+    previousMonth: LocalBadiDate;
     solarNoon: luxon.DateTime;
     start: luxon.DateTime;
     sunrise: luxon.DateTime;
+    timezoneId: string;
 }
 
 export function badiDateSettings(settings: BadiDateSettings): void;

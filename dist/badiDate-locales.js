@@ -1381,7 +1381,7 @@
         }
         _isYearMonthDay(arg) {
             return typeof arg.year === 'number' && typeof arg.month === 'number' &&
-                typeof arg.day === 'number' && arg.holyDayNumber === undefined;
+                typeof arg.day === 'number';
         }
         _isYearHolyDayNumber(arg) {
             return typeof arg.year === 'number' && arg.month === undefined &&
@@ -1556,6 +1556,20 @@
                 [11 /* AscensionOfAbdulBaha */]: [14, 6],
             };
         }
+        _leapYearsBefore() {
+            let leapYearsBefore = Math.floor(Math.min(this.year - 1, 171) / 4);
+            if (this.year > 172) {
+                if (badiYears[0] === 'l4da') {
+                    leapYearsBefore += badiYears.slice(0, this.year - 172).filter(entry => entry[1] === '5').length;
+                }
+                else {
+                    leapYearsBefore += Object.entries(badiYears)
+                        .filter(([year, data]) => parseInt(year, 10) < this.year &&
+                        data.ayyamiHaLength === 5).length;
+                }
+            }
+            return leapYearsBefore;
+        }
         holyDay(language = undefined) {
             if (!this._holyDay) {
                 return '';
@@ -1564,6 +1578,12 @@
                 language = 'default';
             }
             return formatItemFallback(language, 'holyDay', this._holyDay);
+        }
+        valueOf() {
+            return this._dayOfYear([this.year, this.month, this.day]) + this._leapYearsBefore() + (this.year - 1) * 365;
+        }
+        equals(other) {
+            return this.isValid && other.isValid && this.valueOf() === other.valueOf();
         }
         get isValid() {
             return this._valid;
@@ -1602,6 +1622,57 @@
         }
         get holyDayNumber() {
             return this._holyDay ? this._holyDay : undefined;
+        }
+        get workSuspended() {
+            return this._holyDay ? this.holyDayNumber < 10 : undefined;
+        }
+        get nextMonth() {
+            let { year, month } = this;
+            switch (month) {
+                case 18:
+                    month = 20;
+                    break;
+                case 19:
+                    month = 1;
+                    year += 1;
+                    break;
+                case 20:
+                    month = 19;
+                    break;
+                default:
+                    month += 1;
+            }
+            return new BadiDate({ year, month, day: 1 });
+        }
+        get previousMonth() {
+            let { year, month } = this;
+            switch (month) {
+                case 1:
+                    month = 19;
+                    year -= 1;
+                    break;
+                case 19:
+                    month = 20;
+                    break;
+                case 20:
+                    month = 18;
+                    break;
+                default:
+                    month -= 1;
+            }
+            return new BadiDate({ year, month, day: 1 });
+        }
+        get nextDay() {
+            if (this._day === 19 || (this._month === 20 && this._day === this._ayyamiHaLength)) {
+                return this.nextMonth;
+            }
+            return new BadiDate({ year: this._year, month: this._month, day: this._day + 1 });
+        }
+        get previousDay() {
+            if (this._day === 1) {
+                return this.previousMonth;
+            }
+            return new BadiDate({ year: this._year, month: this._month, day: this._day - 1 });
         }
     }
     const badiDateSettings = (settings) => {
