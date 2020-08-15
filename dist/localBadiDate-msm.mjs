@@ -1618,7 +1618,7 @@ class LocalBadiDate {
         this._latitude = latitude;
         this._longitude = longitude;
         this._timezoneId = timezoneId;
-        // If a moment object is being passed, we use date and time, not just the
+        // If a datetime object is being passed, we use date and time, not just the
         // date. For a JS Date object, we can't assume it's in the correct timezone,
         // so in that case we use the date information only.
         this._badiDate = new BadiDate(this._setInputDateToCorrectDay(date, latitude, longitude));
