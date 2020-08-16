@@ -362,7 +362,16 @@ class BadiDate {
 
     get previousDay(): BadiDate {
         if (this._day === 1) {
-            return this.previousMonth;
+            const { previousMonth } = this;
+            let day = 19;
+            if (this._month === 19) {
+                day = this._ayyamiHaLength;
+            }
+            return new BadiDate({
+                year: previousMonth.year,
+                month: previousMonth.month,
+                day,
+            });
         }
         return new BadiDate({ year: this._year, month: this._month, day: this._day - 1 });
     }
