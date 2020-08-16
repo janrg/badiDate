@@ -41,9 +41,11 @@ uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm 
 - Added the `equals()` method to the `BadiDate` class
 - Added the properties `clockLocation`, `latitude`, `longitude`, `nextDay`, `nextMonth`, `previousDay`, `previousMonth`,
 `timezoneId` to the `LocalBadiDate` class
+- Some bugfixes
 
 ###### Breaking Changes:
 - Inputs and outputs are now Luxon DateTime objects instead of moment objects
+- Arrays and date strings can no longer be used in the constructors.
 - Browser support for browsers not supported by Luxon dropped. Any reasonably modern
   browser will work. No version of IE is supported.
 - Changed all accessors to `get()` attributes
