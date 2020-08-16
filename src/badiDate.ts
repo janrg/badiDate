@@ -27,7 +27,7 @@ class BadiDate {
             } else if (this._isYearMonthDay(date) || this._isYearHolyDayNumber(date)) {
                 this._setFromBadiDate(date);
             } else {
-                throw 'Unrecognized input format';
+                throw new TypeError('Unrecognized input format');
             }
             if (this._year === undefined) {
                 // We haven't set the Badí' date yet
@@ -66,7 +66,7 @@ class BadiDate {
 
     _setFromGregorianDate() {
         if (this._notInValidGregorianDateRange(this._gregorianDate)) {
-            throw 'Input date outside of valid range (1844-03-21 - 2351-03-20)';
+            throw new TypeError('Input date outside of valid range (1844-03-21 - 2351-03-20)');
         }
         const gregorianYear = this._gregorianDate.year;
         const oldImplementationCutoff = luxon.DateTime.fromObject({ year: 2015, month: 3, day: 21, zone: 'UTC' });
@@ -108,7 +108,7 @@ class BadiDate {
     _setFromBadiDate(date: YearMonthDay | YearHolyDayNumber) { // eslint-disable-line complexity
         this._year = date.year;
         if (this._year < 1 || this._year > 507) {
-            throw 'Input date outside of valid range (1 - 507 B.E.)';
+            throw new TypeError('Input date outside of valid range (1 - 507 B.E.)');
         } else if (this._year < 172) {
             this._nawRuz = luxon.DateTime.fromObject({ year: 1843 + this._year, month: 3, day: 21, zone: 'UTC' });
             this._setOldAyyamiHaLength();
@@ -126,15 +126,15 @@ class BadiDate {
                     this._month = 19;
                     this._day = 1;
                 } else {
-                    throw 'Input numbers do not designate a valid date';
+                    throw new TypeError('Input numbers do not designate a valid date');
                 }
             }
             if (this._month < 1 || this._month > 20 || this._day < 1 || this.day > 19) {
-                throw 'Input numbers do not designate a valid date';
+                throw new TypeError('Input numbers do not designate a valid date');
             }
         } else {
             if (date.holyDayNumber < 1 || date.holyDayNumber > 11) {
-                throw 'Input numbers do not designate a valid Holy Day';
+                throw new TypeError('Input numbers do not designate a valid Holy Day');
             }
             this._holyDay = date.holyDayNumber;
             [this._month, this._day] = this._holyDayMapping()[this._holyDay];
