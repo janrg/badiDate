@@ -232,6 +232,7 @@ class BadiDate {
     _leapYearsBefore(): number {
         let leapYearsBefore = Math.floor(Math.min(this.year - 1, 171) / 4);
         if (this.year > 172) {
+            // istanbul ignore else
             if (badiYears[0] === 'l4da') {
                 leapYearsBefore += badiYears.slice(0, this.year - 172).filter(entry => entry[1] === '5').length;
             } else {
@@ -362,7 +363,16 @@ class BadiDate {
 
     get previousDay(): BadiDate {
         if (this._day === 1) {
-            return this.previousMonth;
+            const { previousMonth } = this;
+            let day = 19;
+            if (this._month === 19) {
+                day = this._ayyamiHaLength;
+            }
+            return new BadiDate({
+                year: previousMonth.year,
+                month: previousMonth.month,
+                day,
+            });
         }
         return new BadiDate({ year: this._year, month: this._month, day: this._day - 1 });
     }

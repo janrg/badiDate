@@ -83,26 +83,78 @@ describe('the date component getters', () => {
     }
 });
 
+describe('`equals`', () => {
+    it('should compare dates', () => {
+        const invalidBadiDate1 = new BadiDate('someString' as any);
+        const invalidBadiDate2 = new BadiDate('someString' as any);
+        const validBadiDate1 = new BadiDate({ year: 172, holyDayNumber: 10 });
+        const validBadiDate2 = new BadiDate({ year: 172, holyDayNumber: 10 });
+        const validBadiDate3 = new BadiDate({ year: 172, holyDayNumber: 11 });
+        const validBadiDate4 = new BadiDate({ year: 173, holyDayNumber: 10 });
+        const validBadiDate5 = new BadiDate({ year: 173, holyDayNumber: 10 });
+
+        expect(invalidBadiDate1.equals(invalidBadiDate2)).toEqual(false);
+        expect(validBadiDate1.equals(invalidBadiDate2)).toEqual(false);
+        expect(validBadiDate1.equals(validBadiDate2)).toEqual(true);
+        expect(validBadiDate1.equals(validBadiDate3)).toEqual(false);
+        expect(validBadiDate4.equals(validBadiDate5)).toEqual(true);
+    });
+});
+
 describe('Holy Days', () => {
     afterEach(() => {
         badiDateSettings({ defaultLanguage: 'en' });
     });
 
     const holyDays = [
-        { date: { year: 172, holyDayNumber: HolyDay.NawRuz }, expectedOutput: 'Naw-Rúz' },
-        { date: { year: 172, holyDayNumber: HolyDay.FirstRidvan }, expectedOutput: 'First day of Riḍván' },
-        { date: { year: 172, holyDayNumber: HolyDay.NinthRidvan }, expectedOutput: 'Ninth day of Riḍván' },
-        { date: { year: 172, holyDayNumber: HolyDay.TwelfthRidvan }, expectedOutput: 'Twelfth day of Riḍván' },
-        { date: { year: 172, holyDayNumber: HolyDay.DeclarationOfTheBab }, expectedOutput: 'Declaration of the Báb' },
+        { date: { year: 172, holyDayNumber: HolyDay.NawRuz },
+            expectedOutput: 'Naw-Rúz',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.FirstRidvan },
+            expectedOutput: 'First day of Riḍván',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.NinthRidvan },
+            expectedOutput: 'Ninth day of Riḍván',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.TwelfthRidvan },
+            expectedOutput: 'Twelfth day of Riḍván',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.DeclarationOfTheBab },
+            expectedOutput: 'Declaration of the Báb',
+            workSuspended: true,
+        },
         { date: { year: 172, holyDayNumber: HolyDay.AscensionOfBahaullah },
-            expectedOutput: 'Ascension of Bahá’u’lláh' },
-        { date: { year: 172, holyDayNumber: HolyDay.MartyrdomOfTheBab }, expectedOutput: 'Martyrdom of the Báb' },
-        { date: { year: 172, holyDayNumber: HolyDay.BirthOfTheBab }, expectedOutput: 'Birth of the Báb' },
-        { date: { year: 172, holyDayNumber: HolyDay.BirthOfBahaullah }, expectedOutput: 'Birth of Bahá’u’lláh' },
-        { date: { year: 172, holyDayNumber: HolyDay.DayOfTheCovenant }, expectedOutput: 'Day of the Covenant' },
+            expectedOutput: 'Ascension of Bahá’u’lláh',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.MartyrdomOfTheBab },
+            expectedOutput: 'Martyrdom of the Báb',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.BirthOfTheBab },
+            expectedOutput: 'Birth of the Báb',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.BirthOfBahaullah },
+            expectedOutput: 'Birth of Bahá’u’lláh',
+            workSuspended: true,
+        },
+        { date: { year: 172, holyDayNumber: HolyDay.DayOfTheCovenant },
+            expectedOutput: 'Day of the Covenant',
+            workSuspended: false,
+        },
         { date: { year: 172, holyDayNumber: HolyDay.AscensionOfAbdulBaha },
-            expectedOutput: 'Ascension of ‘Abdu’l-Bahá' },
-        { date: { year: 172, month: 1, day: 2 }, expectedOutput: '' },
+            expectedOutput: 'Ascension of ‘Abdu’l-Bahá',
+            workSuspended: false,
+        },
+        { date: { year: 172, month: 1, day: 2 },
+            expectedOutput: '',
+            workSuspended: undefined,
+        },
     ];
 
     holyDays.forEach(({ date, expectedOutput }) => {
@@ -110,6 +162,14 @@ describe('Holy Days', () => {
             const badiDate = new BadiDate(date);
 
             expect(badiDate.holyDay()).toEqual(expectedOutput);
+        });
+    });
+
+    holyDays.forEach(({ date, workSuspended }) => {
+        it('should get work suspended info for Holy Days or not correctly', () => {
+            const badiDate = new BadiDate(date);
+
+            expect(badiDate.workSuspended).toEqual(workSuspended);
         });
     });
 

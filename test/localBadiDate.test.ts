@@ -1,4 +1,5 @@
-import { badiDateSettings, LocalBadiDate } from '../src/localBadiDate';
+import { BadiDate, badiDateSettings, LocalBadiDate } from '../src/localBadiDate';
+import { BadiDate as BadiDateOrig } from '../src/badiDate';
 import { clockLocationFromPolygons } from '../src/clockLocations';
 import * as luxon from 'luxon';
 import { clockMap } from './testData';
@@ -12,6 +13,10 @@ const timesString = localBadiDate => (
 
 const bahjiLat = 32.943;
 const bahjiLng = 35.092;
+
+describe('API', () => {
+    expect(BadiDateOrig).toEqual(BadiDate);
+});
 
 describe('timestamps for start, sunrise, solar noon, and sunrise', () => {
     const badiDate = new LocalBadiDate({ year: 172, month: 1, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
@@ -30,6 +35,87 @@ describe('timestamps for start, sunrise, solar noon, and sunrise', () => {
 
     it('should have the correct timestamp for end', () => {
         expect(badiDate.end.toISO()).toEqual('2015-03-21T17:52:00.000+02:00');
+    });
+});
+
+describe('Getters', () => {
+    it('should return values from geographic getters', () => {
+        const badiDate = new LocalBadiDate({ year: 172, month: 1, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate.latitude).toEqual(bahjiLat);
+        expect(badiDate.longitude).toEqual(bahjiLng);
+        expect(badiDate.timezoneId).toEqual('Asia/Jerusalem');
+    });
+
+    it('should return appropriate relative `LocalBadiDate` instances', () => {
+        const badiDate1 = new LocalBadiDate({ year: 172, month: 1, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate1.nextMonth.badiDate.month).toEqual(2);
+        expect(badiDate1.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate1.previousMonth.badiDate.month).toEqual(19);
+        expect(badiDate1.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate1.nextDay.badiDate.month).toEqual(1);
+        expect(badiDate1.nextDay.badiDate.day).toEqual(2);
+        expect(badiDate1.previousDay.badiDate.month).toEqual(19);
+        expect(badiDate1.previousDay.badiDate.day).toEqual(19);
+
+        const badiDate2 = new LocalBadiDate({ year: 172, month: 9, day: 5 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate2.nextMonth.badiDate.month).toEqual(10);
+        expect(badiDate2.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate2.previousMonth.badiDate.month).toEqual(8);
+        expect(badiDate2.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate2.nextDay.badiDate.month).toEqual(9);
+        expect(badiDate2.nextDay.badiDate.day).toEqual(6);
+        expect(badiDate2.previousDay.badiDate.month).toEqual(9);
+        expect(badiDate2.previousDay.badiDate.day).toEqual(4);
+
+        const badiDate3 = new LocalBadiDate({ year: 172, month: 19, day: 19 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate3.nextMonth.badiDate.month).toEqual(1);
+        expect(badiDate3.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate3.previousMonth.badiDate.month).toEqual(20);
+        expect(badiDate3.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate3.nextDay.badiDate.month).toEqual(1);
+        expect(badiDate3.nextDay.badiDate.day).toEqual(1);
+        expect(badiDate3.previousDay.badiDate.month).toEqual(19);
+        expect(badiDate3.previousDay.badiDate.day).toEqual(18);
+
+        const badiDate4 = new LocalBadiDate({ year: 172, month: 19, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate4.nextMonth.badiDate.month).toEqual(1);
+        expect(badiDate4.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate4.previousMonth.badiDate.month).toEqual(20);
+        expect(badiDate4.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate4.nextDay.badiDate.month).toEqual(19);
+        expect(badiDate4.nextDay.badiDate.day).toEqual(2);
+        expect(badiDate4.previousDay.badiDate.month).toEqual(20);
+        expect(badiDate4.previousDay.badiDate.day).toEqual(4);
+
+        const badiDate5 = new LocalBadiDate({ year: 178, month: 19, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate5.nextMonth.badiDate.month).toEqual(1);
+        expect(badiDate5.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate5.previousMonth.badiDate.month).toEqual(20);
+        expect(badiDate5.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate5.nextDay.badiDate.month).toEqual(19);
+        expect(badiDate5.nextDay.badiDate.day).toEqual(2);
+        expect(badiDate5.previousDay.badiDate.month).toEqual(20);
+        expect(badiDate5.previousDay.badiDate.day).toEqual(5);
+
+        const badiDate6 = new LocalBadiDate({ year: 172, month: 20, day: 4 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate6.nextMonth.badiDate.month).toEqual(19);
+        expect(badiDate6.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate6.previousMonth.badiDate.month).toEqual(18);
+        expect(badiDate6.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate6.nextDay.badiDate.month).toEqual(19);
+        expect(badiDate6.nextDay.badiDate.day).toEqual(1);
+        expect(badiDate6.previousDay.badiDate.month).toEqual(20);
+        expect(badiDate6.previousDay.badiDate.day).toEqual(3);
+
+        const badiDate7 = new LocalBadiDate({ year: 172, month: 18, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
+        expect(badiDate7.nextMonth.badiDate.month).toEqual(20);
+        expect(badiDate7.nextMonth.badiDate.day).toEqual(1);
+        expect(badiDate7.previousMonth.badiDate.month).toEqual(17);
+        expect(badiDate7.previousMonth.badiDate.day).toEqual(1);
+        expect(badiDate7.nextDay.badiDate.month).toEqual(18);
+        expect(badiDate7.nextDay.badiDate.day).toEqual(2);
+        expect(badiDate7.previousDay.badiDate.month).toEqual(17);
+        expect(badiDate7.previousDay.badiDate.day).toEqual(19);
     });
 });
 
