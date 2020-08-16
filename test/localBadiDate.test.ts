@@ -1,4 +1,5 @@
-import { badiDateSettings, LocalBadiDate } from '../src/localBadiDate';
+import { BadiDate, badiDateSettings, LocalBadiDate } from '../src/localBadiDate';
+import { BadiDate as BadiDateOrig } from '../src/badiDate';
 import { clockLocationFromPolygons } from '../src/clockLocations';
 import * as luxon from 'luxon';
 import { clockMap } from './testData';
@@ -12,6 +13,10 @@ const timesString = localBadiDate => (
 
 const bahjiLat = 32.943;
 const bahjiLng = 35.092;
+
+describe('API', () => {
+    expect(BadiDateOrig).toEqual(BadiDate);
+});
 
 describe('timestamps for start, sunrise, solar noon, and sunrise', () => {
     const badiDate = new LocalBadiDate({ year: 172, month: 1, day: 1 }, bahjiLat, bahjiLng, 'Asia/Jerusalem');
