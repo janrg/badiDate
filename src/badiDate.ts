@@ -232,6 +232,7 @@ class BadiDate {
     _leapYearsBefore(): number {
         let leapYearsBefore = Math.floor(Math.min(this.year - 1, 171) / 4);
         if (this.year > 172) {
+            // istanbul ignore else
             if (badiYears[0] === 'l4da') {
                 leapYearsBefore += badiYears.slice(0, this.year - 172).filter(entry => entry[1] === '5').length;
             } else {

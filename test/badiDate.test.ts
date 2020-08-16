@@ -83,6 +83,24 @@ describe('the date component getters', () => {
     }
 });
 
+describe('`equals`', () => {
+    it('should compare dates', () => {
+        const invalidBadiDate1 = new BadiDate('someString' as any);
+        const invalidBadiDate2 = new BadiDate('someString' as any);
+        const validBadiDate1 = new BadiDate({ year: 172, holyDayNumber: 10 });
+        const validBadiDate2 = new BadiDate({ year: 172, holyDayNumber: 10 });
+        const validBadiDate3 = new BadiDate({ year: 172, holyDayNumber: 11 });
+        const validBadiDate4 = new BadiDate({ year: 173, holyDayNumber: 10 });
+        const validBadiDate5 = new BadiDate({ year: 173, holyDayNumber: 10 });
+
+        expect(invalidBadiDate1.equals(invalidBadiDate2)).toEqual(false);
+        expect(validBadiDate1.equals(invalidBadiDate2)).toEqual(false);
+        expect(validBadiDate1.equals(validBadiDate2)).toEqual(true);
+        expect(validBadiDate1.equals(validBadiDate3)).toEqual(false);
+        expect(validBadiDate4.equals(validBadiDate5)).toEqual(true);
+    });
+});
+
 describe('Holy Days', () => {
     afterEach(() => {
         badiDateSettings({ defaultLanguage: 'en' });
