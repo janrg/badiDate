@@ -381,13 +381,3 @@ describe('the language selection', () => {
         expect(badiDate.format('MM BE', 'sv')).toEqual('Bahá B.E.');
     });
 });
-
-// describe('valueOf', () => {
-//     // for (let i = 172; i < 173; i++) {
-//         it('bla', () => {
-//             const badiDate = new BadiDate({year: 172, month: 1, day: 1});
-//             console.log(172, badiDate.valueOf());
-//             expect(true).toBeTruthy();
-//         });
-//     // }
-// });
