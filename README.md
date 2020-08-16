@@ -33,6 +33,10 @@ uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm 
 
 ## Changelog
 
+### 3.0.1
+
+- Fixed error in `previousDay`
+
 ### 3.0.0
 
 - Switched to using Luxon instead of moment-timezone.
