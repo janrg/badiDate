@@ -54,7 +54,7 @@ import { adiDate, LocalBadiDate, badiDateSettings } from 'badidate';
 or directly use it in the browser via
 
 ```js
-import { BadiDate, LocalBadiDate, badiDateSettings } from 'node_modules/badidate/dist/localBadiDate-mss-locales-es.ts';
+import { BadiDate, LocalBadiDate, badiDateSettings } from './node_modules/badidate/dist/localBadiDate-msm-locales.m.js';
 ```
 
 If the version of `localBadiDate*.js` without bundled  MeeusSunMoon is used, the module has to be loaded globally
@@ -330,7 +330,7 @@ The data can be generated in two formats via `npm run generateYearData`, long an
 in the BadiDate class. Every year is represented by a 4 character string in base36 encoding where the first character indicates the day
 in March on which the end of Naw-Rúz falls, the second character the length of Ayyám-i-Há, and the third and fourth character the Badí'
 month and day respectively on which the Birth of the Báb falls. This data is then internally unpacked into the long format as needed,
-though it is also possible to replace the short format data in badiDate.ts with the long format without any additional changes (though
+though it is also possible to replace the short format data in `badiDate.ts` with the long format without any additional changes (though
 this appears to make the handling of the object slightly slower (and of course increases the file size significantly.
 An item in the long format looks as follows:
 
