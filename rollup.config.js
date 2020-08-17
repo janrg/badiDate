@@ -5,7 +5,7 @@ import typescript from '@rollup/plugin-typescript';
 import replace from 'rollup-plugin-re';
 
 const copyrightNotice = `/**
- * @license BadiDate v3.0.1
+ * @license BadiDate v3.0.2
  * (c) 2018 Jan Greis
  * licensed under MIT
  */

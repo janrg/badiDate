@@ -33,6 +33,10 @@ uncertainty in ΔT means the date of Naw-Rúz 2352 AD produced by the algorithm 
 
 ## Changelog
 
+### 3.0.2
+
+- Fixed typo in `main` path in `package.json
+
 ### 3.0.1
 
 - Fixed error in `previousDay`
